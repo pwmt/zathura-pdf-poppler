@@ -4,7 +4,6 @@
 #include <poppler/glib/poppler.h>
 
 #include "pdf.h"
-#include "../../zathura.h"
 
 void
 plugin_register(zathura_document_plugin_t* plugin)

@@ -6,7 +6,7 @@
 #include <stdbool.h>
 #include <poppler.h>
 
-#include "../../document.h"
+#include <zathura/document.h>
 
 typedef struct pdf_document_s
 {
