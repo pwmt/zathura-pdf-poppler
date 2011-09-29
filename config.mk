@@ -4,7 +4,7 @@
 PREFIX ?= /usr
 
 # libs
-GTK_INC ?= $(shell pkg-config --cflags gtk+-2.)
+GTK_INC ?= $(shell pkg-config --cflags gtk+-2.0)
 GTK_LIB ?= $(shell pkg-config --libs gtk+-2.0)
 
 PDF_INC ?= $(shell pkg-config --cflags poppler-glib)
