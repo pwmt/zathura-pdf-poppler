@@ -6,6 +6,10 @@
 #include <stdbool.h>
 #include <poppler.h>
 
+#if HAVE_CAIRO
+#include <cairo.h>
+#endif
+
 #include <zathura/document.h>
 
 typedef struct pdf_document_s
@@ -23,6 +27,9 @@ zathura_list_t* pdf_page_search_text(zathura_page_t* page, const char* text);
 zathura_list_t* pdf_page_links_get(zathura_page_t* page);
 zathura_list_t* pdf_page_form_fields_get(zathura_page_t* page);
 zathura_image_buffer_t* pdf_page_render(zathura_page_t* page);
+#if HAVE_CAIRO
+bool pdf_page_render_cairo(zathura_page_t* page, cairo_t* cairo);
+#endif
 bool pdf_page_free(zathura_page_t* page);
 
 #endif // PDF_H

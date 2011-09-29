@@ -28,6 +28,9 @@ pdf_document_open(zathura_document_t* document)
   document->functions.page_links_get            = pdf_page_links_get;
   document->functions.page_form_fields_get      = pdf_page_form_fields_get;
   document->functions.page_render               = pdf_page_render;
+#if HAVE_CAIRO
+  document->functions.page_render_cairo         = pdf_page_render_cairo;
+#endif
   document->functions.page_free                 = pdf_page_free;
 
   document->data = malloc(sizeof(pdf_document_t));
@@ -110,6 +113,7 @@ build_index(pdf_document_t* pdf, girara_tree_node_t* root, PopplerIndexIter* ite
 
     gchar* markup = g_markup_escape_text(action->any.title, -1);
     zathura_index_element_t* index_element = zathura_index_element_new(markup);
+    g_free(markup);
 
     if (action->type == POPPLER_ACTION_URI) {
       index_element->type = ZATHURA_LINK_EXTERNAL;
@@ -162,7 +166,7 @@ pdf_document_index_generate(zathura_document_t* document)
   }
 
   girara_tree_node_t* root = girara_node_new(zathura_index_element_new("ROOT"));
-  girara_node_set_free_function(root, (girara_free_function_t)zathura_index_element_free);
+  girara_node_set_free_function(root, (girara_free_function_t) zathura_index_element_free);
   build_index(pdf_document, root, iter);
 
   poppler_index_iter_free(iter);
@@ -247,6 +251,12 @@ zathura_list_t*
 pdf_page_form_fields_get(zathura_page_t* page)
 {
   return NULL;
+}
+
+bool
+pdf_page_render_cairo(zathura_page_t* page, cairo_t* cairo)
+{
+  return false;
 }
 
 zathura_image_buffer_t*
