@@ -256,13 +256,20 @@ pdf_page_form_fields_get(zathura_page_t* page)
 bool
 pdf_page_render_cairo(zathura_page_t* page, cairo_t* cairo)
 {
-  return false;
+  if (page == NULL || page->data == NULL || page->document == NULL ||
+      cairo == NULL) {
+    return false;
+  }
+
+  poppler_page_render(page->data, cairo);
+
+  return true;
 }
 
 zathura_image_buffer_t*
 pdf_page_render(zathura_page_t* page)
 {
-  if (!page || !page->data || !page->document) {
+  if (page == NULL || page->data == NULL || page->document == NULL) {
     return NULL;
   }
 
