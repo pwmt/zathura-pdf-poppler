@@ -4,11 +4,14 @@
 PREFIX ?= /usr
 
 # libs
-PDF_INC ?= $(shell pkg-config --cflags gtk+-2.0 poppler-glib)
-PDF_LIB ?= $(shell pkg-config --libs gtk+-2.0 poppler-glib)
+GTK_INC ?= $(shell pkg-config --cflags gtk+-2.)
+GTK_LIB ?= $(shell pkg-config --libs gtk+-2.0)
 
-INCS = -I. -I/usr/include ${PDF_INC}
-LIBS = ${PDF_LIB}
+PDF_INC ?= $(shell pkg-config --cflags poppler-glib)
+PDF_LIB ?= $(shell pkg-config --libs poppler-glib)
+
+INCS = ${GTK_INC} ${PDF_INC}
+LIBS = ${GTK_LIB} ${PDF_LIB}
 
 # flags
 CFLAGS += -std=c99 -fPIC -pedantic -Wall -Wno-format-zero-length $(INCS)
