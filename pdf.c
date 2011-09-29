@@ -253,6 +253,7 @@ pdf_page_form_fields_get(zathura_page_t* page)
   return NULL;
 }
 
+#ifdef HAVE_CAIRO
 bool
 pdf_page_render_cairo(zathura_page_t* page, cairo_t* cairo)
 {
@@ -265,6 +266,7 @@ pdf_page_render_cairo(zathura_page_t* page, cairo_t* cairo)
 
   return true;
 }
+#endif
 
 zathura_image_buffer_t*
 pdf_page_render(zathura_page_t* page)
