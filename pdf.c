@@ -173,7 +173,7 @@ pdf_document_index_generate(zathura_document_t* document)
   }
 
   girara_tree_node_t* root = girara_node_new(zathura_index_element_new("ROOT"));
-  girara_node_set_free_function(root, (girara_free_function_t) zathura_index_element_free);
+  // girara_node_set_free_function(root, (girara_free_function_t) zathura_index_element_free);
   build_index(pdf_document, root, iter);
 
   poppler_index_iter_free(iter);
