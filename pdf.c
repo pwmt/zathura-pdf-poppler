@@ -1,6 +1,8 @@
 /* See LICENSE file for license and copyright information */
 
 #include <stdlib.h>
+#include <string.h>
+#include <time.h>
 #include <poppler/glib/poppler.h>
 
 #include "pdf.h"
@@ -23,6 +25,7 @@ pdf_document_open(zathura_document_t* document)
   document->functions.document_index_generate   = pdf_document_index_generate;;
   document->functions.document_save_as          = pdf_document_save_as;
   document->functions.document_attachments_get  = pdf_document_attachments_get;
+  document->functions.document_meta_get         = pdf_document_meta_get;
   document->functions.page_get                  = pdf_page_get;
   document->functions.page_search_text          = pdf_page_search_text;
   document->functions.page_links_get            = pdf_page_links_get;
@@ -103,8 +106,7 @@ build_index(pdf_document_t* pdf, girara_tree_node_t* root, PopplerIndexIter* ite
     return;
   }
 
-  do
-  {
+  do {
     PopplerAction* action = poppler_index_iter_get_action(iter);
 
     if (!action) {
@@ -113,7 +115,12 @@ build_index(pdf_document_t* pdf, girara_tree_node_t* root, PopplerIndexIter* ite
 
     gchar* markup = g_markup_escape_text(action->any.title, -1);
     zathura_index_element_t* index_element = zathura_index_element_new(markup);
+
     g_free(markup);
+
+    if (index_element == NULL) {
+      continue;
+    }
 
     if (action->type == POPPLER_ACTION_URI) {
       index_element->type = ZATHURA_LINK_EXTERNAL;
@@ -193,6 +200,68 @@ zathura_list_t*
 pdf_document_attachments_get(zathura_document_t* document)
 {
   return NULL;
+}
+
+char*
+pdf_document_meta_get(zathura_document_t* document, zathura_document_meta_t meta)
+{
+  if (document == NULL || document->data == NULL) {
+    return NULL;
+  }
+
+  pdf_document_t* pdf_document  = (pdf_document_t*) document->data;
+
+  char* string_value;
+  char* tmp;
+  time_t time_value;
+
+  switch (meta) {
+    case ZATHURA_DOCUMENT_TITLE:
+      g_object_get(pdf_document->document, "title", &string_value, NULL);
+      break;
+    case ZATHURA_DOCUMENT_AUTHOR:
+      g_object_get(pdf_document->document, "author", &string_value, NULL);
+      break;
+    case ZATHURA_DOCUMENT_SUBJECT:
+      g_object_get(pdf_document->document, "subject", &string_value, NULL);
+      break;
+    case ZATHURA_DOCUMENT_KEYWORDS:
+      g_object_get(pdf_document->document, "keywords", &string_value, NULL);
+      break;
+    case ZATHURA_DOCUMENT_CREATOR:
+      g_object_get(pdf_document->document, "creator", &string_value, NULL);
+      break;
+    case ZATHURA_DOCUMENT_PRODUCER:
+      g_object_get(pdf_document->document, "producer", &string_value, NULL);
+      break;
+    case ZATHURA_DOCUMENT_CREATION_DATE:
+      g_object_get(pdf_document->document, "creation-date", &time_value, NULL);
+      tmp = ctime(&time_value);
+      if (tmp != NULL) {
+        string_value = g_strndup(tmp, strlen(tmp) - 1);
+      } else {
+        return NULL;
+      }
+      break;
+    case ZATHURA_DOCUMENT_MODIFICATION_DATE:
+      g_object_get(pdf_document->document, "mod-date", &time_value, NULL);
+      tmp = ctime(&time_value);
+      if (tmp != NULL) {
+        string_value = g_strndup(tmp, strlen(tmp) - 1);
+      } else {
+        return NULL;
+      }
+      break;
+    default:
+      return NULL;
+  }
+
+  if (string_value == NULL || strlen(string_value) == 0) {
+    g_free(string_value);
+    return NULL;
+  }
+
+  return string_value;
 }
 
 zathura_page_t*
