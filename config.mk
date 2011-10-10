@@ -10,7 +10,10 @@ GTK_LIB ?= $(shell pkg-config --libs gtk+-2.0)
 PDF_INC ?= $(shell pkg-config --cflags poppler-glib)
 PDF_LIB ?= $(shell pkg-config --libs poppler-glib)
 
-INCS = ${GTK_INC} ${PDF_INC}
+GIRARA_INC ?= $(shell pkg-config --cflags girara-gtk2)
+ZATHURA_INC ?= $(shell pkg-config --cflags zathura)
+
+INCS = ${GTK_INC} ${PDF_INC} ${ZATHURA_INC} ${GIRARA_INC}
 LIBS = ${GTK_LIB} ${PDF_LIB}
 
 # flags
