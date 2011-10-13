@@ -27,7 +27,9 @@ zathura_page_t* pdf_page_get(zathura_document_t* document, unsigned int page);
 zathura_list_t* pdf_page_search_text(zathura_page_t* page, const char* text);
 zathura_list_t* pdf_page_links_get(zathura_page_t* page);
 zathura_list_t* pdf_page_form_fields_get(zathura_page_t* page);
+#if !POPPLER_CHECK_VERSION(0,18,0)
 zathura_image_buffer_t* pdf_page_render(zathura_page_t* page);
+#endif
 #if HAVE_CAIRO
 bool pdf_page_render_cairo(zathura_page_t* page, cairo_t* cairo);
 #endif

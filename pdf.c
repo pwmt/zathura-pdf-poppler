@@ -7,6 +7,10 @@
 
 #include "pdf.h"
 
+#if !defined(HAVE_CAIRO) && POPPLER_CHECK_VERSION(0,18,0)
+#error "Cannot render without cairo and poppler >= 0.18"
+#endif
+
 void
 plugin_register(zathura_document_plugin_t* plugin)
 {
@@ -30,7 +34,9 @@ pdf_document_open(zathura_document_t* document)
   document->functions.page_search_text          = pdf_page_search_text;
   document->functions.page_links_get            = pdf_page_links_get;
   document->functions.page_form_fields_get      = pdf_page_form_fields_get;
+#if !POPPLER_CHECK_VERSION(0,18,0)
   document->functions.page_render               = pdf_page_render;
+#endif
 #if HAVE_CAIRO
   document->functions.page_render_cairo         = pdf_page_render_cairo;
 #endif
@@ -337,6 +343,7 @@ pdf_page_render_cairo(zathura_page_t* page, cairo_t* cairo)
 }
 #endif
 
+#if !POPPLER_CHECK_VERSION(0,18,0)
 zathura_image_buffer_t*
 pdf_page_render(zathura_page_t* page)
 {
@@ -386,3 +393,4 @@ pdf_page_render(zathura_page_t* page)
 
   return image_buffer;
 }
+#endif
