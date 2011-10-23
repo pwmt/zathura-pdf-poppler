@@ -1,6 +1,7 @@
 /* See LICENSE file for license and copyright information */
 
 #include <stdlib.h>
+#include <girara/datastructures.h>
 #include <string.h>
 #include <time.h>
 #include <poppler/glib/poppler.h>
