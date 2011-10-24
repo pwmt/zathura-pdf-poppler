@@ -314,6 +314,52 @@ pdf_page_free(zathura_page_t* page)
 girara_list_t*
 pdf_page_search_text(zathura_page_t* page, const char* text)
 {
+  if (page == NULL || page->data == NULL || text == NULL) {
+    goto error_ret;
+  }
+
+  GList* results      = NULL;
+  girara_list_t* list = NULL;
+
+
+  /* search text */
+  results = poppler_page_find_text(page->data, text);
+  if (results == NULL || g_list_length(results) == 0) {
+    goto error_free;
+  }
+
+  list = girara_list_new();
+  if (list == NULL) {
+    goto error_free;
+  }
+
+  GList* entry = NULL;
+  for (entry = results; entry && entry->data; entry = g_list_next(entry)) {
+    PopplerRectangle* poppler_rectangle = (PopplerRectangle*) entry->data;
+    zathura_rectangle_t* rectangle      = g_malloc0(sizeof(zathura_rectangle_t));
+
+    rectangle->x1 = poppler_rectangle->x1;
+    rectangle->x2 = poppler_rectangle->x2;
+    rectangle->y1 = poppler_rectangle->y1;
+    rectangle->y2 = poppler_rectangle->y2;
+
+    girara_list_append(list, rectangle);
+  }
+
+  return list;
+
+error_free:
+
+  if (results != NULL) {
+    g_list_free(results);
+  }
+
+  if (list != NULL) {
+    girara_list_free(list);
+  }
+
+error_ret:
+
   return NULL;
 }
 
