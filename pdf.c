@@ -321,14 +321,13 @@ pdf_page_search_text(zathura_page_t* page, const char* text)
   GList* results      = NULL;
   girara_list_t* list = NULL;
 
-
   /* search text */
   results = poppler_page_find_text(page->data, text);
   if (results == NULL || g_list_length(results) == 0) {
     goto error_free;
   }
 
-  list = girara_list_new();
+  list = girara_list_new2(g_free);
   if (list == NULL) {
     goto error_free;
   }
@@ -346,6 +345,7 @@ pdf_page_search_text(zathura_page_t* page, const char* text)
     girara_list_append(list, rectangle);
   }
 
+  g_list_free(results);
   return list;
 
 error_free:
