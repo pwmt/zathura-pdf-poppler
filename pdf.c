@@ -2,6 +2,7 @@
 
 #include <stdlib.h>
 #include <girara/datastructures.h>
+#include <girara/utils.h>
 #include <string.h>
 #include <time.h>
 #include <poppler/glib/poppler.h>
@@ -27,9 +28,10 @@ pdf_document_open(zathura_document_t* document)
   }
 
   document->functions.document_free             = pdf_document_free;
-  document->functions.document_index_generate   = pdf_document_index_generate;;
+  document->functions.document_index_generate   = pdf_document_index_generate;
   document->functions.document_save_as          = pdf_document_save_as;
   document->functions.document_attachments_get  = pdf_document_attachments_get;
+  document->functions.document_attachment_save  = pdf_document_attachment_save;
   document->functions.document_meta_get         = pdf_document_meta_get;
   document->functions.page_get                  = pdf_page_get;
   document->functions.page_search_text          = pdf_page_search_text;
@@ -206,7 +208,62 @@ pdf_document_save_as(zathura_document_t* document, const char* path)
 girara_list_t*
 pdf_document_attachments_get(zathura_document_t* document)
 {
-  return NULL;
+  if (!document || !document->data) {
+    return NULL;
+  }
+
+  pdf_document_t* pdf_document = (pdf_document_t*) document->data;
+  if (!poppler_document_has_attachments(pdf_document->document))
+  {
+    girara_warning("PDF file has no attachments");
+    return NULL;
+  }
+
+  girara_list_t* res = girara_sorted_list_new2((girara_compare_function_t) g_strcmp0,
+      (girara_free_function_t) g_free);
+  if (!res) {
+    return NULL;
+  }
+
+  GList* attachment_list = poppler_document_get_attachments(pdf_document->document);
+  GList* attachments;
+
+  for (attachments = attachment_list; attachments; attachments = g_list_next(attachments)) {
+    PopplerAttachment* attachment = (PopplerAttachment*) attachments->data;
+    girara_list_append(res, g_strdup(attachment->name));
+  }
+
+  return res;
+}
+
+bool
+pdf_document_attachment_save(zathura_document_t* document, const char* attachmentname, const char* file)
+{
+  if (!document || !document->data) {
+    return false;
+  }
+
+  pdf_document_t* pdf_document = (pdf_document_t*) document->data;
+  if (!poppler_document_has_attachments(pdf_document->document))
+  {
+    girara_warning("PDF file has no attachments");
+    return false;
+  }
+
+
+  GList* attachment_list = poppler_document_get_attachments(pdf_document->document);
+  GList* attachments;
+
+  for (attachments = attachment_list; attachments; attachments = g_list_next(attachments)) {
+    PopplerAttachment* attachment = (PopplerAttachment*) attachments->data;
+    if (g_strcmp0(attachment->name, attachmentname)) {
+      continue;
+    }
+
+    return poppler_attachment_save(attachment, file, NULL);
+  }
+
+  return false;
 }
 
 char*
