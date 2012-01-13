@@ -22,6 +22,7 @@ bool pdf_document_free(zathura_document_t* document);
 girara_tree_node_t* pdf_document_index_generate(zathura_document_t* document);
 bool pdf_document_save_as(zathura_document_t* document, const char* path);
 girara_list_t* pdf_document_attachments_get(zathura_document_t* document);
+bool pdf_document_attachment_save(zathura_document_t* document, const char* attachment, const char* filename);
 char* pdf_document_meta_get(zathura_document_t* document, zathura_document_meta_t meta);
 zathura_page_t* pdf_page_get(zathura_document_t* document, unsigned int page);
 girara_list_t* pdf_page_search_text(zathura_page_t* page, const char* text);
