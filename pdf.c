@@ -366,6 +366,80 @@ error_ret:
 girara_list_t*
 pdf_page_links_get(zathura_page_t* page)
 {
+  if (page == NULL || page->data == NULL) {
+    goto error_ret;
+  }
+
+  girara_list_t* list  = NULL;
+  GList* link_mapping = NULL;
+
+  link_mapping = poppler_page_get_link_mapping(page->data);
+  if (link_mapping == NULL || g_list_length(link_mapping) == 0) {
+    goto error_free;
+  }
+
+  list = girara_list_new();
+  if (list == NULL) {
+    goto error_free;
+  }
+
+  for (GList* link = link_mapping; link != NULL; link = g_list_next(link)) {
+    zathura_link_t* zathura_link = g_malloc0(sizeof(zathura_link_t));
+    if (zathura_link == NULL) {
+      continue;
+    }
+
+    PopplerLinkMapping* poppler_link = (PopplerLinkMapping*) link->data;
+    pdf_document_t* pdf_document     = (pdf_document_t*) page->data;
+
+    /* extract position */
+    zathura_link->position.x1 = poppler_link->area.x1;
+    zathura_link->position.x2 = poppler_link->area.x2;
+    zathura_link->position.y1 = poppler_link->area.y1;
+    zathura_link->position.y1 = poppler_link->area.y2;
+
+    /* extract type and target */
+    PopplerDest* poppler_destination = NULL;
+
+    switch (poppler_link->action->type) {
+      case POPPLER_ACTION_URI:
+        zathura_link->type         = ZATHURA_LINK_EXTERNAL;
+        zathura_link->target.value = poppler_link->action->uri.uri;
+        break;
+      case POPPLER_ACTION_GOTO_DEST:
+        zathura_link->type = ZATHURA_LINK_TO_PAGE;
+        if (poppler_link->action->goto_dest.dest->type == POPPLER_DEST_NAMED) {
+          poppler_destination = poppler_document_find_dest(pdf_document->document, poppler_link->action->goto_dest.dest->named_dest);
+          if (poppler_destination != NULL) {
+            zathura_link->target.page_number = poppler_destination->page_num;
+            poppler_dest_free(poppler_destination);
+          }
+        } else {
+          zathura_link->target.page_number = poppler_link->action->goto_dest.dest->page_num;
+        }
+        break;
+      default:
+        free(zathura_link);
+        continue;
+    }
+  }
+
+  poppler_page_free_link_mapping(page->data);
+
+  return list;
+
+error_free:
+
+  if (list != NULL) {
+    girara_list_free(list);
+  }
+
+  if (link_mapping != NULL) {
+    poppler_page_free_link_mapping(page->data);
+  }
+
+error_ret:
+
   return NULL;
 }
 
