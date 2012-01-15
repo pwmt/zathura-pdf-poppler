@@ -16,6 +16,10 @@
 void
 plugin_register(zathura_document_plugin_t* plugin)
 {
+  if (plugin == NULL) {
+    return;
+  }
+
   girara_list_append(plugin->content_types, g_content_type_from_mime_type("application/pdf"));
   plugin->open_function  = pdf_document_open;
 }
@@ -23,7 +27,7 @@ plugin_register(zathura_document_plugin_t* plugin)
 bool
 pdf_document_open(zathura_document_t* document)
 {
-  if (!document) {
+  if (document == NULL) {
     goto error_out;
   }
 
@@ -45,8 +49,8 @@ pdf_document_open(zathura_document_t* document)
 #endif
   document->functions.page_free                 = pdf_page_free;
 
-  document->data = malloc(sizeof(pdf_document_t));
-  if (!document->data) {
+  document->data = g_malloc0(sizeof(pdf_document_t));
+  if (document->data == NULL) {
     goto error_out;
   }
 
@@ -54,7 +58,7 @@ pdf_document_open(zathura_document_t* document)
   GError* error  = NULL;
   char* file_uri = g_filename_to_uri(document->file_path, NULL, &error);
 
-  if (!file_uri) {
+  if (file_uri == NULL) {
     fprintf(stderr, "error: could not open file: %s\n", error->message);
     goto error_free;
   }
@@ -62,7 +66,7 @@ pdf_document_open(zathura_document_t* document)
   pdf_document_t* pdf_document = (pdf_document_t*) document->data;
   pdf_document->document       = poppler_document_new_from_file(file_uri, document->password, &error);
 
-  if (!pdf_document->document) {
+  if (pdf_document->document == NULL) {
     fprintf(stderr, "error: could not open file: %s\n", error->message);
     goto error_free;
   }
@@ -75,16 +79,18 @@ pdf_document_open(zathura_document_t* document)
 
 error_free:
 
-    if (error) {
+    if (error != NULL) {
       g_error_free(error);
     }
 
-    if (file_uri) {
+    if (file_uri != NULL) {
       g_free(file_uri);
     }
 
-    free(document->data);
-    document->data = NULL;
+    if (document != NULL) {
+      free(document->data);
+      document->data = NULL;
+    }
 
 error_out:
 
@@ -94,11 +100,11 @@ error_out:
 bool
 pdf_document_free(zathura_document_t* document)
 {
-  if (!document) {
+  if (document == NULL) {
     return false;
   }
 
-  if (document->data) {
+  if (document->data != NULL) {
     pdf_document_t* pdf_document = (pdf_document_t*) document->data;
     g_object_unref(pdf_document->document);
     free(document->data);
@@ -111,14 +117,14 @@ pdf_document_free(zathura_document_t* document)
 static void
 build_index(pdf_document_t* pdf, girara_tree_node_t* root, PopplerIndexIter* iter)
 {
-  if (!root || !iter) {
+  if (root == NULL || iter == NULL) {
     return;
   }
 
   do {
     PopplerAction* action = poppler_index_iter_get_action(iter);
 
-    if (!action) {
+    if (action == NULL) {
       continue;
     }
 
@@ -139,7 +145,7 @@ build_index(pdf_document_t* pdf, girara_tree_node_t* root, PopplerIndexIter* ite
 
       if (action->goto_dest.dest->type == POPPLER_DEST_NAMED) {
         PopplerDest* dest = poppler_document_find_dest(pdf->document, action->goto_dest.dest->named_dest);
-        if (dest) {
+        if (dest != NULL) {
           index_element->target.page_number = dest->page_num - 1;
           poppler_dest_free(dest);
         }
@@ -157,7 +163,7 @@ build_index(pdf_document_t* pdf, girara_tree_node_t* root, PopplerIndexIter* ite
     girara_tree_node_t* node = girara_node_append_data(root, index_element);
     PopplerIndexIter* child  = poppler_index_iter_get_child(iter);
 
-    if (child) {
+    if (child != NULL) {
       build_index(pdf, node, child);
     }
 
@@ -169,14 +175,14 @@ build_index(pdf_document_t* pdf, girara_tree_node_t* root, PopplerIndexIter* ite
 girara_tree_node_t*
 pdf_document_index_generate(zathura_document_t* document)
 {
-  if (!document || !document->data) {
+  if (document == NULL || document->data == NULL) {
     return NULL;
   }
 
   pdf_document_t* pdf_document = (pdf_document_t*) document->data;
   PopplerIndexIter* iter       = poppler_index_iter_new(pdf_document->document);
 
-  if (!iter) {
+  if (iter == NULL) {
     // XXX: error message?
     return NULL;
   }
@@ -192,7 +198,7 @@ pdf_document_index_generate(zathura_document_t* document)
 bool
 pdf_document_save_as(zathura_document_t* document, const char* path)
 {
-  if (!document || !document->data || !path) {
+  if (document == NULL || document->data == NULL || path == NULL) {
     return false;
   }
 
@@ -208,20 +214,19 @@ pdf_document_save_as(zathura_document_t* document, const char* path)
 girara_list_t*
 pdf_document_attachments_get(zathura_document_t* document)
 {
-  if (!document || !document->data) {
+  if (document == NULL || document->data == NULL) {
     return NULL;
   }
 
   pdf_document_t* pdf_document = (pdf_document_t*) document->data;
-  if (!poppler_document_has_attachments(pdf_document->document))
-  {
+  if (poppler_document_has_attachments(pdf_document->document) == FALSE) {
     girara_warning("PDF file has no attachments");
     return NULL;
   }
 
   girara_list_t* res = girara_sorted_list_new2((girara_compare_function_t) g_strcmp0,
       (girara_free_function_t) g_free);
-  if (!res) {
+  if (res == NULL) {
     return NULL;
   }
 
@@ -239,13 +244,12 @@ pdf_document_attachments_get(zathura_document_t* document)
 bool
 pdf_document_attachment_save(zathura_document_t* document, const char* attachmentname, const char* file)
 {
-  if (!document || !document->data) {
+  if (document == NULL || document->data == NULL) {
     return false;
   }
 
   pdf_document_t* pdf_document = (pdf_document_t*) document->data;
-  if (!poppler_document_has_attachments(pdf_document->document))
-  {
+  if (poppler_document_has_attachments(pdf_document->document) == FALSE) {
     girara_warning("PDF file has no attachments");
     return false;
   }
@@ -256,7 +260,7 @@ pdf_document_attachment_save(zathura_document_t* document, const char* attachmen
 
   for (attachments = attachment_list; attachments; attachments = g_list_next(attachments)) {
     PopplerAttachment* attachment = (PopplerAttachment*) attachments->data;
-    if (g_strcmp0(attachment->name, attachmentname)) {
+    if (g_strcmp0(attachment->name, attachmentname) != 0) {
       continue;
     }
 
@@ -331,21 +335,21 @@ pdf_document_meta_get(zathura_document_t* document, zathura_document_meta_t meta
 zathura_page_t*
 pdf_page_get(zathura_document_t* document, unsigned int page)
 {
-  if (!document || !document->data) {
+  if (document == NULL || document->data == NULL) {
     return NULL;
   }
 
   pdf_document_t* pdf_document  = (pdf_document_t*) document->data;
-  zathura_page_t* document_page = malloc(sizeof(zathura_page_t));
+  zathura_page_t* document_page = g_malloc0(sizeof(zathura_page_t));
 
-  if (!document_page) {
+  if (document_page == NULL) {
     return NULL;
   }
 
   document_page->document = document;
   document_page->data     = poppler_document_get_page(pdf_document->document, page);
 
-  if (!document_page->data) {
+  if (document_page->data == NULL) {
     free(document_page);
     return NULL;
   }
@@ -358,7 +362,7 @@ pdf_page_get(zathura_document_t* document, unsigned int page)
 bool
 pdf_page_free(zathura_page_t* page)
 {
-  if (!page) {
+  if (page == NULL) {
     return false;
   }
 
