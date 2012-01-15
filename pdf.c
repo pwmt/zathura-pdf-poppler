@@ -446,8 +446,9 @@ pdf_page_links_get(zathura_page_t* page)
       continue;
     }
 
-    PopplerLinkMapping* poppler_link = (PopplerLinkMapping*) link->data;
-    pdf_document_t* pdf_document     = (pdf_document_t*) page->data;
+    PopplerLinkMapping* poppler_link     = (PopplerLinkMapping*) link->data;
+    zathura_document_t* zathura_document = (zathura_document_t*) page->document;
+    pdf_document_t* pdf_document         = (pdf_document_t*) zathura_document->data;
 
     /* extract position */
     zathura_link->position.x1 = poppler_link->area.x1;
@@ -481,7 +482,7 @@ pdf_page_links_get(zathura_page_t* page)
     }
   }
 
-  poppler_page_free_link_mapping(page->data);
+  poppler_page_free_link_mapping(link_mapping);
 
   return list;
 
@@ -492,7 +493,7 @@ error_free:
   }
 
   if (link_mapping != NULL) {
-    poppler_page_free_link_mapping(page->data);
+    poppler_page_free_link_mapping(link_mapping);
   }
 
 error_ret:
