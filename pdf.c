@@ -484,6 +484,8 @@ pdf_page_links_get(zathura_page_t* page)
         free(zathura_link);
         continue;
     }
+
+    girara_list_append(list, zathura_link);
   }
 
   poppler_page_free_link_mapping(link_mapping);
