@@ -346,15 +346,23 @@ pdf_page_get(zathura_document_t* document, unsigned int page)
     return NULL;
   }
 
-  document_page->document = document;
-  document_page->data     = poppler_document_get_page(pdf_document->document, page);
-
-  if (document_page->data == NULL) {
-    free(document_page);
+  poppler_page_t* poppler_page = g_malloc0(sizeof(poppler_page_t));
+  if (poppler_page == NULL) {
     return NULL;
   }
 
-  poppler_page_get_size(document_page->data, &(document_page->width), &(document_page->height));
+  document_page->document = document;
+  document_page->data     = poppler_page;
+
+  poppler_page->page = poppler_document_get_page(pdf_document->document, page);
+
+  if (poppler_page->page == NULL) {
+    g_free(document_page);
+    g_free(poppler_page);
+    return NULL;
+  }
+
+  poppler_page_get_size(poppler_page->page, &(document_page->width), &(document_page->height));
 
   return document_page;
 }
@@ -366,8 +374,13 @@ pdf_page_free(zathura_page_t* page)
     return false;
   }
 
-  g_object_unref(page->data);
-  free(page);
+  poppler_page_t* poppler_page = (poppler_page_t*) page->data;
+  if (poppler_page != NULL) {
+    g_object_unref(poppler_page->page);
+    g_free(poppler_page);
+  }
+
+  g_free(page);
 
   return true;
 }
@@ -431,10 +444,11 @@ pdf_page_links_get(zathura_page_t* page)
     goto error_ret;
   }
 
-  girara_list_t* list  = NULL;
-  GList* link_mapping = NULL;
+  poppler_page_t* poppler_page = (poppler_page_t*) page->data;
+  girara_list_t* list          = NULL;
+  GList* link_mapping          = NULL;
 
-  link_mapping = poppler_page_get_link_mapping(page->data);
+  link_mapping = poppler_page_get_link_mapping(poppler_page->page);
   if (link_mapping == NULL || g_list_length(link_mapping) == 0) {
     goto error_free;
   }
@@ -522,7 +536,8 @@ pdf_page_render_cairo(zathura_page_t* page, cairo_t* cairo)
     return false;
   }
 
-  poppler_page_render(page->data, cairo);
+  poppler_page_t* poppler_page = (poppler_page_t*) page->data;
+  poppler_page_render(poppler_page->page, cairo);
 
   return true;
 }
@@ -536,6 +551,8 @@ pdf_page_render(zathura_page_t* page)
     return NULL;
   }
 
+  poppler_page_t* poppler_page = (poppler_page_t*) page->data;
+
   /* calculate sizes */
   unsigned int page_width  = page->document->scale * page->width;
   unsigned int page_height = page->document->scale * page->height;
@@ -548,7 +565,7 @@ pdf_page_render(zathura_page_t* page)
     return NULL;
   }
 
-  poppler_page_render_to_pixbuf(page->data, 0, 0, page_width, page_height,
+  poppler_page_render_to_pixbuf(poppler_page->page, 0, 0, page_width, page_height,
       page->document->scale, 0, pixbuf);
 
   /* create image buffer */

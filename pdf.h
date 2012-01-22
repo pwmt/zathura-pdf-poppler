@@ -17,6 +17,11 @@ typedef struct pdf_document_s
   PopplerDocument *document; /**< Poppler document */
 } pdf_document_t;
 
+typedef struct poppler_page_s
+{
+  PopplerPage* page; /**< Poppler page */
+} poppler_page_t;
+
 /**
  * Open a pdf document
  *
