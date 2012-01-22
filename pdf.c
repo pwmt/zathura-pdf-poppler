@@ -13,6 +13,19 @@
 #error "Cannot render without cairo and poppler >= 0.18"
 #endif
 
+static void pdf_zathura_image_free(zathura_image_t* image)
+{
+  if (image == NULL) {
+    return;
+  }
+
+  if (image->data != NULL) {
+    g_free(image->data);
+  }
+
+  free(image->data);
+}
+
 void
 plugin_register(zathura_document_plugin_t* plugin)
 {
@@ -41,11 +54,13 @@ pdf_document_open(zathura_document_t* document)
   document->functions.page_search_text          = pdf_page_search_text;
   document->functions.page_links_get            = pdf_page_links_get;
   document->functions.page_form_fields_get      = pdf_page_form_fields_get;
+  document->functions.page_images_get           = pdf_page_images_get;
 #if !POPPLER_CHECK_VERSION(0,18,0)
   document->functions.page_render               = pdf_page_render;
 #endif
 #if HAVE_CAIRO
   document->functions.page_render_cairo         = pdf_page_render_cairo;
+  document->functions.page_image_save           = pdf_page_image_save;
 #endif
   document->functions.page_free                 = pdf_page_free;
 
@@ -269,6 +284,100 @@ pdf_document_attachment_save(zathura_document_t* document, const char* attachmen
 
   return false;
 }
+
+girara_list_t*
+pdf_page_images_get(zathura_page_t* page)
+{
+  if (page == NULL || page->data == NULL) {
+    goto error_ret;
+  }
+
+  poppler_page_t* poppler_page = (poppler_page_t*) page->data;
+  girara_list_t* list          = NULL;
+  GList* image_mapping         = NULL;
+
+  image_mapping = poppler_page_get_image_mapping(poppler_page->page);
+  if (image_mapping == NULL || g_list_length(image_mapping) == 0) {
+    goto error_free;
+  }
+
+  list = girara_list_new();
+  if (list == NULL) {
+    goto error_free;
+  }
+
+  girara_list_set_free_function(list, (girara_free_function_t) pdf_zathura_image_free);
+
+  for (GList* image = image_mapping; image != NULL; image = g_list_next(image)) {
+    zathura_image_t* zathura_image = g_malloc0(sizeof(zathura_image_t));
+    if (zathura_image == NULL) {
+      continue;
+    }
+
+    PopplerImageMapping* poppler_image = (PopplerImageMapping*) image->data;
+
+    /* extract id */
+    zathura_image->data = g_malloc(sizeof(gint));
+    if (zathura_image->data == NULL) {
+      g_free(zathura_image);
+      continue;
+    }
+
+    gint* image_id = zathura_image->data;
+    *image_id = poppler_image->image_id;
+
+    /* extract position */
+    zathura_image->position.x1 = poppler_image->area.x1;
+    zathura_image->position.x2 = poppler_image->area.x2;
+    zathura_image->position.y1 = poppler_image->area.y1;
+    zathura_image->position.y2 = poppler_image->area.y2;
+
+    girara_list_append(list, zathura_image);
+  }
+
+  poppler_page_free_image_mapping(image_mapping);
+
+  return list;
+
+error_free:
+
+  if (list != NULL) {
+    girara_list_free(list);
+  }
+
+  if (image_mapping != NULL) {
+    poppler_page_free_image_mapping(image_mapping);
+  }
+
+error_ret:
+
+  return NULL;
+}
+
+#if HAVE_CAIRO
+bool
+pdf_page_image_save(zathura_page_t* page, zathura_image_t* image, const char* file)
+{
+  if (page == NULL || page->data == NULL || image == NULL || image->data == NULL
+      || file == NULL) {
+    return false;
+  }
+
+  poppler_page_t* poppler_page = (poppler_page_t*) page->data;
+  gint* image_id               = (gint*) image->data;
+
+  cairo_surface_t* surface = poppler_page_get_image(poppler_page->page, *image_id);
+  if (surface == NULL) {
+    return false;
+  }
+
+  if (cairo_surface_write_to_png(surface, file) != CAIRO_STATUS_SUCCESS) {
+    return false;
+  }
+
+  return true;
+}
+#endif
 
 char*
 pdf_document_meta_get(zathura_document_t* document, zathura_document_meta_t meta)

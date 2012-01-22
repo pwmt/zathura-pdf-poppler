@@ -92,6 +92,26 @@ girara_list_t* pdf_document_attachments_get(zathura_document_t* document);
 bool pdf_document_attachment_save(zathura_document_t* document, const char* attachment, const char* filename);
 
 /**
+ * Returns a list of images included on the zathura page
+ *
+ * @param page The page
+ * @return List of images
+ */
+girara_list_t* pdf_page_images_get(zathura_page_t* page);
+
+/**
+ * Saves the image to the given file path
+ *
+ * @param page The page
+ * @param image The image
+ * @param file Path to the file
+ * @return true if no error occured, otherwise false
+ */
+#if HAVE_CAIRO
+bool pdf_page_image_save(zathura_page_t* page, zathura_image_t* image, const char* file);
+#endif
+
+/**
  * Returns the content of a given meta field
  *
  * @param document Zathura document
