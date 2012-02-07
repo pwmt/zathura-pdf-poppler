@@ -504,8 +504,10 @@ pdf_page_search_text(zathura_page_t* page, const char* text)
   GList* results      = NULL;
   girara_list_t* list = NULL;
 
+  poppler_page_t* poppler_page = (poppler_page_t*) page->data;
+
   /* search text */
-  results = poppler_page_find_text(page->data, text);
+  results = poppler_page_find_text(poppler_page->page, text);
   if (results == NULL || g_list_length(results) == 0) {
     goto error_free;
   }
