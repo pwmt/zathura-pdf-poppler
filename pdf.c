@@ -497,15 +497,17 @@ pdf_page_free(zathura_page_t* page)
 girara_list_t*
 pdf_page_search_text(zathura_page_t* page, const char* text)
 {
-  if (page == NULL || page->data == NULL || text == NULL) {
+  if (page == NULL || page->data == NULL || text == NULL || strlen(text) == 0) {
     goto error_ret;
   }
 
   GList* results      = NULL;
   girara_list_t* list = NULL;
 
+  poppler_page_t* poppler_page = (poppler_page_t*) page->data;
+
   /* search text */
-  results = poppler_page_find_text(page->data, text);
+  results = poppler_page_find_text(poppler_page->page, text);
   if (results == NULL || g_list_length(results) == 0) {
     goto error_free;
   }
@@ -562,7 +564,7 @@ pdf_page_links_get(zathura_page_t* page)
     goto error_free;
   }
 
-  list = girara_list_new();
+  list = girara_list_new2(g_free);
   if (list == NULL) {
     goto error_free;
   }
@@ -604,7 +606,7 @@ pdf_page_links_get(zathura_page_t* page)
         }
         break;
       default:
-        free(zathura_link);
+        g_free(zathura_link);
         continue;
     }
 
@@ -638,7 +640,7 @@ pdf_page_form_fields_get(zathura_page_t* page)
 
 #ifdef HAVE_CAIRO
 bool
-pdf_page_render_cairo(zathura_page_t* page, cairo_t* cairo)
+pdf_page_render_cairo(zathura_page_t* page, cairo_t* cairo, bool printing)
 {
   if (page == NULL || page->data == NULL || page->document == NULL ||
       cairo == NULL) {
@@ -646,7 +648,11 @@ pdf_page_render_cairo(zathura_page_t* page, cairo_t* cairo)
   }
 
   poppler_page_t* poppler_page = (poppler_page_t*) page->data;
-  poppler_page_render(poppler_page->page, cairo);
+  if (printing == false) {
+    poppler_page_render(poppler_page->page, cairo);
+  } else {
+    poppler_page_render_for_printing(poppler_page->page, cairo);
+  }
 
   return true;
 }
