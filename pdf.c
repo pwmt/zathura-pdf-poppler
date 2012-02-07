@@ -589,7 +589,7 @@ pdf_page_links_get(zathura_page_t* page)
     switch (poppler_link->action->type) {
       case POPPLER_ACTION_URI:
         zathura_link->type         = ZATHURA_LINK_EXTERNAL;
-        zathura_link->target.value = poppler_link->action->uri.uri;
+        zathura_link->target.value = g_strdup(poppler_link->action->uri.uri);
         break;
       case POPPLER_ACTION_GOTO_DEST:
         zathura_link->type = ZATHURA_LINK_TO_PAGE;
