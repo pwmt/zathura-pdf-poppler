@@ -564,7 +564,7 @@ pdf_page_links_get(zathura_page_t* page)
     goto error_free;
   }
 
-  list = girara_list_new2(g_free);
+  list = girara_list_new2((girara_free_function_t) zathura_link_free);
   if (list == NULL) {
     goto error_free;
   }
