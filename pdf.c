@@ -639,6 +639,7 @@ pdf_page_links_get(zathura_page_t* page, zathura_plugin_error_t* error)
     }
     goto error_free;
   }
+  link_mapping = g_list_reverse(link_mapping);
 
   list = girara_list_new2((girara_free_function_t) zathura_link_free);
   if (list == NULL) {
