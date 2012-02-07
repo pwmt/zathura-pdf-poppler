@@ -507,6 +507,7 @@ pdf_page_get(zathura_document_t* document, unsigned int page, zathura_plugin_err
     if (error != NULL) {
       *error = ZATHURA_PLUGIN_ERROR_OUT_OF_MEMORY;
     }
+    g_free(document_page);
     return NULL;
   }
 
