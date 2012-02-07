@@ -164,7 +164,7 @@ zathura_image_buffer_t* pdf_page_render(zathura_page_t* page);
  * @param cairo Cairo object
  * @return  true if no error occurred, otherwise false
  */
-bool pdf_page_render_cairo(zathura_page_t* page, cairo_t* cairo);
+bool pdf_page_render_cairo(zathura_page_t* page, cairo_t* cairo, bool printing);
 #endif
 
 #endif // PDF_H

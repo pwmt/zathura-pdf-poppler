@@ -497,7 +497,7 @@ pdf_page_free(zathura_page_t* page)
 girara_list_t*
 pdf_page_search_text(zathura_page_t* page, const char* text)
 {
-  if (page == NULL || page->data == NULL || text == NULL) {
+  if (page == NULL || page->data == NULL || text == NULL || strlen(text) == 0) {
     goto error_ret;
   }
 
@@ -640,7 +640,7 @@ pdf_page_form_fields_get(zathura_page_t* page)
 
 #ifdef HAVE_CAIRO
 bool
-pdf_page_render_cairo(zathura_page_t* page, cairo_t* cairo)
+pdf_page_render_cairo(zathura_page_t* page, cairo_t* cairo, bool printing)
 {
   if (page == NULL || page->data == NULL || page->document == NULL ||
       cairo == NULL) {
@@ -648,7 +648,11 @@ pdf_page_render_cairo(zathura_page_t* page, cairo_t* cairo)
   }
 
   poppler_page_t* poppler_page = (poppler_page_t*) page->data;
-  poppler_page_render(poppler_page->page, cairo);
+  if (printing == false) {
+    poppler_page_render(poppler_page->page, cairo);
+  } else {
+    poppler_page_render_for_printing(poppler_page->page, cairo);
+  }
 
   return true;
 }
