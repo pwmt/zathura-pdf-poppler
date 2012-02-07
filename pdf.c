@@ -598,11 +598,11 @@ pdf_page_links_get(zathura_page_t* page)
         if (poppler_link->action->goto_dest.dest->type == POPPLER_DEST_NAMED) {
           poppler_destination = poppler_document_find_dest(pdf_document->document, poppler_link->action->goto_dest.dest->named_dest);
           if (poppler_destination != NULL) {
-            zathura_link->target.page_number = poppler_destination->page_num;
+            zathura_link->target.page_number = poppler_destination->page_num - 1;
             poppler_dest_free(poppler_destination);
           }
         } else {
-          zathura_link->target.page_number = poppler_link->action->goto_dest.dest->page_num;
+          zathura_link->target.page_number = poppler_link->action->goto_dest.dest->page_num - 1;
         }
         break;
       default:
