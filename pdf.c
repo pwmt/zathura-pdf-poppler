@@ -583,8 +583,8 @@ pdf_page_links_get(zathura_page_t* page)
     /* extract position */
     zathura_link->position.x1 = poppler_link->area.x1;
     zathura_link->position.x2 = poppler_link->area.x2;
-    zathura_link->position.y1 = poppler_link->area.y1;
-    zathura_link->position.y2 = poppler_link->area.y2;
+    zathura_link->position.y1 = page->height - poppler_link->area.y2;
+    zathura_link->position.y2 = page->height - poppler_link->area.y1;
 
     /* extract type and target */
     PopplerDest* poppler_destination = NULL;
