@@ -22,13 +22,15 @@ typedef struct poppler_page_s
   PopplerPage* page; /**< Poppler page */
 } poppler_page_t;
 
+//TODO: Update documentation
+
 /**
  * Open a pdf document
  *
  * @param document Zathura document
  * @return true if no error occurred, otherwise false
  */
-bool pdf_document_open(zathura_document_t* document);
+zathura_plugin_error_t pdf_document_open(zathura_document_t* document);
 
 /**
  * Closes and frees the internal document structure
@@ -36,7 +38,7 @@ bool pdf_document_open(zathura_document_t* document);
  * @param document Zathura document
  * @return true if no error occurred, otherwise false
  */
-bool pdf_document_free(zathura_document_t* document);
+zathura_plugin_error_t pdf_document_free(zathura_document_t* document);
 
 /**
  * Returns a reference to a page
@@ -45,7 +47,7 @@ bool pdf_document_free(zathura_document_t* document);
  * @param page Page number
  * @return A page object or NULL if an error occurred
  */
-zathura_page_t* pdf_page_get(zathura_document_t* document, unsigned int page);
+zathura_page_t* pdf_page_get(zathura_document_t* document, unsigned int page, zathura_plugin_error_t* error);
 
 /**
  * Frees a pdf page
@@ -53,7 +55,7 @@ zathura_page_t* pdf_page_get(zathura_document_t* document, unsigned int page);
  * @param page Page
  * @return true if no error occurred, otherwise false
  */
-bool pdf_page_free(zathura_page_t* page);
+zathura_plugin_error_t pdf_page_free(zathura_page_t* page);
 
 /**
  * Saves the document to the given path
@@ -62,7 +64,7 @@ bool pdf_page_free(zathura_page_t* page);
  * @param path File path
  * @return true if no error occurred otherwise false
  */
-bool pdf_document_save_as(zathura_document_t* document, const char* path);
+zathura_plugin_error_t pdf_document_save_as(zathura_document_t* document, const char* path);
 
 /**
  * Generates the index of the document
@@ -71,7 +73,7 @@ bool pdf_document_save_as(zathura_document_t* document, const char* path);
  * @return Tree node object or NULL if an error occurred (e.g.: the document has
  * no index)
  */
-girara_tree_node_t* pdf_document_index_generate(zathura_document_t* document);
+girara_tree_node_t* pdf_document_index_generate(zathura_document_t* document, zathura_plugin_error_t* error);
 
 /**
  * Returns a list of attachments included in the zathura document
@@ -79,7 +81,7 @@ girara_tree_node_t* pdf_document_index_generate(zathura_document_t* document);
  * @param document Zathura document
  * @return List of attachments or NULL if an error occurred
  */
-girara_list_t* pdf_document_attachments_get(zathura_document_t* document);
+girara_list_t* pdf_document_attachments_get(zathura_document_t* document, zathura_plugin_error_t* error);
 
 /**
  * Saves an attachment to a file
@@ -89,7 +91,7 @@ girara_list_t* pdf_document_attachments_get(zathura_document_t* document);
  * @param filename Target file path where the attachment should be saved to
  * @return true if no error occurred otherwise false
  */
-bool pdf_document_attachment_save(zathura_document_t* document, const char* attachment, const char* filename);
+zathura_plugin_error_t pdf_document_attachment_save(zathura_document_t* document, const char* attachment, const char* filename);
 
 /**
  * Returns a list of images included on the zathura page
@@ -97,8 +99,9 @@ bool pdf_document_attachment_save(zathura_document_t* document, const char* atta
  * @param page The page
  * @return List of images
  */
-girara_list_t* pdf_page_images_get(zathura_page_t* page);
+girara_list_t* pdf_page_images_get(zathura_page_t* page, zathura_plugin_error_t* error);
 
+#if HAVE_CAIRO
 /**
  * Saves the image to the given file path
  *
@@ -107,8 +110,7 @@ girara_list_t* pdf_page_images_get(zathura_page_t* page);
  * @param file Path to the file
  * @return true if no error occured, otherwise false
  */
-#if HAVE_CAIRO
-bool pdf_page_image_save(zathura_page_t* page, zathura_image_t* image, const char* file);
+zathura_plugin_error_t pdf_page_image_save(zathura_page_t* page, zathura_image_t* image, const char* file);
 #endif
 
 /**
@@ -118,7 +120,7 @@ bool pdf_page_image_save(zathura_page_t* page, zathura_image_t* image, const cha
  * @param meta Meta identifier
  * @return Value of the meta data or NULL if an error occurred
  */
-char* pdf_document_meta_get(zathura_document_t* document, zathura_document_meta_t meta);
+char* pdf_document_meta_get(zathura_document_t* document, zathura_document_meta_t meta, zathura_plugin_error_t* error);
 
 /**
  * Searches for a specific text on a page and returns a list of results
@@ -127,7 +129,7 @@ char* pdf_document_meta_get(zathura_document_t* document, zathura_document_meta_
  * @param text Search item
  * @return List of search results or NULL if an error occurred
  */
-girara_list_t* pdf_page_search_text(zathura_page_t* page, const char* text);
+girara_list_t* pdf_page_search_text(zathura_page_t* page, const char* text, zathura_plugin_error_t* error);
 
 /**
  * Returns a list of internal/external links that are shown on the given page
@@ -135,7 +137,7 @@ girara_list_t* pdf_page_search_text(zathura_page_t* page, const char* text);
  * @param page Page
  * @return List of links or NULL if an error occurred
  */
-girara_list_t* pdf_page_links_get(zathura_page_t* page);
+girara_list_t* pdf_page_links_get(zathura_page_t* page, zathura_plugin_error_t* error);
 
 /**
  * Returns a list of form fields available on the given page
@@ -143,7 +145,7 @@ girara_list_t* pdf_page_links_get(zathura_page_t* page);
  * @param page Page
  * @return List of form fields or NULL if an error occurred
  */
-girara_list_t* pdf_page_form_fields_get(zathura_page_t* page);
+girara_list_t* pdf_page_form_fields_get(zathura_page_t* page, zathura_plugin_error_t* error);
 
 #if !POPPLER_CHECK_VERSION(0,18,0)
 /**
@@ -153,7 +155,7 @@ girara_list_t* pdf_page_form_fields_get(zathura_page_t* page);
  * @param page Page
  * @return Image buffer or NULL if an error occurred
  */
-zathura_image_buffer_t* pdf_page_render(zathura_page_t* page);
+zathura_image_buffer_t* pdf_page_render(zathura_page_t* page, zathura_plugin_error_t* error);
 #endif
 
 #if HAVE_CAIRO
@@ -164,7 +166,7 @@ zathura_image_buffer_t* pdf_page_render(zathura_page_t* page);
  * @param cairo Cairo object
  * @return  true if no error occurred, otherwise false
  */
-bool pdf_page_render_cairo(zathura_page_t* page, cairo_t* cairo, bool printing);
+zathura_plugin_error_t pdf_page_render_cairo(zathura_page_t* page, cairo_t* cairo, bool printing);
 #endif
 
 #endif // PDF_H
