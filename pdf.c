@@ -85,7 +85,11 @@ pdf_document_open(zathura_document_t* document)
   pdf_document->document       = poppler_document_new_from_file(file_uri, document->password, &gerror);
 
   if (pdf_document->document == NULL) {
-    error = ZATHURA_PLUGIN_ERROR_UNKNOWN;
+    if(gerror != NULL && gerror->code == POPPLER_ERROR_ENCRYPTED) {
+      error = ZATHURA_PLUGIN_ERROR_INVALID_PASSWORD;
+    } else {
+      error = ZATHURA_PLUGIN_ERROR_UNKNOWN;
+    }
     goto error_free;
   }
 
