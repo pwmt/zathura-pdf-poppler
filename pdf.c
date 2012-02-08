@@ -57,6 +57,7 @@ pdf_document_open(zathura_document_t* document)
   document->functions.page_links_get            = pdf_page_links_get;
   document->functions.page_form_fields_get      = pdf_page_form_fields_get;
   document->functions.page_images_get           = pdf_page_images_get;
+  document->functions.page_get_text             = pdf_page_get_text;
 #if !POPPLER_CHECK_VERSION(0,18,0)
   document->functions.page_render               = pdf_page_render;
 #endif
@@ -722,6 +723,29 @@ pdf_page_form_fields_get(zathura_page_t* page, zathura_plugin_error_t* error)
     *error = ZATHURA_PLUGIN_ERROR_NOT_IMPLEMENTED;
   }
   return NULL;
+}
+
+char* pdf_page_get_text(zathura_page_t* page, zathura_rectangle_t rectangle, zathura_plugin_error_t* error)
+{
+  if (page == NULL) {
+    if (error != NULL) {
+      *error = ZATHURA_PLUGIN_ERROR_INVALID_ARGUMENTS;
+    }
+    return NULL;
+  }
+
+  poppler_page_t* poppler_page = (poppler_page_t*) page->data;
+  PopplerRectangle rect;
+  rect.x1 = rectangle.x1;
+  rect.x2 = rectangle.x2;
+#if POPPLER_CHECK_VERSION(0,15,0)
+  /* adapt y coordinates */
+  rect.y1 = page->height - rectangle.y1;
+  rect.y2 = page->height - rectangle.y2;
+#endif
+
+  /* get selected text */
+  return poppler_page_get_selected_text(poppler_page->page, POPPLER_SELECTION_GLYPH, &rect);
 }
 
 #ifdef HAVE_CAIRO
