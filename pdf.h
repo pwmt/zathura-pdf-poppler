@@ -32,7 +32,7 @@ typedef struct poppler_page_s
  * Open a pdf document
  *
  * @param document Zathura document
- * @return ZATHURA_PLUGIN_ERROR_OK when no error occured, otherwise see \ref
+ * @return ZATHURA_PLUGIN_ERROR_OK when no error occured, otherwise see
  *    zathura_plugin_error_t
  */
 zathura_plugin_error_t pdf_document_open(zathura_document_t* document);
@@ -41,7 +41,7 @@ zathura_plugin_error_t pdf_document_open(zathura_document_t* document);
  * Closes and frees the internal document structure
  *
  * @param document Zathura document
- * @return ZATHURA_PLUGIN_ERROR_OK when no error occured, otherwise see \ref
+ * @return ZATHURA_PLUGIN_ERROR_OK when no error occured, otherwise see
  *    zathura_plugin_error_t
  */
 zathura_plugin_error_t pdf_document_free(zathura_document_t* document);
@@ -51,7 +51,7 @@ zathura_plugin_error_t pdf_document_free(zathura_document_t* document);
  *
  * @param document Zathura document
  * @param page Page number
- * @param error Set to an error value (see \ref zathura_plugin_error_t) if an
+ * @param error Set to an error value (see zathura_plugin_error_t) if an
  *   error occured
  * @return A page object or NULL if an error occurred
  */
@@ -61,7 +61,7 @@ zathura_page_t* pdf_page_get(zathura_document_t* document, unsigned int page, za
  * Frees a pdf page
  *
  * @param page Page
- * @return ZATHURA_PLUGIN_ERROR_OK when no error occured, otherwise see \ref
+ * @return ZATHURA_PLUGIN_ERROR_OK when no error occured, otherwise see
  *    zathura_plugin_error_t
  */
 zathura_plugin_error_t pdf_page_free(zathura_page_t* page);
@@ -71,7 +71,7 @@ zathura_plugin_error_t pdf_page_free(zathura_page_t* page);
  *
  * @param document Zathura document
  * @param path File path
- * @return ZATHURA_PLUGIN_ERROR_OK when no error occured, otherwise see \ref
+ * @return ZATHURA_PLUGIN_ERROR_OK when no error occured, otherwise see
  *    zathura_plugin_error_t
  */
 zathura_plugin_error_t pdf_document_save_as(zathura_document_t* document, const char* path);
@@ -80,7 +80,7 @@ zathura_plugin_error_t pdf_document_save_as(zathura_document_t* document, const 
  * Generates the index of the document
  *
  * @param document Zathura document
- * @param error Set to an error value (see \ref zathura_plugin_error_t) if an
+ * @param error Set to an error value (see zathura_plugin_error_t) if an
  *   error occured
  * @return Tree node object or NULL if an error occurred (e.g.: the document has
  *   no index)
@@ -91,7 +91,7 @@ girara_tree_node_t* pdf_document_index_generate(zathura_document_t* document, za
  * Returns a list of attachments included in the zathura document
  *
  * @param document Zathura document
- * @param error Set to an error value (see \ref zathura_plugin_error_t) if an
+ * @param error Set to an error value (see zathura_plugin_error_t) if an
  *   error occured
  * @return List of attachments or NULL if an error occurred
  */
@@ -103,7 +103,7 @@ girara_list_t* pdf_document_attachments_get(zathura_document_t* document, zathur
  * @param document Zathura document
  * @param attachment Name of the attachment
  * @param filename Target file path where the attachment should be saved to
- * @return ZATHURA_PLUGIN_ERROR_OK when no error occured, otherwise see \ref
+ * @return ZATHURA_PLUGIN_ERROR_OK when no error occured, otherwise see
  *    zathura_plugin_error_t
  */
 zathura_plugin_error_t pdf_document_attachment_save(zathura_document_t* document, const char* attachment, const char* filename);
@@ -112,7 +112,7 @@ zathura_plugin_error_t pdf_document_attachment_save(zathura_document_t* document
  * Returns a list of images included on the zathura page
  *
  * @param page The page
- * @param error Set to an error value (see \ref zathura_plugin_error_t) if an
+ * @param error Set to an error value (see zathura_plugin_error_t) if an
  *   error occured
  * @return List of images
  */
@@ -125,7 +125,7 @@ girara_list_t* pdf_page_images_get(zathura_page_t* page, zathura_plugin_error_t*
  * @param page The page
  * @param image The image
  * @param file Path to the file
- * @return ZATHURA_PLUGIN_ERROR_OK when no error occured, otherwise see \ref
+ * @return ZATHURA_PLUGIN_ERROR_OK when no error occured, otherwise see
  *    zathura_plugin_error_t
  */
 zathura_plugin_error_t pdf_page_image_save(zathura_page_t* page, zathura_image_t* image, const char* file);
@@ -136,7 +136,7 @@ zathura_plugin_error_t pdf_page_image_save(zathura_page_t* page, zathura_image_t
  *
  * @param document Zathura document
  * @param meta Meta identifier
- * @param error Set to an error value (see \ref zathura_plugin_error_t) if an
+ * @param error Set to an error value (see zathura_plugin_error_t) if an
  *   error occured
  * @return Value of the meta data or NULL if an error occurred
  */
@@ -147,7 +147,7 @@ char* pdf_document_meta_get(zathura_document_t* document, zathura_document_meta_
  *
  * @param page Page
  * @param text Search item
- * @param error Set to an error value (see \ref zathura_plugin_error_t) if an
+ * @param error Set to an error value (see zathura_plugin_error_t) if an
  *   error occured
  * @return List of search results or NULL if an error occurred
  */
@@ -157,7 +157,7 @@ girara_list_t* pdf_page_search_text(zathura_page_t* page, const char* text, zath
  * Returns a list of internal/external links that are shown on the given page
  *
  * @param page Page
- * @param error Set to an error value (see \ref zathura_plugin_error_t) if an
+ * @param error Set to an error value (see zathura_plugin_error_t) if an
  *   error occured
  * @return List of links or NULL if an error occurred
  */
@@ -167,7 +167,7 @@ girara_list_t* pdf_page_links_get(zathura_page_t* page, zathura_plugin_error_t* 
  * Returns a list of form fields available on the given page
  *
  * @param page Page
- * @param error Set to an error value (see \ref zathura_plugin_error_t) if an
+ * @param error Set to an error value (see zathura_plugin_error_t) if an
  *   error occured
  * @return List of form fields or NULL if an error occurred
  */
@@ -179,7 +179,7 @@ girara_list_t* pdf_page_form_fields_get(zathura_page_t* page, zathura_plugin_err
  * with zathura_image_buffer_free
  *
  * @param page Page
- * @param error Set to an error value (see \ref zathura_plugin_error_t) if an
+ * @param error Set to an error value (see zathura_plugin_error_t) if an
  *   error occured
  * @return Image buffer or NULL if an error occurred
  */
@@ -193,7 +193,7 @@ zathura_image_buffer_t* pdf_page_render(zathura_page_t* page, zathura_plugin_err
  * @param page Page
  * @param cairo Cairo object
  * @param printing Set to true if page should be rendered for printing
- * @return ZATHURA_PLUGIN_ERROR_OK when no error occured, otherwise see \ref
+ * @return ZATHURA_PLUGIN_ERROR_OK when no error occured, otherwise see
  *    zathura_plugin_error_t
  */
 zathura_plugin_error_t pdf_page_render_cairo(zathura_page_t* page, cairo_t* cairo, bool printing);
