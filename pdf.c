@@ -594,8 +594,8 @@ pdf_page_search_text(zathura_page_t* page, const char* text, zathura_plugin_erro
 
     rectangle->x1 = poppler_rectangle->x1;
     rectangle->x2 = poppler_rectangle->x2;
-    rectangle->y1 = poppler_rectangle->y1;
-    rectangle->y2 = poppler_rectangle->y2;
+    rectangle->y1 = page->height - poppler_rectangle->y2;
+    rectangle->y2 = page->height - poppler_rectangle->y1;
 
     girara_list_append(list, rectangle);
   }
