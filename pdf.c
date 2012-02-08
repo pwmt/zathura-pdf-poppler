@@ -742,10 +742,13 @@ char* pdf_page_get_text(zathura_page_t* page, zathura_rectangle_t rectangle, zat
   PopplerRectangle rect;
   rect.x1 = rectangle.x1;
   rect.x2 = rectangle.x2;
-#if POPPLER_CHECK_VERSION(0,15,0)
+#if !POPPLER_CHECK_VERSION(0,15,0)
   /* adapt y coordinates */
   rect.y1 = page->height - rectangle.y1;
   rect.y2 = page->height - rectangle.y2;
+#elif
+  rect.y1 = rectangle.y1;
+  rect.y2 = rectangle.y2;
 #endif
 
   /* get selected text */
