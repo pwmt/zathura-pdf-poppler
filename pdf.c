@@ -730,7 +730,7 @@ pdf_page_render_cairo(zathura_page_t* page, cairo_t* cairo, bool printing)
 {
   if (page == NULL || page->data == NULL || page->document == NULL ||
       cairo == NULL) {
-    return false;
+    return ZATHURA_PLUGIN_ERROR_INVALID_ARGUMENTS;
   }
 
   poppler_page_t* poppler_page = (poppler_page_t*) page->data;
@@ -740,7 +740,7 @@ pdf_page_render_cairo(zathura_page_t* page, cairo_t* cairo, bool printing)
     poppler_page_render_for_printing(poppler_page->page, cairo);
   }
 
-  return true;
+  return ZATHURA_PLUGIN_ERROR_OK;
 }
 #endif
 

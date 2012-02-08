@@ -164,6 +164,7 @@ zathura_image_buffer_t* pdf_page_render(zathura_page_t* page, zathura_plugin_err
  *
  * @param page Page
  * @param cairo Cairo object
+ * @param printing Set to true if page should be rendered for printing
  * @return  true if no error occurred, otherwise false
  */
 zathura_plugin_error_t pdf_page_render_cairo(zathura_page_t* page, cairo_t* cairo, bool printing);
