@@ -746,7 +746,7 @@ char* pdf_page_get_text(zathura_page_t* page, zathura_rectangle_t rectangle, zat
   /* adapt y coordinates */
   rect.y1 = page->height - rectangle.y1;
   rect.y2 = page->height - rectangle.y2;
-#elif
+#else
   rect.y1 = rectangle.y1;
   rect.y2 = rectangle.y2;
 #endif
