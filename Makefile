@@ -42,9 +42,12 @@ ${PLUGIN}-debug: ${DOBJECTS}
 	@${CC} -shared ${LDFLAGS} -o ${PLUGIN}.so $(DOBJECTS) ${LIBS}
 
 clean:
-	@rm -rf ${OBJECTS} ${DOBJECTS} $(PLUGIN).so .depend
+	@rm -rf ${OBJECTS} ${DOBJECTS} $(PLUGIN).so doc .depend
 
 debug: options ${PLUGIN}-debug
+
+doc: clean
+	@doxygen Doxyfile
 
 install: all
 	@echo installing ${PLUGIN} plugin
@@ -58,4 +61,4 @@ uninstall:
 
 -include $(wildcard .depend/*.dep)
 
-.PHONY: all options clean debug install uninstall
+.PHONY: all options clean debug doc install uninstall
