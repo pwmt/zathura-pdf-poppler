@@ -120,15 +120,15 @@ girara_list_t* pdf_page_images_get(zathura_page_t* page, zathura_plugin_error_t*
 
 #if HAVE_CAIRO
 /**
- * Saves the image to the given file path
+ * Gets the content of the image in a cairo surface
  *
- * @param page The page
- * @param image The image
- * @param file Path to the file
- * @return ZATHURA_PLUGIN_ERROR_OK when no error occured, otherwise see
- *    zathura_plugin_error_t
+ * @param page Page
+ * @param image Image identifier
+ * @param error Set to an error value (see \ref zathura_plugin_error_t) if an
+ *   error occured
+ * @return The cairo image surface or NULL if an error occured
  */
-zathura_plugin_error_t pdf_page_image_save(zathura_page_t* page, zathura_image_t* image, const char* file);
+cairo_surface_t* pdf_page_image_get_cairo(zathura_page_t* page, zathura_image_t* image, zathura_plugin_error_t* error);
 #endif
 
 /**

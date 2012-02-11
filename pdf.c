@@ -63,7 +63,7 @@ pdf_document_open(zathura_document_t* document)
 #endif
 #if HAVE_CAIRO
   document->functions.page_render_cairo         = pdf_page_render_cairo;
-  document->functions.page_image_save           = pdf_page_image_save;
+  document->functions.page_image_get_cairo      = pdf_page_image_get_cairo;
 #endif
   document->functions.page_free                 = pdf_page_free;
 
@@ -386,12 +386,14 @@ error_ret:
 }
 
 #if HAVE_CAIRO
-zathura_plugin_error_t
-pdf_page_image_save(zathura_page_t* page, zathura_image_t* image, const char* file)
+cairo_surface_t*
+pdf_page_image_get_cairo(zathura_page_t* page, zathura_image_t* image, zathura_plugin_error_t* error)
 {
-  if (page == NULL || page->data == NULL || image == NULL || image->data == NULL
-      || file == NULL) {
-    return ZATHURA_PLUGIN_ERROR_INVALID_ARGUMENTS;
+  if (page == NULL || page->data == NULL || image == NULL || image->data == NULL) {
+    if (error != NULL) {
+      *error = ZATHURA_PLUGIN_ERROR_INVALID_ARGUMENTS;
+    }
+    return NULL;
   }
 
   poppler_page_t* poppler_page = (poppler_page_t*) page->data;
@@ -399,14 +401,13 @@ pdf_page_image_save(zathura_page_t* page, zathura_image_t* image, const char* fi
 
   cairo_surface_t* surface = poppler_page_get_image(poppler_page->page, *image_id);
   if (surface == NULL) {
-    return ZATHURA_PLUGIN_ERROR_UNKNOWN;
+    if (error != NULL) {
+      *error = ZATHURA_PLUGIN_ERROR_UNKNOWN;
+    }
+    return NULL;
   }
 
-  if (cairo_surface_write_to_png(surface, file) != CAIRO_STATUS_SUCCESS) {
-    return ZATHURA_PLUGIN_ERROR_UNKNOWN;
-  }
-
-  return ZATHURA_PLUGIN_ERROR_OK;
+  return surface;
 }
 #endif
 
