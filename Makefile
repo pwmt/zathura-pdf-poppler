@@ -63,13 +63,13 @@ doc: clean
 
 install: all
 	$(ECHO) installing ${PLUGIN} plugin
-	$(QUIET)mkdir -p ${DESTDIR}${PREFIX}/lib/zathura
-	$(QUIET)cp -f ${PLUGIN}.so ${DESTDIR}${PREFIX}/lib/zathura
+	$(QUIET)mkdir -p ${DESTDIR}${PREFIX}${PLUGINDIR}
+	$(QUIET)cp -f ${PLUGIN}.so ${DESTDIR}${PLUGINDIR}
 
 uninstall:
 	$(ECHO) uninstalling ${PLUGIN} plugin
-	$(QUIET)rm -f ${DESTDIR}${PREFIX}/lib/zathura/${PLUGIN}.so
-	$(QUIET)rmdir ${DESTDIR}${PREFIX}/lib/zathura 2> /dev/null || /bin/true
+	$(QUIET)rm -f ${DESTDIR}${PLUGINDIR}/${PLUGIN}.so
+	$(QUIET)rmdir ${DESTDIR}${PREFIX}${PLUGINDIR} 2> /dev/null || /bin/true
 
 -include $(wildcard .depend/*.dep)
 
