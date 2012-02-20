@@ -63,13 +63,13 @@ doc: clean
 
 install: all
 	$(ECHO) installing ${PLUGIN} plugin
-	$(QUIET)mkdir -p ${DESTDIR}${PREFIX}${PLUGINDIR}
+	$(QUIET)mkdir -p ${DESTDIR}${PLUGINDIR}
 	$(QUIET)cp -f ${PLUGIN}.so ${DESTDIR}${PLUGINDIR}
 
 uninstall:
 	$(ECHO) uninstalling ${PLUGIN} plugin
 	$(QUIET)rm -f ${DESTDIR}${PLUGINDIR}/${PLUGIN}.so
-	$(QUIET)rmdir ${DESTDIR}${PREFIX}${PLUGINDIR} 2> /dev/null || /bin/true
+	$(QUIET)rmdir ${DESTDIR}${PLUGINDIR} 2> /dev/null || /bin/true
 
 -include $(wildcard .depend/*.dep)
 
