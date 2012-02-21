@@ -53,7 +53,7 @@ debug: options ${PLUGIN}-debug
 dist: clean
 	$(QUIET)mkdir -p ${PROJECT}-${VERSION}
 	$(QUIET)cp -R LICENSE Makefile config.mk common.mk Doxyfile \
-		${HEADER} ${SOURCE} ${PROJECT}-${VERSION}
+		${HEADER} ${SOURCE} AUTHORS ${PROJECT}-${VERSION}
 	$(QUIET)tar -cf ${PROJECT}-${VERSION}.tar ${PROJECT}-${VERSION}
 	$(QUIET)gzip ${PROJECT}-${VERSION}.tar
 	$(QUIET)rm -rf ${PROJECT}-${VERSION}
