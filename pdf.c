@@ -27,16 +27,7 @@ pdf_zathura_image_free(zathura_image_t* image)
   g_free(image);
 }
 
-void
-plugin_register(zathura_document_plugin_t* plugin)
-{
-  if (plugin == NULL) {
-    return;
-  }
-
-  girara_list_append(plugin->content_types, g_content_type_from_mime_type("application/pdf"));
-  plugin->open_function  = pdf_document_open;
-}
+PLUGIN_REGISTER(poppler-pdf, 0, 1, 0, pdf_document_open, { "application/pdf" })
 
 zathura_plugin_error_t
 pdf_document_open(zathura_document_t* document)
@@ -111,8 +102,6 @@ error_free:
       free(document->data);
       document->data = NULL;
     }
-
-error_out:
 
   return error;
 }
