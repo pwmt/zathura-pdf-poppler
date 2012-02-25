@@ -13,7 +13,8 @@
 #error "Cannot render without cairo and poppler >= 0.18"
 #endif
 
-static void pdf_zathura_image_free(zathura_image_t* image)
+static void
+pdf_zathura_image_free(zathura_image_t* image)
 {
   if (image == NULL) {
     return;
@@ -23,7 +24,7 @@ static void pdf_zathura_image_free(zathura_image_t* image)
     g_free(image->data);
   }
 
-  free(image->data);
+  g_free(image);
 }
 
 void
