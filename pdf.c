@@ -692,7 +692,8 @@ pdf_page_form_fields_get(zathura_page_t* page, zathura_plugin_error_t* error)
   return NULL;
 }
 
-char* pdf_page_get_text(zathura_page_t* page, zathura_rectangle_t rectangle, zathura_plugin_error_t* error)
+char*
+pdf_page_get_text(zathura_page_t* page, zathura_rectangle_t rectangle, zathura_plugin_error_t* error)
 {
   if (page == NULL) {
     if (error != NULL) {
