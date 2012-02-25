@@ -69,10 +69,6 @@ pdf_document_open(zathura_document_t* document)
   document->functions.page_free                 = pdf_page_free;
 
   document->data = g_malloc0(sizeof(pdf_document_t));
-  if (document->data == NULL) {
-    error = ZATHURA_PLUGIN_ERROR_OUT_OF_MEMORY;
-    goto error_out;
-  }
 
   /* format path */
   GError* gerror  = NULL;
@@ -342,18 +338,11 @@ pdf_page_images_get(zathura_page_t* page, zathura_plugin_error_t* error)
 
   for (GList* image = image_mapping; image != NULL; image = g_list_next(image)) {
     zathura_image_t* zathura_image = g_malloc0(sizeof(zathura_image_t));
-    if (zathura_image == NULL) {
-      continue;
-    }
 
     PopplerImageMapping* poppler_image = (PopplerImageMapping*) image->data;
 
     /* extract id */
     zathura_image->data = g_malloc(sizeof(gint));
-    if (zathura_image->data == NULL) {
-      g_free(zathura_image);
-      continue;
-    }
 
     gint* image_id = zathura_image->data;
     *image_id = poppler_image->image_id;
@@ -501,22 +490,7 @@ pdf_page_get(zathura_document_t* document, unsigned int page, zathura_plugin_err
 
   pdf_document_t* pdf_document  = (pdf_document_t*) document->data;
   zathura_page_t* document_page = g_malloc0(sizeof(zathura_page_t));
-
-  if (document_page == NULL) {
-    if (error != NULL) {
-      *error = ZATHURA_PLUGIN_ERROR_OUT_OF_MEMORY;
-    }
-    return NULL;
-  }
-
-  poppler_page_t* poppler_page = g_malloc0(sizeof(poppler_page_t));
-  if (poppler_page == NULL) {
-    if (error != NULL) {
-      *error = ZATHURA_PLUGIN_ERROR_OUT_OF_MEMORY;
-    }
-    g_free(document_page);
-    return NULL;
-  }
+  poppler_page_t* poppler_page  = g_malloc0(sizeof(poppler_page_t));
 
   document_page->document = document;
   document_page->data     = poppler_page;
@@ -592,13 +566,6 @@ pdf_page_search_text(zathura_page_t* page, const char* text, zathura_plugin_erro
     PopplerRectangle* poppler_rectangle = (PopplerRectangle*) entry->data;
     zathura_rectangle_t* rectangle      = g_malloc0(sizeof(zathura_rectangle_t));
 
-    if (rectangle == NULL) {
-      if (error != NULL) {
-        *error = ZATHURA_PLUGIN_ERROR_OUT_OF_MEMORY;
-      }
-      goto error_free;
-    }
-
     rectangle->x1 = poppler_rectangle->x1;
     rectangle->x2 = poppler_rectangle->x2;
     rectangle->y1 = page->height - poppler_rectangle->y2;
@@ -658,12 +625,6 @@ pdf_page_links_get(zathura_page_t* page, zathura_plugin_error_t* error)
 
   for (GList* link = link_mapping; link != NULL; link = g_list_next(link)) {
     zathura_link_t* zathura_link = g_malloc0(sizeof(zathura_link_t));
-    if (zathura_link == NULL) {
-      if (error != NULL) {
-        *error = ZATHURA_PLUGIN_ERROR_OUT_OF_MEMORY;
-      }
-      goto error_free;
-    }
 
     PopplerLinkMapping* poppler_link     = (PopplerLinkMapping*) link->data;
     zathura_document_t* zathura_document = (zathura_document_t*) page->document;
