@@ -27,7 +27,7 @@ pdf_zathura_image_free(zathura_image_t* image)
   g_free(image);
 }
 
-PLUGIN_REGISTER(poppler-pdf, 0, 1, 0, pdf_document_open, { "application/pdf" })
+PLUGIN_REGISTER("poppler-pdf-poppler", 0, 1, 0, pdf_document_open, { "application/pdf" })
 
 zathura_plugin_error_t
 pdf_document_open(zathura_document_t* document)
@@ -681,7 +681,8 @@ pdf_page_form_fields_get(zathura_page_t* page, zathura_plugin_error_t* error)
   return NULL;
 }
 
-char* pdf_page_get_text(zathura_page_t* page, zathura_rectangle_t rectangle, zathura_plugin_error_t* error)
+char*
+pdf_page_get_text(zathura_page_t* page, zathura_rectangle_t rectangle, zathura_plugin_error_t* error)
 {
   if (page == NULL) {
     if (error != NULL) {
