@@ -219,10 +219,10 @@ pdf_document_save_as(zathura_document_t* document, const char* path)
   pdf_document_t* pdf_document = (pdf_document_t*) document->data;
 
   char* file_path = g_strdup_printf("file://%s", path);
-  poppler_document_save(pdf_document->document, file_path, NULL);
+  gboolean ret = poppler_document_save(pdf_document->document, file_path, NULL);
   g_free(file_path);
 
-  return ZATHURA_PLUGIN_ERROR_OK;
+  return (ret == true ? ZATHURA_PLUGIN_ERROR_OK : ZATHURA_PLUGIN_ERROR_UNKNOWN);
 }
 
 girara_list_t*
