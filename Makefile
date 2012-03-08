@@ -42,13 +42,13 @@ ${PLUGIN}.so: ${OBJECTS}
 
 ${PLUGIN}-debug.so: ${DOBJECTS}
 	$(ECHO) LD $@
-	$(QUIET)${CC} -shared ${LDFLAGS} -o ${PLUGIN}.so ${DOBJECTS} ${LIBS}
+	$(QUIET)${CC} -shared ${LDFLAGS} -o $@ ${DOBJECTS} ${LIBS}
 
 clean:
-	$(QUIET)rm -rf ${OBJECTS} ${DOBJECTS} $(PLUGIN).so doc .depend \
-		${PROJECT}-${VERSION}.tar.gz
+	$(QUIET)rm -rf ${OBJECTS} ${DOBJECTS} $(PLUGIN).so $(PLUGIN)-debug.so \
+		doc .depend ${PROJECT}-${VERSION}.tar.gz
 
-debug: options ${PLUGIN}-debug
+debug: options ${PLUGIN}-debug.so
 
 dist: clean
 	$(QUIET)mkdir -p ${PROJECT}-${VERSION}
