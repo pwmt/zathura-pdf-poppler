@@ -1,4 +1,5 @@
 *.o
+*.do
 *~
 .depend
-pdf.so
+*.so
