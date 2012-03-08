@@ -17,7 +17,9 @@ GIRARA_LIB ?= $(shell pkg-config --libs girara-gtk2)
 
 ZATHURA_INC ?= $(shell pkg-config --cflags zathura)
 PLUGINDIR ?= $(shell pkg-config --variable=plugindir zathura)
-PLUGINDIR ?= ${PREFIX}/lib/zathura
+ifeq (,${PLUGINDIR})
+PLUGINDIR = ${PREFIX}/lib/zathura
+endif
 
 INCS = ${GTK_INC} ${PDF_INC} ${ZATHURA_INC} ${GIRARA_INC}
 LIBS = ${GIRARA_LIB} ${GTK_LIB} ${PDF_LIB}
