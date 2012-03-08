@@ -153,7 +153,9 @@ build_index(pdf_document_t* pdf, girara_tree_node_t* root, PopplerIndexIter* ite
       index_element->type = ZATHURA_LINK_TO_PAGE;
 
       if (action->goto_dest.dest->type == POPPLER_DEST_NAMED) {
-        PopplerDest* dest = poppler_document_find_dest(pdf->document, action->goto_dest.dest->named_dest);
+				PopplerDest* dest = poppler_document_find_dest(pdf->document,
+						action->goto_dest.dest->named_dest);
+
         if (dest != NULL) {
           index_element->target.page_number = dest->page_num - 1;
           poppler_dest_free(dest);
@@ -636,7 +638,10 @@ pdf_page_links_get(zathura_page_t* page, zathura_plugin_error_t* error)
       case POPPLER_ACTION_GOTO_DEST:
         zathura_link->type = ZATHURA_LINK_TO_PAGE;
         if (poppler_link->action->goto_dest.dest->type == POPPLER_DEST_NAMED) {
-          poppler_destination = poppler_document_find_dest(pdf_document->document, poppler_link->action->goto_dest.dest->named_dest);
+					poppler_destination =
+						poppler_document_find_dest(pdf_document->document,
+								poppler_link->action->goto_dest.dest->named_dest);
+
           if (poppler_destination != NULL) {
             zathura_link->target.page_number = poppler_destination->page_num - 1;
             poppler_dest_free(poppler_destination);
@@ -681,8 +686,8 @@ pdf_page_form_fields_get(zathura_page_t* page, zathura_plugin_error_t* error)
   return NULL;
 }
 
-char*
-pdf_page_get_text(zathura_page_t* page, zathura_rectangle_t rectangle, zathura_plugin_error_t* error)
+char* pdf_page_get_text(zathura_page_t* page, zathura_rectangle_t rectangle,
+		zathura_plugin_error_t* error)
 {
   if (page == NULL) {
     if (error != NULL) {
