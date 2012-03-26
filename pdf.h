@@ -10,6 +10,7 @@
 #include <cairo.h>
 #endif
 
+#include <zathura/page.h>
 #include <zathura/document.h>
 
 /**
@@ -47,25 +48,22 @@ zathura_plugin_error_t pdf_document_open(zathura_document_t* document);
 zathura_plugin_error_t pdf_document_free(zathura_document_t* document);
 
 /**
- * Returns a reference to a page
+ * Initializes the page with the needed values
  *
- * @param document Zathura document
- * @param page Page number
- * @param error Set to an error value (see zathura_plugin_error_t) if an
- *   error occured
- * @return A page object or NULL if an error occurred
+ * @param page The page object
+ * @return ZATHURA_PLUGIN_ERROR_OK when no error occured, otherwise see
+ *    zathura_plugin_error_t
  */
-zathura_page_t* pdf_page_get(zathura_document_t* document, unsigned int page,
-		zathura_plugin_error_t* error);
+zathura_plugin_error_t pdf_page_init(zathura_page_t* page);
 
 /**
- * Frees a pdf page
+ * Frees the data that is used by the plugin in the page
  *
  * @param page Page
  * @return ZATHURA_PLUGIN_ERROR_OK when no error occured, otherwise see
  *    zathura_plugin_error_t
  */
-zathura_plugin_error_t pdf_page_free(zathura_page_t* page);
+zathura_plugin_error_t pdf_page_clear(zathura_page_t* page);
 
 /**
  * Saves the document to the given path
