@@ -16,6 +16,12 @@ endif
 
 all: options ${PLUGIN}.so
 
+zathura-version-check:
+ifneq ($(ZATHURA_VERSION_CHECK), 0)
+	$(error "The minimum required version of zathura is ${ZATHURA_MIN_VERSION}")
+endif
+	$(QUIET)touch zathura-version-check
+
 options:
 	$(ECHO) ${PLUGIN} build options:
 	$(ECHO) "CFLAGS  = ${CFLAGS}"
@@ -33,8 +39,8 @@ options:
 	@mkdir -p .depend
 	$(QUIET)${CC} -c ${CPPFLAGS} ${CFLAGS} ${DFLAGS} -o $@ $< -MMD -MF .depend/$@.dep
 
-${OBJECTS}:  config.mk
-${DOBJECTS}: config.mk
+${OBJECTS}:  config.mk zathura-version-check
+${DOBJECTS}: config.mk zathura-version-check
 
 ${PLUGIN}.so: ${OBJECTS}
 	$(ECHO) LD $@
@@ -46,7 +52,7 @@ ${PLUGIN}-debug.so: ${DOBJECTS}
 
 clean:
 	$(QUIET)rm -rf ${OBJECTS} ${DOBJECTS} $(PLUGIN).so $(PLUGIN)-debug.so \
-		doc .depend ${PROJECT}-${VERSION}.tar.gz
+		doc .depend ${PROJECT}-${VERSION}.tar.gz zathura-version-check
 
 debug: options ${PLUGIN}-debug.so
 

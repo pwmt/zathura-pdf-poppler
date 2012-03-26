@@ -1,9 +1,14 @@
 # See LICENSE file for license and copyright information
 
-VERSION = 0.1.0
+VERSION = 0.1.1
+
+# minimum required zathura version
+ZATHURA_MIN_VERSION = 0.1.1
+ZATHURA_VERSION_CHECK ?= $(shell pkg-config --atleast-version=$(ZATHURA_MIN_VERSION) zathura; echo $$?)
 
 # paths
 PREFIX ?= /usr
+LIBDIR ?= ${PREFIX}/lib
 
 # libs
 GTK_INC ?= $(shell pkg-config --cflags gtk+-2.0)
@@ -18,7 +23,7 @@ GIRARA_LIB ?= $(shell pkg-config --libs girara-gtk2)
 ZATHURA_INC ?= $(shell pkg-config --cflags zathura)
 PLUGINDIR ?= $(shell pkg-config --variable=plugindir zathura)
 ifeq (,${PLUGINDIR})
-PLUGINDIR = ${PREFIX}/lib/zathura
+PLUGINDIR = ${LIBDIR}/zathura
 endif
 
 INCS = ${GTK_INC} ${PDF_INC} ${ZATHURA_INC} ${GIRARA_INC}
