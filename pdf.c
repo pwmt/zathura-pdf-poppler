@@ -501,7 +501,7 @@ pdf_page_init(zathura_page_t* page)
 
   /* init poppler data */
   poppler_page_t* poppler_page = g_malloc0(sizeof(poppler_page_t));
-  poppler_page->page           = poppler_document_get_page(pdf_document->document, zathura_page_get_id(page));
+  poppler_page->page           = poppler_document_get_page(pdf_document->document, zathura_page_get_index(page));
 
   if (poppler_page->page == NULL) {
     g_free(poppler_page);
