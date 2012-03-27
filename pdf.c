@@ -69,9 +69,8 @@ pdf_document_open(zathura_document_t* document)
     return ZATHURA_ERROR_INVALID_ARGUMENTS;
   }
 
-  zathura_error_t error = ZATHURA_ERROR_OK;
-
-  document->data = g_malloc0(sizeof(pdf_document_t));
+  zathura_error_t error         = ZATHURA_ERROR_OK;
+  zathura_document_data_t* document_data = g_malloc0(sizeof(zathura_document_data_t));
 
   /* format path */
   GError* gerror  = NULL;
@@ -82,10 +81,10 @@ pdf_document_open(zathura_document_t* document)
     goto error_free;
   }
 
-  pdf_document_t* pdf_document = (pdf_document_t*) document->data;
-  pdf_document->document       = poppler_document_new_from_file(file_uri, document->password, &gerror);
+  document_data->document = poppler_document_new_from_file(file_uri,
+      zathura_document_get_password(document), &gerror);
 
-  if (pdf_document->document == NULL) {
+  if (document_data->document == NULL) {
     if(gerror != NULL && gerror->code == POPPLER_ERROR_ENCRYPTED) {
       error = ZATHURA_ERROR_INVALID_PASSWORD;
     } else {
@@ -94,7 +93,10 @@ pdf_document_open(zathura_document_t* document)
     goto error_free;
   }
 
-  document->number_of_pages = poppler_document_get_n_pages(pdf_document->document);
+  zathura_document_set_data(document, document_data);
+
+  zathura_document_set_number_of_pages(document,
+      poppler_document_get_n_pages(document_data->document));
 
   g_free(file_uri);
 
@@ -110,33 +112,33 @@ error_free:
       g_free(file_uri);
     }
 
-    if (document != NULL) {
-      free(document->data);
-      document->data = NULL;
+    if (document_data != NULL) {
+      g_free(document_data->document);
+      g_free(document_data);
+      zathura_document_set_data(document, NULL);
     }
 
   return error;
 }
 
 zathura_error_t
-pdf_document_free(zathura_document_t* document)
+pdf_document_free(zathura_document_t* document, zathura_document_data_t* document_data)
 {
   if (document == NULL) {
     return ZATHURA_ERROR_INVALID_ARGUMENTS;
   }
 
-  if (document->data != NULL) {
-    pdf_document_t* pdf_document = (pdf_document_t*) document->data;
-    g_object_unref(pdf_document->document);
-    free(document->data);
-    document->data = NULL;
+  if (document_data != NULL) {
+    g_object_unref(document_data->document);
+    g_free(document_data);
+    zathura_document_set_data(document, NULL);
   }
 
   return ZATHURA_ERROR_OK;
 }
 
 static void
-build_index(pdf_document_t* pdf, girara_tree_node_t* root, PopplerIndexIter* iter)
+build_index(zathura_document_data_t* document_data, girara_tree_node_t* root, PopplerIndexIter* iter)
 {
   if (root == NULL || iter == NULL) {
     return;
@@ -165,7 +167,7 @@ build_index(pdf_document_t* pdf, girara_tree_node_t* root, PopplerIndexIter* ite
       index_element->type = ZATHURA_LINK_TO_PAGE;
 
       if (action->goto_dest.dest->type == POPPLER_DEST_NAMED) {
-        PopplerDest* dest = poppler_document_find_dest(pdf->document,
+        PopplerDest* dest = poppler_document_find_dest(document_data->document,
             action->goto_dest.dest->named_dest);
 
         if (dest != NULL) {
@@ -187,7 +189,7 @@ build_index(pdf_document_t* pdf, girara_tree_node_t* root, PopplerIndexIter* ite
     PopplerIndexIter* child  = poppler_index_iter_get_child(iter);
 
     if (child != NULL) {
-      build_index(pdf, node, child);
+      build_index(document_data, node, child);
     }
 
     poppler_index_iter_free(child);
@@ -196,17 +198,16 @@ build_index(pdf_document_t* pdf, girara_tree_node_t* root, PopplerIndexIter* ite
 }
 
 girara_tree_node_t*
-pdf_document_index_generate(zathura_document_t* document, zathura_error_t* error)
+pdf_document_index_generate(zathura_document_t* document, zathura_document_data_t* document_data, zathura_error_t* error)
 {
-  if (document == NULL || document->data == NULL) {
+  if (document == NULL || document_data == NULL) {
     if (error != NULL) {
       *error = ZATHURA_ERROR_INVALID_ARGUMENTS;
     }
     return NULL;
   }
 
-  pdf_document_t* pdf_document = (pdf_document_t*) document->data;
-  PopplerIndexIter* iter       = poppler_index_iter_new(pdf_document->document);
+  PopplerIndexIter* iter = poppler_index_iter_new(document_data->document);
 
   if (iter == NULL) {
     if (error != NULL) {
@@ -217,40 +218,37 @@ pdf_document_index_generate(zathura_document_t* document, zathura_error_t* error
 
   girara_tree_node_t* root = girara_node_new(zathura_index_element_new("ROOT"));
   // girara_node_set_free_function(root, (girara_free_function_t) zathura_index_element_free);
-  build_index(pdf_document, root, iter);
+  build_index(document_data, root, iter);
 
   poppler_index_iter_free(iter);
   return root;
 }
 
 zathura_error_t
-pdf_document_save_as(zathura_document_t* document, const char* path)
+pdf_document_save_as(zathura_document_t* document, zathura_document_data_t* document_data, const char* path)
 {
-  if (document == NULL || document->data == NULL || path == NULL) {
+  if (document == NULL || document_data == NULL || path == NULL) {
     return ZATHURA_ERROR_INVALID_ARGUMENTS;
   }
 
-  pdf_document_t* pdf_document = (pdf_document_t*) document->data;
-
   char* file_path = g_strdup_printf("file://%s", path);
-  gboolean ret = poppler_document_save(pdf_document->document, file_path, NULL);
+  gboolean ret = poppler_document_save(document_data->document, file_path, NULL);
   g_free(file_path);
 
   return (ret == true ? ZATHURA_ERROR_OK : ZATHURA_ERROR_UNKNOWN);
 }
 
 girara_list_t*
-pdf_document_attachments_get(zathura_document_t* document, zathura_error_t* error)
+pdf_document_attachments_get(zathura_document_t* document, zathura_document_data_t* document_data, zathura_error_t* error)
 {
-  if (document == NULL || document->data == NULL) {
+  if (document == NULL || document_data == NULL) {
     if (error != NULL) {
       *error = ZATHURA_ERROR_INVALID_ARGUMENTS;
     }
     return NULL;
   }
 
-  pdf_document_t* pdf_document = (pdf_document_t*) document->data;
-  if (poppler_document_has_attachments(pdf_document->document) == FALSE) {
+  if (poppler_document_has_attachments(document_data->document) == FALSE) {
     girara_warning("PDF file has no attachments");
     if (error != NULL) {
       *error = ZATHURA_ERROR_UNKNOWN;
@@ -267,7 +265,7 @@ pdf_document_attachments_get(zathura_document_t* document, zathura_error_t* erro
     return NULL;
   }
 
-  GList* attachment_list = poppler_document_get_attachments(pdf_document->document);
+  GList* attachment_list = poppler_document_get_attachments(document_data->document);
   GList* attachments;
 
   for (attachments = attachment_list; attachments; attachments = g_list_next(attachments)) {
@@ -279,20 +277,20 @@ pdf_document_attachments_get(zathura_document_t* document, zathura_error_t* erro
 }
 
 zathura_error_t
-pdf_document_attachment_save(zathura_document_t* document, const char* attachmentname, const char* file)
+pdf_document_attachment_save(zathura_document_t* document,
+    zathura_document_data_t* document_data, const char* attachmentname, const char* file)
 {
-  if (document == NULL || document->data == NULL) {
+  if (document == NULL || document_data == NULL) {
     return ZATHURA_ERROR_INVALID_ARGUMENTS;
   }
 
-  pdf_document_t* pdf_document = (pdf_document_t*) document->data;
-  if (poppler_document_has_attachments(pdf_document->document) == FALSE) {
+  if (poppler_document_has_attachments(document_data->document) == FALSE) {
     girara_warning("PDF file has no attachments");
     return ZATHURA_ERROR_INVALID_ARGUMENTS;
   }
 
 
-  GList* attachment_list = poppler_document_get_attachments(pdf_document->document);
+  GList* attachment_list = poppler_document_get_attachments(document_data->document);
   GList* attachments;
 
   for (attachments = attachment_list; attachments; attachments = g_list_next(attachments)) {
@@ -308,25 +306,19 @@ pdf_document_attachment_save(zathura_document_t* document, const char* attachmen
 }
 
 girara_list_t*
-pdf_page_images_get(zathura_page_t* page, zathura_error_t* error)
+pdf_page_images_get(zathura_page_t* page, zathura_page_data_t* page_data, zathura_error_t* error)
 {
-  if (page == NULL) {
+  if (page == NULL || page_data == NULL) {
     if (error != NULL) {
       *error = ZATHURA_ERROR_INVALID_ARGUMENTS;
     }
     goto error_ret;
   }
 
-  poppler_page_t* poppler_page = (poppler_page_t*) zathura_page_get_data(page);
-
-  if (poppler_page == NULL) {
-    goto error_ret;
-  }
-
   girara_list_t* list  = NULL;
   GList* image_mapping = NULL;
 
-  image_mapping = poppler_page_get_image_mapping(poppler_page->page);
+  image_mapping = poppler_page_get_image_mapping(page_data->page);
   if (image_mapping == NULL || g_list_length(image_mapping) == 0) {
     if (error != NULL) {
       *error = ZATHURA_ERROR_UNKNOWN;
@@ -385,23 +377,19 @@ error_ret:
 
 #if HAVE_CAIRO
 cairo_surface_t*
-pdf_page_image_get_cairo(zathura_page_t* page, zathura_image_t* image, zathura_error_t* error)
+pdf_page_image_get_cairo(zathura_page_t* page, zathura_page_data_t* page_data,
+    zathura_image_t* image, zathura_error_t* error)
 {
-  if (page == NULL || image == NULL || image->data == NULL) {
+  if (page == NULL || page_data == NULL || image == NULL || image->data == NULL) {
     if (error != NULL) {
       *error = ZATHURA_ERROR_INVALID_ARGUMENTS;
     }
     goto error_ret;
   }
 
-  poppler_page_t* poppler_page = (poppler_page_t*) zathura_page_get_data(page);
-  gint* image_id               = (gint*) image->data;
+  gint* image_id = (gint*) image->data;
 
-  if (poppler_page == NULL) {
-    goto error_ret;
-  }
-
-  cairo_surface_t* surface = poppler_page_get_image(poppler_page->page, *image_id);
+  cairo_surface_t* surface = poppler_page_get_image(page_data->page, *image_id);
   if (surface == NULL) {
     if (error != NULL) {
       *error = ZATHURA_ERROR_UNKNOWN;
@@ -418,16 +406,15 @@ error_ret:
 #endif
 
 char*
-pdf_document_meta_get(zathura_document_t* document, zathura_document_meta_t meta, zathura_error_t* error)
+pdf_document_meta_get(zathura_document_t* document, zathura_document_data_t*
+    document_data, zathura_document_meta_t meta, zathura_error_t* error)
 {
-  if (document == NULL || document->data == NULL) {
+  if (document == NULL || document_data == NULL) {
     if (error != NULL) {
       *error = ZATHURA_ERROR_INVALID_ARGUMENTS;
     }
     return NULL;
   }
-
-  pdf_document_t* pdf_document  = (pdf_document_t*) document->data;
 
   char* string_value;
   char* tmp;
@@ -435,25 +422,25 @@ pdf_document_meta_get(zathura_document_t* document, zathura_document_meta_t meta
 
   switch (meta) {
     case ZATHURA_DOCUMENT_TITLE:
-      g_object_get(pdf_document->document, "title", &string_value, NULL);
+      g_object_get(document_data->document, "title", &string_value, NULL);
       break;
     case ZATHURA_DOCUMENT_AUTHOR:
-      g_object_get(pdf_document->document, "author", &string_value, NULL);
+      g_object_get(document_data->document, "author", &string_value, NULL);
       break;
     case ZATHURA_DOCUMENT_SUBJECT:
-      g_object_get(pdf_document->document, "subject", &string_value, NULL);
+      g_object_get(document_data->document, "subject", &string_value, NULL);
       break;
     case ZATHURA_DOCUMENT_KEYWORDS:
-      g_object_get(pdf_document->document, "keywords", &string_value, NULL);
+      g_object_get(document_data->document, "keywords", &string_value, NULL);
       break;
     case ZATHURA_DOCUMENT_CREATOR:
-      g_object_get(pdf_document->document, "creator", &string_value, NULL);
+      g_object_get(document_data->document, "creator", &string_value, NULL);
       break;
     case ZATHURA_DOCUMENT_PRODUCER:
-      g_object_get(pdf_document->document, "producer", &string_value, NULL);
+      g_object_get(document_data->document, "producer", &string_value, NULL);
       break;
     case ZATHURA_DOCUMENT_CREATION_DATE:
-      g_object_get(pdf_document->document, "creation-date", &time_value, NULL);
+      g_object_get(document_data->document, "creation-date", &time_value, NULL);
       tmp = ctime(&time_value);
       if (tmp != NULL) {
         string_value = g_strndup(tmp, strlen(tmp) - 1);
@@ -465,7 +452,7 @@ pdf_document_meta_get(zathura_document_t* document, zathura_document_meta_t meta
       }
       break;
     case ZATHURA_DOCUMENT_MODIFICATION_DATE:
-      g_object_get(pdf_document->document, "mod-date", &time_value, NULL);
+      g_object_get(document_data->document, "mod-date", &time_value, NULL);
       tmp = ctime(&time_value);
       if (tmp != NULL) {
         string_value = g_strndup(tmp, strlen(tmp) - 1);
@@ -501,24 +488,28 @@ pdf_page_init(zathura_page_t* page)
     return ZATHURA_ERROR_INVALID_ARGUMENTS;
   }
 
-  zathura_document_t* document = zathura_page_get_document(page);
-  pdf_document_t* pdf_document = (pdf_document_t*) document->data;
+  zathura_document_t* document           = zathura_page_get_document(page);
+  zathura_document_data_t* document_data = zathura_document_get_data(document);
 
-  /* init poppler data */
-  poppler_page_t* poppler_page = g_malloc0(sizeof(poppler_page_t));
-  poppler_page->page           = poppler_document_get_page(pdf_document->document, zathura_page_get_index(page));
-
-  if (poppler_page->page == NULL) {
-    g_free(poppler_page);
+  if (document_data == NULL) {
     return ZATHURA_ERROR_UNKNOWN;
   }
 
-  zathura_page_set_data(page, poppler_page);
+  /* init poppler data */
+  zathura_page_data_t* page_data = g_malloc0(sizeof(zathura_page_data_t));
+  page_data->page                = poppler_document_get_page(document_data->document, zathura_page_get_index(page));
+
+  if (page_data->page == NULL) {
+    g_free(page_data);
+    return ZATHURA_ERROR_UNKNOWN;
+  }
+
+  zathura_page_set_data(page, page_data);
 
   /* calculate dimensions */
   double width;
   double height;
-  poppler_page_get_size(poppler_page->page, &width, &height);
+  poppler_page_get_size(page_data->page, &width, &height);
   zathura_page_set_width(page, width);
   zathura_page_set_height(page, height);
 
@@ -526,25 +517,25 @@ pdf_page_init(zathura_page_t* page)
 }
 
 zathura_error_t
-pdf_page_clear(zathura_page_t* page)
+pdf_page_clear(zathura_page_t* page, zathura_page_data_t* page_data)
 {
   if (page == NULL) {
     return ZATHURA_ERROR_INVALID_ARGUMENTS;
   }
 
-  poppler_page_t* poppler_page = (poppler_page_t*) zathura_page_get_data(page);
-  if (poppler_page != NULL) {
-    g_object_unref(poppler_page->page);
-    g_free(poppler_page);
+  if (page_data != NULL) {
+    g_object_unref(page_data->page);
+    g_free(page_data);
   }
 
   return ZATHURA_ERROR_OK;
 }
 
 girara_list_t*
-pdf_page_search_text(zathura_page_t* page, const char* text, zathura_error_t* error)
+pdf_page_search_text(zathura_page_t* page, zathura_page_data_t* page_data, const
+    char* text, zathura_error_t* error)
 {
-  if (page == NULL || text == NULL || strlen(text) == 0) {
+  if (page == NULL || page_data == NULL || text == NULL || strlen(text) == 0) {
     if (error != NULL) {
       *error = ZATHURA_ERROR_INVALID_ARGUMENTS;
     }
@@ -554,13 +545,8 @@ pdf_page_search_text(zathura_page_t* page, const char* text, zathura_error_t* er
   GList* results      = NULL;
   girara_list_t* list = NULL;
 
-  poppler_page_t* poppler_page = (poppler_page_t*) zathura_page_get_data(page);
-  if (poppler_page == NULL) {
-    goto error_ret;
-  }
-
   /* search text */
-  results = poppler_page_find_text(poppler_page->page, text);
+  results = poppler_page_find_text(page_data->page, text);
   if (results == NULL || g_list_length(results) == 0) {
     if (error != NULL) {
       *error = ZATHURA_ERROR_UNKNOWN;
@@ -608,24 +594,19 @@ error_ret:
 }
 
 girara_list_t*
-pdf_page_links_get(zathura_page_t* page, zathura_error_t* error)
+pdf_page_links_get(zathura_page_t* page, zathura_page_data_t* page_data, zathura_error_t* error)
 {
-  if (page == NULL) {
+  if (page == NULL || page_data == NULL) {
     if (error != NULL) {
       *error = ZATHURA_ERROR_INVALID_ARGUMENTS;
     }
     goto error_ret;
   }
 
-  poppler_page_t* poppler_page = (poppler_page_t*) zathura_page_get_data(page);
-  if (poppler_page == NULL) {
-    goto error_ret;
-  }
-
   girara_list_t* list = NULL;
   GList* link_mapping = NULL;
 
-  link_mapping = poppler_page_get_link_mapping(poppler_page->page);
+  link_mapping = poppler_page_get_link_mapping(page_data->page);
   if (link_mapping == NULL || g_list_length(link_mapping) == 0) {
     if (error != NULL) {
       *error = ZATHURA_ERROR_UNKNOWN;
@@ -643,9 +624,9 @@ pdf_page_links_get(zathura_page_t* page, zathura_error_t* error)
   }
 
   for (GList* link = link_mapping; link != NULL; link = g_list_next(link)) {
-    PopplerLinkMapping* poppler_link     = (PopplerLinkMapping*) link->data;
-    zathura_document_t* zathura_document = (zathura_document_t*) zathura_page_get_document(page);
-    pdf_document_t* pdf_document         = (pdf_document_t*) zathura_document->data;
+    PopplerLinkMapping* poppler_link       = (PopplerLinkMapping*) link->data;
+    zathura_document_t* zathura_document   = (zathura_document_t*) zathura_page_get_document(page);
+    zathura_document_data_t* document_data = zathura_document_get_data(zathura_document);
 
     /* extract position */
     zathura_rectangle_t position = { 0, 0, 0, 0 };
@@ -668,7 +649,7 @@ pdf_page_links_get(zathura_page_t* page, zathura_error_t* error)
         type = ZATHURA_LINK_TO_PAGE;
         if (poppler_link->action->goto_dest.dest->type == POPPLER_DEST_NAMED) {
           poppler_destination =
-            poppler_document_find_dest(pdf_document->document,
+            poppler_document_find_dest(document_data->document,
                 poppler_link->action->goto_dest.dest->named_dest);
 
           if (poppler_destination != NULL) {
@@ -707,7 +688,8 @@ error_ret:
 }
 
 girara_list_t*
-pdf_page_form_fields_get(zathura_page_t* page, zathura_error_t* error)
+pdf_page_form_fields_get(zathura_page_t* page, zathura_page_data_t* page_data,
+    zathura_error_t* error)
 {
   if (error != NULL) {
     *error = ZATHURA_ERROR_NOT_IMPLEMENTED;
@@ -715,18 +697,14 @@ pdf_page_form_fields_get(zathura_page_t* page, zathura_error_t* error)
   return NULL;
 }
 
-char* pdf_page_get_text(zathura_page_t* page, zathura_rectangle_t rectangle,
-    zathura_error_t* error)
+char*
+pdf_page_get_text(zathura_page_t* page, zathura_page_data_t* page_data,
+    zathura_rectangle_t rectangle, zathura_error_t* error)
 {
-  if (page == NULL) {
+  if (page == NULL || page_data == NULL) {
     if (error != NULL) {
       *error = ZATHURA_ERROR_INVALID_ARGUMENTS;
     }
-    return NULL;
-  }
-
-  poppler_page_t* poppler_page = (poppler_page_t*) zathura_page_get_data(page);
-  if (poppler_page == NULL) {
     return NULL;
   }
 
@@ -743,26 +721,22 @@ char* pdf_page_get_text(zathura_page_t* page, zathura_rectangle_t rectangle,
 #endif
 
   /* get selected text */
-  return poppler_page_get_selected_text(poppler_page->page, POPPLER_SELECTION_GLYPH, &rect);
+  return poppler_page_get_selected_text(page_data->page, POPPLER_SELECTION_GLYPH, &rect);
 }
 
 #ifdef HAVE_CAIRO
 zathura_error_t
-pdf_page_render_cairo(zathura_page_t* page, cairo_t* cairo, bool printing)
+pdf_page_render_cairo(zathura_page_t* page, zathura_page_data_t* page_data, cairo_t*
+    cairo, bool printing)
 {
-  if (page == NULL || cairo == NULL) {
+  if (page == NULL || page_data == NULL || cairo == NULL) {
     return ZATHURA_ERROR_INVALID_ARGUMENTS;
   }
 
-  poppler_page_t* poppler_page = (poppler_page_t*) zathura_page_get_data(page);
-  if (poppler_page == NULL) {
-    return ZATHURA_ERROR_UNKNOWN;
-  }
-
   if (printing == false) {
-    poppler_page_render(poppler_page->page, cairo);
+    poppler_page_render(page_data->page, cairo);
   } else {
-    poppler_page_render_for_printing(poppler_page->page, cairo);
+    poppler_page_render_for_printing(page_data->page, cairo);
   }
 
   return ZATHURA_ERROR_OK;
@@ -771,9 +745,10 @@ pdf_page_render_cairo(zathura_page_t* page, cairo_t* cairo, bool printing)
 
 #if !POPPLER_CHECK_VERSION(0,18,0)
 zathura_image_buffer_t*
-pdf_page_render(zathura_page_t* page, zathura_error_t* error)
+pdf_page_render(zathura_page_t* page, zathura_page_data_t* page_data,
+    zathura_error_t* error)
 {
-  if (page == NULL) {
+  if (page == NULL || data == NULL) {
     if (error != NULL) {
       *error = ZATHURA_ERROR_INVALID_ARGUMENTS;
     }
@@ -781,8 +756,7 @@ pdf_page_render(zathura_page_t* page, zathura_error_t* error)
   }
 
   zathura_document_t* document = zathura_page_get_document(page);
-  poppler_page_t* poppler_page = (poppler_page_t*) zathura_page_get_data(page);
-  if (poppler_page == NULL || document == NULL) {
+  if (document == NULL) {
     return NULL;
   }
 
@@ -801,7 +775,7 @@ pdf_page_render(zathura_page_t* page, zathura_error_t* error)
     return NULL;
   }
 
-  poppler_page_render_to_pixbuf(poppler_page->page, 0, 0, page_width, page_height,
+  poppler_page_render_to_pixbuf(data->page, 0, 0, page_width, page_height,
       document->scale, 0, pixbuf);
 
   /* create image buffer */
