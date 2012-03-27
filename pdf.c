@@ -638,46 +638,47 @@ pdf_page_links_get(zathura_page_t* page, zathura_plugin_error_t* error)
   }
 
   for (GList* link = link_mapping; link != NULL; link = g_list_next(link)) {
-    zathura_link_t* zathura_link = g_malloc0(sizeof(zathura_link_t));
-
     PopplerLinkMapping* poppler_link     = (PopplerLinkMapping*) link->data;
     zathura_document_t* zathura_document = (zathura_document_t*) zathura_page_get_document(page);
     pdf_document_t* pdf_document         = (pdf_document_t*) zathura_document->data;
 
     /* extract position */
-    zathura_link->position.x1 = poppler_link->area.x1;
-    zathura_link->position.x2 = poppler_link->area.x2;
-    zathura_link->position.y1 = zathura_page_get_height(page) - poppler_link->area.y2;
-    zathura_link->position.y2 = zathura_page_get_height(page) - poppler_link->area.y1;
+    zathura_rectangle_t position = { 0, 0, 0, 0 };
+    position.x1 = poppler_link->area.x1;
+    position.x2 = poppler_link->area.x2;
+    position.y1 = zathura_page_get_height(page) - poppler_link->area.y2;
+    position.y2 = zathura_page_get_height(page) - poppler_link->area.y1;
 
     /* extract type and target */
+    zathura_link_type_t type         = ZATHURA_LINK_INVALID;
+    zathura_link_target_t target     = { 0 };
     PopplerDest* poppler_destination = NULL;
 
     switch (poppler_link->action->type) {
       case POPPLER_ACTION_URI:
-        zathura_link->type         = ZATHURA_LINK_EXTERNAL;
-        zathura_link->target.value = g_strdup(poppler_link->action->uri.uri);
+        type       = ZATHURA_LINK_EXTERNAL;
+        target.uri = poppler_link->action->uri.uri;
         break;
       case POPPLER_ACTION_GOTO_DEST:
-        zathura_link->type = ZATHURA_LINK_TO_PAGE;
+        type = ZATHURA_LINK_TO_PAGE;
         if (poppler_link->action->goto_dest.dest->type == POPPLER_DEST_NAMED) {
           poppler_destination =
             poppler_document_find_dest(pdf_document->document,
                 poppler_link->action->goto_dest.dest->named_dest);
 
           if (poppler_destination != NULL) {
-            zathura_link->target.page_number = poppler_destination->page_num - 1;
+            target.page_number = poppler_destination->page_num - 1;
             poppler_dest_free(poppler_destination);
           }
         } else {
-          zathura_link->target.page_number = poppler_link->action->goto_dest.dest->page_num - 1;
+          target.page_number = poppler_link->action->goto_dest.dest->page_num - 1;
         }
         break;
       default:
-        g_free(zathura_link);
         continue;
     }
 
+    zathura_link_t* zathura_link = zathura_link_new(type, position, target);
     girara_list_append(list, zathura_link);
   }
 
