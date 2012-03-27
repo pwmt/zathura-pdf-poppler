@@ -28,7 +28,7 @@ pdf_zathura_image_free(zathura_image_t* image)
 }
 
 void
-register_functions(zathura_document_functions_t* functions)
+register_functions(zathura_plugin_functions_t* functions)
 {
   functions->document_open            = pdf_document_open;
   functions->document_free            = pdf_document_free;
@@ -53,14 +53,14 @@ register_functions(zathura_document_functions_t* functions)
 #endif
 }
 
-PLUGIN_REGISTER(
-    "pdf-poppler",
-    0, 1, 0,
-    register_functions,
-    PLUGIN_MIMETYPES({
-      "application/pdf"
-    })
-  )
+ZATHURA_PLUGIN_REGISTER(
+  "pdf-poppler",
+  0, 1, 0,
+  register_functions,
+  ZATHURA_PLUGIN_MIMETYPES({
+    "application/pdf"
+  })
+)
 
 zathura_error_t
 pdf_document_open(zathura_document_t* document)
@@ -521,7 +521,6 @@ pdf_page_clear(zathura_page_t* page, PopplerPage* poppler_page)
 
   if (poppler_page != NULL) {
     g_object_unref(poppler_page);
-    g_free(poppler_page);
   }
 
   return ZATHURA_ERROR_OK;

@@ -15,22 +15,6 @@
 #include <zathura/plugin-api.h>
 
 /**
- * Internal document container
- */
-struct zathura_poppler_document_s
-{
-  PopplerDocument *document; /**< Poppler document */
-};
-
-/**
- * Internal page container
- */
-struct zathura_poppler_page_s
-{
-  PopplerPage* page; /**< Poppler page */
-};
-
-/**
  * Open a pdf document
  *
  * @param document Zathura document
