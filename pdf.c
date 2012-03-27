@@ -743,7 +743,7 @@ zathura_image_buffer_t*
 pdf_page_render(zathura_page_t* page, PopplerPage* poppler_page,
     zathura_error_t* error)
 {
-  if (page == NULL || data == NULL) {
+  if (page == NULL || poppler_page == NULL) {
     if (error != NULL) {
       *error = ZATHURA_ERROR_INVALID_ARGUMENTS;
     }
@@ -756,8 +756,9 @@ pdf_page_render(zathura_page_t* page, PopplerPage* poppler_page,
   }
 
   /* calculate sizes */
-  unsigned int page_width  = document->scale * zathura_page_get_width(page);
-  unsigned int page_height = document->scale * zathura_page_get_height(page);
+  double scale             = zathura_document_get_scale(document);
+  unsigned int page_width  = scale * zathura_page_get_width(page);
+  unsigned int page_height = scale * zathura_page_get_height(page);
 
   /* create pixbuf */
   GdkPixbuf* pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8,
@@ -770,8 +771,8 @@ pdf_page_render(zathura_page_t* page, PopplerPage* poppler_page,
     return NULL;
   }
 
-  poppler_page_render_to_pixbuf(data->page, 0, 0, page_width, page_height,
-      document->scale, 0, pixbuf);
+  poppler_page_render_to_pixbuf(poppler_page, 0, 0, page_width, page_height,
+      scale, 0, pixbuf);
 
   /* create image buffer */
   zathura_image_buffer_t* image_buffer = zathura_image_buffer_create(page_width, page_height);
