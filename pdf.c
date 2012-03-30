@@ -13,6 +13,8 @@
 #error "Cannot render without cairo and poppler >= 0.18"
 #endif
 
+#define LENGTH(x) (sizeof(x)/sizeof((x)[0]))
+
 static void
 pdf_zathura_image_free(zathura_image_t* image)
 {
@@ -36,7 +38,7 @@ register_functions(zathura_plugin_functions_t* functions)
   functions->document_save_as         = pdf_document_save_as;
   functions->document_attachments_get = pdf_document_attachments_get;
   functions->document_attachment_save = pdf_document_attachment_save;
-  functions->document_meta_get        = pdf_document_meta_get;
+  functions->document_get_information = pdf_document_get_information;
   functions->page_init                = pdf_page_init;
   functions->page_clear               = pdf_page_clear;
   functions->page_search_text         = pdf_page_search_text;
@@ -402,9 +404,9 @@ error_ret:
 }
 #endif
 
-char*
-pdf_document_meta_get(zathura_document_t* document, PopplerDocument*
-    poppler_document, zathura_document_meta_t meta, zathura_error_t* error)
+girara_list_t*
+pdf_document_get_information(zathura_document_t* document, PopplerDocument*
+    poppler_document, zathura_error_t* error)
 {
   if (document == NULL || poppler_document == NULL) {
     if (error != NULL) {
@@ -413,69 +415,59 @@ pdf_document_meta_get(zathura_document_t* document, PopplerDocument*
     return NULL;
   }
 
-  char* string_value;
-  char* tmp;
-  time_t time_value;
-
-  switch (meta) {
-    case ZATHURA_DOCUMENT_TITLE:
-      g_object_get(poppler_document, "title", &string_value, NULL);
-      break;
-    case ZATHURA_DOCUMENT_AUTHOR:
-      g_object_get(poppler_document, "author", &string_value, NULL);
-      break;
-    case ZATHURA_DOCUMENT_SUBJECT:
-      g_object_get(poppler_document, "subject", &string_value, NULL);
-      break;
-    case ZATHURA_DOCUMENT_KEYWORDS:
-      g_object_get(poppler_document, "keywords", &string_value, NULL);
-      break;
-    case ZATHURA_DOCUMENT_CREATOR:
-      g_object_get(poppler_document, "creator", &string_value, NULL);
-      break;
-    case ZATHURA_DOCUMENT_PRODUCER:
-      g_object_get(poppler_document, "producer", &string_value, NULL);
-      break;
-    case ZATHURA_DOCUMENT_CREATION_DATE:
-      g_object_get(poppler_document, "creation-date", &time_value, NULL);
-      tmp = ctime(&time_value);
-      if (tmp != NULL) {
-        string_value = g_strndup(tmp, strlen(tmp) - 1);
-      } else {
-        if (error != NULL) {
-          *error = ZATHURA_ERROR_UNKNOWN;
-        }
-        return NULL;
-      }
-      break;
-    case ZATHURA_DOCUMENT_MODIFICATION_DATE:
-      g_object_get(poppler_document, "mod-date", &time_value, NULL);
-      tmp = ctime(&time_value);
-      if (tmp != NULL) {
-        string_value = g_strndup(tmp, strlen(tmp) - 1);
-      } else {
-        if (error != NULL) {
-          *error = ZATHURA_ERROR_UNKNOWN;
-        }
-        return NULL;
-      }
-      break;
-    default:
-      if (error != NULL) {
-        *error = ZATHURA_ERROR_UNKNOWN;
-      }
-      return NULL;
-  }
-
-  if (string_value == NULL || strlen(string_value) == 0) {
-    g_free(string_value);
-    if (error != NULL) {
-      *error = ZATHURA_ERROR_UNKNOWN;
-    }
+  girara_list_t* list = zathura_document_information_entry_list_new();
+  if (list == NULL) {
     return NULL;
   }
 
-  return string_value;
+  /* get string values */
+  typedef struct info_value_s {
+    char* property;
+    zathura_document_information_type_t type;
+  } info_value_t;
+
+  static const info_value_t string_values[] = {
+    { "title",    ZATHURA_DOCUMENT_INFORMATION_TITLE },
+    { "author",   ZATHURA_DOCUMENT_INFORMATION_AUTHOR },
+    { "subject",  ZATHURA_DOCUMENT_INFORMATION_SUBJECT },
+    { "keywords", ZATHURA_DOCUMENT_INFORMATION_KEYWORDS },
+    { "creator",  ZATHURA_DOCUMENT_INFORMATION_CREATOR },
+    { "producer", ZATHURA_DOCUMENT_INFORMATION_PRODUCER }
+  };
+
+  char* string_value;
+  for (unsigned int i = 0; i < LENGTH(string_values); i++) {
+    g_object_get(poppler_document, string_values[i].property, &string_value, NULL);
+    zathura_document_information_entry_t* entry = zathura_document_information_entry_new(
+        string_values[i].type, string_value);
+    if (entry != NULL) {
+      girara_list_append(list, entry);
+    }
+  }
+
+  /* get time values */
+  static const info_value_t time_values[] = {
+    { "creation-date", ZATHURA_DOCUMENT_INFORMATION_CREATION_DATE },
+    { "mod-date",      ZATHURA_DOCUMENT_INFORMATION_MODIFICATION_DATE }
+  };
+
+  char* tmp;
+  time_t time_value;
+  for (unsigned int i = 0; i < LENGTH(time_values); i++) {
+    g_object_get(poppler_document, string_values[i].property, &time_value, NULL);
+    tmp = ctime(&time_value);
+    if (tmp != NULL) {
+      string_value = g_strndup(tmp, strlen(tmp) - 1);
+      zathura_document_information_entry_t* entry = zathura_document_information_entry_new(
+          string_values[i].type, string_value);
+      if (entry != NULL) {
+        girara_list_append(list, entry);
+      }
+      g_free(string_value);
+    }
+  }
+
+  return list;
 }
 
 zathura_error_t

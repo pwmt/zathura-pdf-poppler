@@ -125,14 +125,12 @@ cairo_surface_t* pdf_page_image_get_cairo(zathura_page_t* page,
  * Returns the content of a given meta field
  *
  * @param document Zathura document
- * @param meta Meta identifier
  * @param error Set to an error value (see zathura_error_t) if an
  *   error occured
  * @return Value of the meta data or NULL if an error occurred
  */
-char* pdf_document_meta_get(zathura_document_t* document,
-    PopplerDocument* poppler_document, zathura_document_meta_t meta,
-    zathura_error_t* error);
+girara_list_t* pdf_document_get_information(zathura_document_t* document,
+    PopplerDocument* poppler_document, zathura_error_t* error);
 
 /**
  * Searches for a specific text on a page and returns a list of results
