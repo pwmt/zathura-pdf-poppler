@@ -683,7 +683,9 @@ pdf_page_links_get(zathura_page_t* page, PopplerPage* poppler_page, zathura_erro
     }
 
     zathura_link_t* zathura_link = zathura_link_new(type, position, target);
-    girara_list_append(list, zathura_link);
+    if (zathura_link != NULL) {
+      girara_list_append(list, zathura_link);
+    }
   }
 
   poppler_page_free_link_mapping(link_mapping);
