@@ -159,30 +159,38 @@ build_index(PopplerDocument* poppler_document, girara_tree_node_t* root, Poppler
       continue;
     }
 
+    zathura_link_type_t type = ZATHURA_LINK_INVALID;
+    zathura_link_target_t target;
+    zathura_rectangle_t rect;
+
     if (action->type == POPPLER_ACTION_URI) {
-      index_element->type = ZATHURA_LINK_EXTERNAL;
-      index_element->target.uri = g_strdup(action->uri.uri);
+      type = ZATHURA_LINK_URI;
+      target.value = g_strdup(action->uri.uri);
     } else if (action->type == POPPLER_ACTION_GOTO_DEST) {
-      index_element->type = ZATHURA_LINK_TO_PAGE;
+      type = ZATHURA_LINK_GOTO_DEST;
 
       if (action->goto_dest.dest->type == POPPLER_DEST_NAMED) {
         PopplerDest* dest = poppler_document_find_dest(poppler_document,
             action->goto_dest.dest->named_dest);
 
         if (dest != NULL) {
-          index_element->target.page_number = dest->page_num - 1;
+          target.page_number = dest->page_num - 1;
           poppler_dest_free(dest);
         }
       } else {
-        index_element->target.page_number = action->goto_dest.dest->page_num - 1;
+        target.page_number = action->goto_dest.dest->page_num - 1;
       }
     } else {
       poppler_action_free(action);
       zathura_index_element_free(index_element);
       continue;
     }
-
     poppler_action_free(action);
+
+    index_element->link = zathura_link_new(type, rect, target);
+    if (index_element->link == NULL) {
+      continue;
+    }
 
     girara_tree_node_t* node = girara_node_append_data(root, index_element);
     PopplerIndexIter* child  = poppler_index_iter_get_child(iter);
@@ -628,12 +636,8 @@ pdf_page_links_get(zathura_page_t* page, PopplerPage* poppler_page, zathura_erro
     PopplerDest* poppler_destination = NULL;
 
     switch (poppler_link->action->type) {
-      case POPPLER_ACTION_URI:
-        type       = ZATHURA_LINK_EXTERNAL;
-        target.uri = poppler_link->action->uri.uri;
-        break;
       case POPPLER_ACTION_GOTO_DEST:
-        type = ZATHURA_LINK_TO_PAGE;
+        type = ZATHURA_LINK_GOTO_DEST;
         if (poppler_link->action->goto_dest.dest->type == POPPLER_DEST_NAMED) {
           poppler_destination =
             poppler_document_find_dest(poppler_document,
@@ -646,6 +650,33 @@ pdf_page_links_get(zathura_page_t* page, PopplerPage* poppler_page, zathura_erro
         } else {
           target.page_number = poppler_link->action->goto_dest.dest->page_num - 1;
         }
+        break;
+      case POPPLER_ACTION_GOTO_REMOTE:
+        type = ZATHURA_LINK_GOTO_REMOTE;
+        if (poppler_link->action->goto_dest.dest->type == POPPLER_DEST_NAMED) {
+          poppler_destination =
+            poppler_document_find_dest(poppler_document,
+                poppler_link->action->goto_dest.dest->named_dest);
+
+          if (poppler_destination != NULL) {
+            target.page_number = poppler_destination->page_num - 1;
+            poppler_dest_free(poppler_destination);
+          }
+        } else {
+          target.page_number = poppler_link->action->goto_dest.dest->page_num - 1;
+        }
+        break;
+      case POPPLER_ACTION_URI:
+        type         = ZATHURA_LINK_URI;
+        target.value = poppler_link->action->uri.uri;
+        break;
+      case POPPLER_ACTION_LAUNCH:
+        type         = ZATHURA_LINK_LAUNCH;
+        target.value = poppler_link->action->launch.file_name;
+        break;
+      case POPPLER_ACTION_NAMED:
+        type         = ZATHURA_LINK_NAMED;
+        target.value = poppler_link->action->named.named_dest;
         break;
       default:
         continue;
