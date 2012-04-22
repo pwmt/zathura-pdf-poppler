@@ -653,17 +653,8 @@ pdf_page_links_get(zathura_page_t* page, PopplerPage* poppler_page, zathura_erro
         break;
       case POPPLER_ACTION_GOTO_REMOTE:
         type = ZATHURA_LINK_GOTO_REMOTE;
-        if (poppler_link->action->goto_dest.dest->type == POPPLER_DEST_NAMED) {
-          poppler_destination =
-            poppler_document_find_dest(poppler_document,
-                poppler_link->action->goto_dest.dest->named_dest);
-
-          if (poppler_destination != NULL) {
-            target.page_number = poppler_destination->page_num - 1;
-            poppler_dest_free(poppler_destination);
-          }
-        } else {
-          target.page_number = poppler_link->action->goto_dest.dest->page_num - 1;
+        if ((target.value = poppler_link->action->goto_remote.file_name) == NULL) {
+          continue;
         }
         break;
       case POPPLER_ACTION_URI:
