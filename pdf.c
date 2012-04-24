@@ -9,6 +9,10 @@
 
 #include "pdf.h"
 
+#if !POPPLER_CHECK_VERSION(0,15,0)
+#define poppler_page_get_selected_text poppler_page_get_text
+#endif
+
 #if !defined(HAVE_CAIRO) && POPPLER_CHECK_VERSION(0,18,0)
 #error "Cannot render without cairo and poppler >= 0.18"
 #endif
@@ -724,8 +728,8 @@ pdf_page_get_text(zathura_page_t* page, PopplerPage* poppler_page,
   rect.x2 = rectangle.x2;
 #if !POPPLER_CHECK_VERSION(0,15,0)
   /* adapt y coordinates */
-  rect.y1 = page->height - rectangle.y1;
-  rect.y2 = page->height - rectangle.y2;
+  rect.y1 = zathura_page_get_height(page) - rectangle.y1;
+  rect.y2 = zathura_page_get_height(page) - rectangle.y2;
 #else
   rect.y1 = rectangle.y1;
   rect.y2 = rectangle.y2;
