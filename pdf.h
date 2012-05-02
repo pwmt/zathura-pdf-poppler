@@ -177,6 +177,17 @@ girara_list_t* pdf_page_form_fields_get(zathura_page_t* page,
 char* pdf_page_get_text(zathura_page_t* page, PopplerPage* poppler_page,
     zathura_rectangle_t rectangle, zathura_error_t* error);
 
+/**
+ * Returns a list of annotations of the page
+ *
+ * @param document Page
+ * @param error Set to an error value (see zathura_error_t) if an
+ *   error occured
+ * @return List of annotations or NULL if an error occurred
+ */
+girara_list_t* pdf_page_get_annotations(zathura_page_t* page, PopplerPage* poppler_page,
+    zathura_error_t* error);
+
 #if !POPPLER_CHECK_VERSION(0,18,0)
 /**
  * Renders a page and returns a allocated image buffer which has to be freed
