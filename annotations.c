@@ -8,7 +8,8 @@
 #include "pdf.h"
 
 static zathura_annotation_t*
-zathura_annotation_from_poppler_annotation(PopplerAnnot* poppler_annotation);
+zathura_annotation_from_poppler_annotation(zathura_page_t* page, PopplerAnnot*
+    poppler_annotation);
 
 static zathura_annotation_type_t
 poppler_annot_get_zathura_annot_type(PopplerAnnot* poppler_annotation);
@@ -40,7 +41,7 @@ pdf_page_get_annotations(zathura_page_t* page, PopplerPage* poppler_page,
     }
 
     zathura_annotation_t* annotation =
-      zathura_annotation_from_poppler_annotation(poppler_annotation);
+      zathura_annotation_from_poppler_annotation(page, poppler_annotation);
 
     if (annotation != NULL) {
       girara_list_append(list, annotation);
@@ -52,7 +53,7 @@ pdf_page_get_annotations(zathura_page_t* page, PopplerPage* poppler_page,
 }
 
 static zathura_annotation_t*
-zathura_annotation_from_poppler_annotation(PopplerAnnot* poppler_annotation)
+zathura_annotation_from_poppler_annotation(zathura_page_t* page, PopplerAnnot* poppler_annotation)
 {
   /* get type */
   zathura_annotation_type_t type =
@@ -68,6 +69,22 @@ zathura_annotation_from_poppler_annotation(PopplerAnnot* poppler_annotation)
   zathura_annotation_set_name(annotation,    poppler_annot_get_name(poppler_annotation));
   zathura_annotation_set_content(annotation, poppler_annot_get_contents(poppler_annotation));
   zathura_annotation_set_data(annotation,    poppler_annotation);
+
+  /* set type specific values */
+  if (type == ZATHURA_ANNOTATION_MARKUP) {
+    PopplerAnnotMarkup* annot_markup = POPPLER_ANNOT_MARKUP(poppler_annotation);
+    PopplerRectangle annot_rectangle;
+
+    if (poppler_annot_markup_get_popup_rectangle(annot_markup, &annot_rectangle) == TRUE) {
+      zathura_rectangle_t rectangle;
+      rectangle.x1 = annot_rectangle.x1;
+      rectangle.x2 = annot_rectangle.x2;
+      rectangle.y1 = zathura_page_get_height(page) - annot_rectangle.y1;
+      rectangle.y2 = zathura_page_get_height(page) - annot_rectangle.y2;
+
+      zathura_annotation_set_position(annotation, rectangle);
+    }
+  }
 
   return annotation;
 }
