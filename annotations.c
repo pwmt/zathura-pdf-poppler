@@ -43,9 +43,21 @@ pdf_page_get_annotations(zathura_page_t* page, PopplerPage* poppler_page,
     zathura_annotation_t* annotation =
       zathura_annotation_from_poppler_annotation(page, poppler_annotation);
 
-    if (annotation != NULL) {
-      girara_list_append(list, annotation);
+    if (annotation == NULL) {
+      continue;
     }
+
+    /* set position */
+    zathura_rectangle_t rectangle;
+    rectangle.x1 = mapping->area.x1;
+    rectangle.x2 = mapping->area.x2;
+    rectangle.y1 = zathura_page_get_height(page) - mapping->area.y2;
+    rectangle.y2 = zathura_page_get_height(page) - mapping->area.y1;
+
+    zathura_annotation_set_position(annotation, rectangle);
+
+    /* add annotation */
+    girara_list_append(list, annotation);
   }
   poppler_page_free_annot_mapping(results);
 
@@ -76,13 +88,6 @@ zathura_annotation_from_poppler_annotation(zathura_page_t* page, PopplerAnnot* p
     PopplerRectangle annot_rectangle;
 
     if (poppler_annot_markup_get_popup_rectangle(annot_markup, &annot_rectangle) == TRUE) {
-      zathura_rectangle_t rectangle;
-      rectangle.x1 = annot_rectangle.x1;
-      rectangle.x2 = annot_rectangle.x2;
-      rectangle.y1 = zathura_page_get_height(page) - annot_rectangle.y2;
-      rectangle.y2 = zathura_page_get_height(page) - annot_rectangle.y1;
-
-      zathura_annotation_set_position(annotation, rectangle);
     }
   }
 
