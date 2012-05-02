@@ -79,8 +79,8 @@ zathura_annotation_from_poppler_annotation(zathura_page_t* page, PopplerAnnot* p
       zathura_rectangle_t rectangle;
       rectangle.x1 = annot_rectangle.x1;
       rectangle.x2 = annot_rectangle.x2;
-      rectangle.y1 = zathura_page_get_height(page) - annot_rectangle.y1;
-      rectangle.y2 = zathura_page_get_height(page) - annot_rectangle.y2;
+      rectangle.y1 = zathura_page_get_height(page) - annot_rectangle.y2;
+      rectangle.y2 = zathura_page_get_height(page) - annot_rectangle.y1;
 
       zathura_annotation_set_position(annotation, rectangle);
     }
