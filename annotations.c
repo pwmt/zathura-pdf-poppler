@@ -10,9 +10,12 @@
 static zathura_annotation_t*
 zathura_annotation_from_poppler_annotation(zathura_page_t* page, PopplerAnnot*
     poppler_annotation);
-
+static PopplerAnnot* poppler_annotation_from_zathura_annotation(zathura_page_t*
+    page, zathura_annotation_t* annotation);
 static zathura_annotation_type_t
 poppler_annot_get_zathura_annot_type(PopplerAnnot* poppler_annotation);
+static PopplerAnnotType
+zathura_annot_get_poppler_annot_type(zathura_annotation_t* annotation);
 
 girara_list_t*
 pdf_page_get_annotations(zathura_page_t* page, PopplerPage* poppler_page,
@@ -64,9 +67,33 @@ pdf_page_get_annotations(zathura_page_t* page, PopplerPage* poppler_page,
   return list;
 }
 
+zathura_error_t
+pdf_page_set_annotations(zathura_page_t* page, PopplerPage* poppler_page,
+    girara_list_t* annotations)
+{
+  if (page == NULL || poppler_page == NULL || annotations == NULL) {
+    return ZATHURA_ERROR_INVALID_ARGUMENTS;
+  }
+
+  GIRARA_LIST_FOREACH(annotations, zathura_annotation_t*, iter, annotation)
+    if (annotation != NULL && zathura_annotation_get_data(annotation) == NULL) {
+      PopplerAnnot* poppler_annotation = poppler_annotation_from_zathura_annotation(page, annotation);
+      if (poppler_annotation != NULL) {
+        poppler_page_add_annot(poppler_page, poppler_annotation);
+      }
+    }
+  GIRARA_LIST_FOREACH_END(annotations, zathura_annotation_t*, iter, annotation);
+
+  return ZATHURA_ERROR_OK;
+}
+
 static zathura_annotation_t*
 zathura_annotation_from_poppler_annotation(zathura_page_t* page, PopplerAnnot* poppler_annotation)
 {
+  if (page == NULL || poppler_annotation == NULL) {
+    return NULL;
+  }
+
   /* get type */
   zathura_annotation_type_t type =
     poppler_annot_get_zathura_annot_type(poppler_annotation);
@@ -113,6 +140,34 @@ zathura_annotation_from_poppler_annotation(zathura_page_t* page, PopplerAnnot* p
   }
 
   return annotation;
+}
+
+static PopplerAnnot*
+poppler_annotation_from_zathura_annotation(zathura_page_t* page,
+    zathura_annotation_t* annotation)
+{
+  if (page == NULL || annotation == NULL) {
+    return NULL;
+  }
+
+  zathura_document_t* document      = zathura_page_get_document(page);
+  PopplerDocument* poppler_document = zathura_document_get_data(document);
+
+  if (poppler_document == NULL) {
+    return NULL;
+  }
+
+  PopplerAnnotType type = zathura_annot_get_poppler_annot_type(annotation);
+  if (type != POPPLER_ANNOT_TEXT) {
+    return NULL;
+  }
+
+  zathura_rectangle_t position = zathura_annotation_get_position(annotation);
+  PopplerRectangle rectangle = { 0, 10, 0, 10 };
+
+  PopplerAnnot* poppler_annotation = poppler_annot_text_new(poppler_document, &rectangle);
+
+  return poppler_annotation;
 }
 
 static zathura_annotation_type_t
@@ -208,6 +263,104 @@ poppler_annot_get_zathura_annot_type(PopplerAnnot* poppler_annotation)
       break;
     default:
       annotation_type = ZATHURA_ANNOTATION_UNKNOWN;
+      break;
+  }
+
+  return annotation_type;
+}
+
+static PopplerAnnotType
+zathura_annot_get_poppler_annot_type(zathura_annotation_t* annotation)
+{
+  if (annotation == NULL) {
+    return POPPLER_ANNOT_UNKNOWN;
+  }
+
+  PopplerAnnotType annotation_type = POPPLER_ANNOT_UNKNOWN;
+  switch (zathura_annotation_get_type(annotation)) {
+    case ZATHURA_ANNOTATION_UNKNOWN:
+      annotation_type = POPPLER_ANNOT_UNKNOWN;
+      break;
+    case ZATHURA_ANNOTATION_MARKUP:
+      annotation_type = POPPLER_ANNOT_TEXT;
+      break;
+    case ZATHURA_ANNOTATION_TEXT:
+      annotation_type = POPPLER_ANNOT_TEXT;
+      break;
+    case ZATHURA_ANNOTATION_LINK:
+      annotation_type = POPPLER_ANNOT_LINK;
+      break;
+    case ZATHURA_ANNOTATION_FREE_TEXT:
+      annotation_type = POPPLER_ANNOT_FREE_TEXT;
+      break;
+    case ZATHURA_ANNOTATION_LINE:
+      annotation_type = POPPLER_ANNOT_LINE;
+      break;
+    case ZATHURA_ANNOTATION_SQUARE:
+      annotation_type = POPPLER_ANNOT_SQUARE;
+      break;
+    case ZATHURA_ANNOTATION_CIRCLE:
+      annotation_type = POPPLER_ANNOT_CIRCLE;
+      break;
+    case ZATHURA_ANNOTATION_POLYGON:
+      annotation_type = POPPLER_ANNOT_POLYGON;
+      break;
+    case ZATHURA_ANNOTATION_POLY_LINE:
+      annotation_type = POPPLER_ANNOT_POLY_LINE;
+      break;
+    case ZATHURA_ANNOTATION_HIGHLIGHT:
+      annotation_type = POPPLER_ANNOT_HIGHLIGHT;
+      break;
+    case ZATHURA_ANNOTATION_UNDERLINE:
+      annotation_type = POPPLER_ANNOT_UNDERLINE;
+      break;
+    case ZATHURA_ANNOTATION_SQUIGGLY:
+      annotation_type = POPPLER_ANNOT_SQUIGGLY;
+      break;
+    case ZATHURA_ANNOTATION_STRIKE_OUT:
+      annotation_type = POPPLER_ANNOT_STRIKE_OUT;
+      break;
+    case ZATHURA_ANNOTATION_STAMP:
+      annotation_type = POPPLER_ANNOT_STAMP;
+      break;
+    case ZATHURA_ANNOTATION_CARET:
+      annotation_type = POPPLER_ANNOT_CARET;
+      break;
+    case ZATHURA_ANNOTATION_INK:
+      annotation_type = POPPLER_ANNOT_INK;
+      break;
+    case ZATHURA_ANNOTATION_POPUP:
+      annotation_type = POPPLER_ANNOT_POPUP;
+      break;
+    case ZATHURA_ANNOTATION_FILE_ATTACHMENT:
+      annotation_type = POPPLER_ANNOT_FILE_ATTACHMENT;
+      break;
+    case ZATHURA_ANNOTATION_SOUND:
+      annotation_type = POPPLER_ANNOT_SOUND;
+      break;
+    case ZATHURA_ANNOTATION_MOVIE:
+      annotation_type = POPPLER_ANNOT_MOVIE;
+      break;
+    case ZATHURA_ANNOTATION_WIDGET:
+      annotation_type = POPPLER_ANNOT_WIDGET;
+      break;
+    case ZATHURA_ANNOTATION_SCREEN:
+      annotation_type = POPPLER_ANNOT_SCREEN;
+      break;
+    case ZATHURA_ANNOTATION_PRINTER_MARK:
+      annotation_type = POPPLER_ANNOT_PRINTER_MARK;
+      break;
+    case ZATHURA_ANNOTATION_TRAP_NET:
+      annotation_type = POPPLER_ANNOT_TRAP_NET;
+      break;
+    case ZATHURA_ANNOTATION_WATERMARK:
+      annotation_type = POPPLER_ANNOT_WATERMARK;
+      break;
+    case ZATHURA_ANNOTATION_3D:
+      annotation_type = POPPLER_ANNOT_3D;
+      break;
+    default:
+      annotation_type = POPPLER_ANNOT_UNKNOWN;
       break;
   }
 

@@ -51,6 +51,7 @@ register_functions(zathura_plugin_functions_t* functions)
   functions->page_images_get          = (zathura_plugin_page_images_get_t) pdf_page_images_get;
   functions->page_get_text            = (zathura_plugin_page_get_text_t) pdf_page_get_text;
   functions->page_get_annotations     = (zathura_plugin_page_get_annotations_t) pdf_page_get_annotations;
+  functions->page_set_annotations     = (zathura_plugin_page_set_annotations_t) pdf_page_set_annotations;
 #if !POPPLER_CHECK_VERSION(0,18,0)
   functions->page_render              = (zathura_plugin_page_render_t) pdf_page_render;
 #endif

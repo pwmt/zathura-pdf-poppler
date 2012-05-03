@@ -188,6 +188,18 @@ char* pdf_page_get_text(zathura_page_t* page, PopplerPage* poppler_page,
 girara_list_t* pdf_page_get_annotations(zathura_page_t* page, PopplerPage* poppler_page,
     zathura_error_t* error);
 
+/**
+ * Sets the list of annotations
+ *
+ * @param page Page
+ * @param poppler_page The poppler page
+ * @param annotations List of annotations
+ * @return ZATHURA_ERROR_OK when no error occured, otherwise see
+ *    zathura_error_t
+ */
+zathura_error_t pdf_page_set_annotations(zathura_page_t* page, PopplerPage*
+    poppler_page, girara_list_t* annotations);
+
 #if !POPPLER_CHECK_VERSION(0,18,0)
 /**
  * Renders a page and returns a allocated image buffer which has to be freed
