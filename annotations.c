@@ -7,6 +7,8 @@
 
 #include "pdf.h"
 
+#define ANNOTATION_ICON_SIZE 15
+
 static zathura_annotation_t*
 zathura_annotation_from_poppler_annotation(zathura_page_t* page, PopplerAnnot*
     poppler_annotation);
@@ -162,9 +164,15 @@ poppler_annotation_from_zathura_annotation(zathura_page_t* page,
     return NULL;
   }
 
+  /* set annotation position */
   zathura_rectangle_t position = zathura_annotation_get_position(annotation);
-  PopplerRectangle rectangle = { 0, 10, 0, 10 };
+  PopplerRectangle rectangle;
+  rectangle.x1 = position.x1 - (ANNOTATION_ICON_SIZE / 2);
+  rectangle.x2 = position.x2 + (ANNOTATION_ICON_SIZE / 2);
+  rectangle.y1 = zathura_page_get_height(page) - position.y1 + (ANNOTATION_ICON_SIZE / 2);
+  rectangle.y2 = zathura_page_get_height(page) - position.y2 - (ANNOTATION_ICON_SIZE / 2);
 
+  /* create new annotation */
   PopplerAnnot* poppler_annotation = poppler_annot_text_new(poppler_document, &rectangle);
 
   return poppler_annotation;
