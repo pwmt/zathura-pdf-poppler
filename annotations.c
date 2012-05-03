@@ -79,6 +79,25 @@ static const zathura_poppler_text_state_t zathura_poppler_text_state_mapping[] =
  { POPPLER_ANNOT_TEXT_STATE_COMPLETED, ZATHURA_ANNOTATION_TEXT_STATE_COMPLETED }
 };
 
+typedef struct zathura_poppler_flag_s {
+  PopplerAnnotFlag poppler;
+  zathura_annotation_flag_t zathura;
+} zathura_poppler_flag_t;
+
+static const zathura_poppler_flag_t zathura_poppler_flag_mapping[] = {
+ { POPPLER_ANNOT_FLAG_UNKNOWN,         ZATHURA_ANNOTATION_FLAG_UNKNOWN },
+ { POPPLER_ANNOT_FLAG_INVISIBLE,       ZATHURA_ANNOTATION_FLAG_INVISIBLE },
+ { POPPLER_ANNOT_FLAG_HIDDEN,          ZATHURA_ANNOTATION_FLAG_HIDDEN },
+ { POPPLER_ANNOT_FLAG_PRINT,           ZATHURA_ANNOTATION_FLAG_PRINT },
+ { POPPLER_ANNOT_FLAG_NO_ZOOM,         ZATHURA_ANNOTATION_FLAG_NO_ZOOM },
+ { POPPLER_ANNOT_FLAG_NO_ROTATE,       ZATHURA_ANNOTATION_FLAG_NO_ROTATE },
+ { POPPLER_ANNOT_FLAG_NO_VIEW,         ZATHURA_ANNOTATION_FLAG_NO_VIEW },
+ { POPPLER_ANNOT_FLAG_READ_ONLY,       ZATHURA_ANNOTATION_FLAG_READ_ONLY },
+ { POPPLER_ANNOT_FLAG_LOCKED,          ZATHURA_ANNOTATION_FLAG_LOCKED },
+ { POPPLER_ANNOT_FLAG_TOGGLE_NO_VIEW,  ZATHURA_ANNOTATION_FLAG_TOGGLE_NO_VIEW },
+ { POPPLER_ANNOT_FLAG_LOCKED_CONTENTS, ZATHURA_ANNOTATION_FLAG_LOCKED_CONTENTS }
+};
+
 #define ANNOTATION_ICON_SIZE 15
 
 static zathura_annotation_t*
@@ -98,6 +117,10 @@ static zathura_annotation_text_state_t
 poppler_get_zathura_text_state(PopplerAnnotTextState state);
 static PopplerAnnotTextState
 zathura_get_poppler_text_state(zathura_annotation_text_state_t state);
+static zathura_annotation_flag_t
+poppler_get_zathura_flags(PopplerAnnotFlag poppler_flags);
+static PopplerAnnotFlag
+zathura_get_poppler_flags(zathura_annotation_flag_t flags);
 
 girara_list_t*
 pdf_page_get_annotations(zathura_page_t* page, PopplerPage* poppler_page,
@@ -177,8 +200,10 @@ zathura_annotation_from_poppler_annotation(zathura_page_t* page, PopplerAnnotMap
   zathura_annotation_set_content(annotation, poppler_annot_get_contents(poppler_annotation));
   zathura_annotation_set_page(annotation,    page);
   zathura_annotation_set_data(annotation,    poppler_annotation);
-  /*zathura_annotation_set_flags();*/
   /*zathura_annotation_set_modified();*/
+
+  zathura_annotation_flag_t flags = poppler_get_zathura_flags(poppler_annot_get_flags(poppler_annotation));
+  zathura_annotation_set_flags(annotation, flags);
 
   zathura_rectangle_t position;
   position.x1 = mapping->area.x1;
@@ -416,4 +441,32 @@ zathura_get_poppler_text_state(zathura_annotation_text_state_t state)
   }
 
   return POPPLER_ANNOT_TEXT_STATE_UNKNOWN;
+}
+
+static zathura_annotation_flag_t
+poppler_get_zathura_flags(PopplerAnnotFlag poppler_flags)
+{
+  zathura_annotation_flag_t flags = ZATHURA_ANNOTATION_FLAG_UNKNOWN;
+
+  for (unsigned int i = 0; i < LENGTH(zathura_poppler_flag_mapping); i++) {
+    if (zathura_poppler_text_state_mapping[i].poppler & flags) {
+      flags ^= zathura_poppler_text_state_mapping[i].zathura;
+    }
+  }
+
+  return flags;
+}
+
+static PopplerAnnotFlag
+zathura_get_poppler_flags(zathura_annotation_flag_t flags)
+{
+  PopplerAnnotFlag poppler_flags = POPPLER_ANNOT_FLAG_UNKNOWN;
+
+  for (unsigned int i = 0; i < LENGTH(zathura_poppler_flag_mapping); i++) {
+    if (zathura_poppler_text_state_mapping[i].zathura & flags) {
+      poppler_flags ^= zathura_poppler_text_state_mapping[i].poppler;
+    }
+  }
+
+  return poppler_flags;
 }
