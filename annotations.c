@@ -87,7 +87,28 @@ zathura_annotation_from_poppler_annotation(zathura_page_t* page, PopplerAnnot* p
     PopplerAnnotMarkup* annot_markup = POPPLER_ANNOT_MARKUP(poppler_annotation);
     PopplerRectangle annot_rectangle;
 
+    zathura_annotation_markup_set_subject(annotation, poppler_annot_markup_get_subject(annot_markup));
+    zathura_annotation_markup_set_label(annotation,   poppler_annot_markup_get_label(annot_markup));
+
+    /* popup */
     if (poppler_annot_markup_get_popup_rectangle(annot_markup, &annot_rectangle) == TRUE) {
+      zathura_annotation_popup_t* popup = zathura_annotation_popup_new();
+      if (popup == NULL) {
+        zathura_annotation_free(annotation);
+        return NULL;
+      }
+
+      zathura_rectangle_t rectangle;
+      rectangle.x1 = annot_rectangle.x1;
+      rectangle.x2 = annot_rectangle.x2;
+      rectangle.y1 = zathura_page_get_height(page) - annot_rectangle.y2;
+      rectangle.y2 = zathura_page_get_height(page) - annot_rectangle.y1;
+
+      zathura_annotation_popup_set_position(popup,    rectangle);
+      zathura_annotation_popup_set_open_status(popup, poppler_annot_markup_get_popup_is_open(annot_markup));
+      zathura_annotation_popup_set_opacity(popup,     poppler_annot_markup_get_opacity(annot_markup));
+
+      zathura_annotation_markup_set_popup(annotation, popup);
     }
   }
 
