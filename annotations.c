@@ -121,6 +121,8 @@ static zathura_annotation_flag_t
 poppler_get_zathura_flags(PopplerAnnotFlag poppler_flags);
 static PopplerAnnotFlag
 zathura_get_poppler_flags(zathura_annotation_flag_t flags);
+static time_t time_from_string(char* date);
+static char* time_to_string(time_t time);
 
 girara_list_t*
 pdf_page_get_annotations(zathura_page_t* page, PopplerPage* poppler_page,
@@ -200,7 +202,9 @@ zathura_annotation_from_poppler_annotation(zathura_page_t* page, PopplerAnnotMap
   zathura_annotation_set_content(annotation, poppler_annot_get_contents(poppler_annotation));
   zathura_annotation_set_page(annotation,    page);
   zathura_annotation_set_data(annotation,    poppler_annotation);
-  /*zathura_annotation_set_modified();*/
+
+  time_t modification_date = time_from_string(poppler_annot_get_modified(poppler_annotation));
+  zathura_annotation_set_modification_date(annotation, modification_date);
 
   zathura_annotation_flag_t flags = poppler_get_zathura_flags(poppler_annot_get_flags(poppler_annotation));
   zathura_annotation_set_flags(annotation, flags);
@@ -293,34 +297,33 @@ poppler_annotation_from_zathura_annotation(zathura_page_t* page,
   /* create new annotation */
   PopplerAnnot* poppler_annotation = poppler_annot_text_new(poppler_document, &rectangle);
 
-  /* set icon */
+  /* set basic annotation information */
+  char* content = zathura_annotation_get_content(annotation);
+  poppler_annot_set_contents(poppler_annotation, content);
+
+  /* there are no methods available to neither set the page index, the flags,
+   * the modification date nor the name of annotation */
+
+  /* set text annotation information
+   * poppler does not provide a method to set the state */
   zathura_annotation_text_icon_t icon = zathura_annotation_text_get_icon(annotation);
   if (icon != ZATHURA_ANNOTATION_TEXT_ICON_UNKNOWN) {
     const char* poppler_icon = zathura_get_poppler_text_icon(icon);
     poppler_annot_text_set_icon(POPPLER_ANNOT_TEXT(poppler_annotation), poppler_icon);
   }
 
-  /* set state */
-  /* TODO: poppler does not provide a set method right now */
-  /*zathura_annotation_text_state_t state = zathura_annotation_text_get_state(annotation);*/
-
-  /* set open status */
   bool opened = zathura_annotation_text_get_open_status(annotation);
   poppler_annot_text_set_is_open(POPPLER_ANNOT_TEXT(poppler_annotation), (opened
         == true) ? TRUE : FALSE);
 
-  /* set markup information */
+  /* set markup annotation information */
   if (POPPLER_IS_ANNOT_MARKUP(poppler_annotation) == TRUE
       && zathura_annotation_get_type(annotation) == ZATHURA_ANNOTATION_MARKUP) {
-    /* set label */
+
     char* label = zathura_annotation_markup_get_label(annotation);
     if (label != NULL) {
       poppler_annot_markup_set_label(POPPLER_ANNOT_MARKUP(poppler_annotation), label);
     }
-
-    /* set creation date */
-    /* TODO: poppler does not provide a set method right now */
-    /*time_t creation_date = zathura_annotation_markup_get_creation_date(annotation);*/
 
     zathura_annotation_popup_t* popup = zathura_annotation_markup_get_popup(annotation);
     if (popup != NULL) {
@@ -469,4 +472,19 @@ zathura_get_poppler_flags(zathura_annotation_flag_t flags)
   }
 
   return poppler_flags;
+}
+
+static time_t
+time_from_string(char* date)
+{
+  /* TODO: Implement */
+  time_t time = 0;
+
+  return time;
+}
+
+static char*
+time_to_string(time_t time)
+{
+  return NULL;
 }
