@@ -60,7 +60,6 @@ static const zathura_poppler_annotation_type_t zathura_poppler_annotation_type_m
   { POPPLER_ANNOT_TRAP_NET,        ZATHURA_ANNOTATION_TRAP_NET },
   { POPPLER_ANNOT_WATERMARK,       ZATHURA_ANNOTATION_WATERMARK },
   { POPPLER_ANNOT_3D,              ZATHURA_ANNOTATION_3D },
-  { POPPLER_ANNOT_TEXT,            ZATHURA_ANNOTATION_MARKUP }
 };
 
 typedef struct zathura_poppler_text_state_s {
@@ -217,7 +216,7 @@ zathura_annotation_from_poppler_annotation(zathura_page_t* page, PopplerAnnotMap
   zathura_annotation_set_position(annotation, position);
 
   /* set type specific values */
-  if (type == ZATHURA_ANNOTATION_MARKUP) {
+  if (zathura_annotation_is_markup_annotation(annotation) == true) {
     PopplerAnnotMarkup* annot_markup = POPPLER_ANNOT_MARKUP(poppler_annotation);
 
     zathura_annotation_markup_set_subject(annotation, poppler_annot_markup_get_subject(annot_markup));
@@ -248,7 +247,7 @@ zathura_annotation_from_poppler_annotation(zathura_page_t* page, PopplerAnnotMap
     }
   }
 
-  if (type == ZATHURA_ANNOTATION_MARKUP || type == ZATHURA_ANNOTATION_TEXT) {
+  if (type == ZATHURA_ANNOTATION_TEXT) {
     PopplerAnnotText* annot_text = POPPLER_ANNOT_TEXT(poppler_annotation);
 
     zathura_annotation_text_icon_t icon = poppler_get_zathura_text_icon(
@@ -318,7 +317,7 @@ poppler_annotation_from_zathura_annotation(zathura_page_t* page,
 
   /* set markup annotation information */
   if (POPPLER_IS_ANNOT_MARKUP(poppler_annotation) == TRUE
-      && zathura_annotation_get_type(annotation) == ZATHURA_ANNOTATION_MARKUP) {
+      && zathura_annotation_is_markup_annotation(annotation) == true) {
 
     char* label = zathura_annotation_markup_get_label(annotation);
     if (label != NULL) {
@@ -356,11 +355,6 @@ poppler_annot_get_zathura_annot_type(PopplerAnnot* poppler_annotation)
 {
   if (poppler_annotation == NULL) {
     return ZATHURA_ANNOTATION_UNKNOWN;
-  }
-
-  /* exception */
-  if (POPPLER_IS_ANNOT_MARKUP(poppler_annotation) == TRUE) {
-    return ZATHURA_ANNOTATION_MARKUP;
   }
 
   PopplerAnnotType type = poppler_annot_get_annot_type(poppler_annotation);
