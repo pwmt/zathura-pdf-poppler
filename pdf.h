@@ -189,16 +189,38 @@ girara_list_t* pdf_page_get_annotations(zathura_page_t* page, PopplerPage* poppl
     zathura_error_t* error);
 
 /**
- * Sets the list of annotations
+ * Adds an annotation to the page
  *
  * @param page Page
  * @param poppler_page The poppler page
- * @param annotations List of annotations
+ * @param annotation The annotation
  * @return ZATHURA_ERROR_OK when no error occured, otherwise see
  *    zathura_error_t
  */
-zathura_error_t pdf_page_set_annotations(zathura_page_t* page, PopplerPage*
-    poppler_page, girara_list_t* annotations);
+zathura_error_t pdf_page_add_annotation(zathura_page_t* page, PopplerPage*
+    poppler_page, zathura_annotation_t* annotation);
+
+/**
+ * Removes an annotation from the page
+ *
+ * @param page Page
+ * @param poppler_page The poppler page
+ * @param annotation The annotation
+ * @return ZATHURA_ERROR_OK when no error occured, otherwise see
+ *    zathura_error_t
+ */
+zathura_error_t pdf_page_remove_annotation(zathura_page_t* page, PopplerPage*
+    poppler_page, zathura_annotation_t* annotation);
+
+/**
+ * Removes an annotation from the page
+ *
+ * @param page Page
+ * @param poppler_page The poppler page
+ * @param annotation The annotation
+ * @return ZATHURA_ERROR_OK when no error occured, otherwise see
+ *    zathura_error_t
+ */
 
 #if !POPPLER_CHECK_VERSION(0,18,0)
 /**
