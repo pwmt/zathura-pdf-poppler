@@ -268,8 +268,8 @@ zathura_annotation_from_poppler_annotation(zathura_page_t* page, PopplerAnnotMap
     zathura_annotation_text_set_icon(annotation, icon);
 
     PopplerAnnotTextState poppler_state = poppler_annot_text_get_state(annot_text);
-    int flags = poppler_get_zathura_text_state(poppler_state);
-    zathura_annotation_text_set_flags(annotation, flags);
+    zathura_annotation_text_state_t state = poppler_get_zathura_text_state(poppler_state);
+    zathura_annotation_text_set_state(annotation, state);
   }
 
   return annotation;
