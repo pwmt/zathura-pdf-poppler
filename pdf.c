@@ -30,10 +30,17 @@ poppler_link_to_zathura_link(PopplerDocument* poppler_document, PopplerAction*
   switch (poppler_action->type) {
     case POPPLER_ACTION_GOTO_DEST: {
       PopplerDest* poppler_destination = poppler_action->goto_dest.dest;
+      if (poppler_destination == NULL) {
+        return NULL;
+      }
+
       type = ZATHURA_LINK_GOTO_DEST;
 
       if (poppler_action->goto_dest.dest->type == POPPLER_DEST_NAMED) {
         poppler_destination = poppler_document_find_dest(poppler_document, poppler_destination->named_dest);
+        if (poppler_destination == NULL) {
+          return NULL;
+        }
       }
 
       PopplerPage* poppler_page = poppler_document_get_page(poppler_document, poppler_destination->page_num);
