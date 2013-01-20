@@ -2,7 +2,7 @@
 
 VERSION_MAJOR = 0
 VERSION_MINOR = 2
-VERSION_REV = 1
+VERSION_REV = 2
 VERSION = ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_REV}
 
 # minimum required zathura version
@@ -15,8 +15,8 @@ PREFIX ?= /usr
 LIBDIR ?= ${PREFIX}/lib
 
 # libs
-GTK_INC ?= $(shell pkg-config --cflags gtk+-${ZATHURA_GTK_VERSION}.0)
-GTK_LIB ?= $(shell pkg-config --libs gtk+-${ZATHURA_GTK_VERSION}.0)
+CAIRO_INC ?= $(shell pkg-config --cflags cairo)
+CAIRO_LIB ?= $(shell pkg-config --libs cairo)
 
 PDF_INC ?= $(shell pkg-config --cflags poppler-glib)
 PDF_LIB ?= $(shell pkg-config --libs poppler-glib)
@@ -30,8 +30,8 @@ ifeq (,${PLUGINDIR})
 PLUGINDIR = ${LIBDIR}/zathura
 endif
 
-INCS = ${GTK_INC} ${PDF_INC} ${ZATHURA_INC} ${GIRARA_INC}
-LIBS = ${GIRARA_LIB} ${GTK_LIB} ${PDF_LIB}
+INCS = ${CAIRO_INC} ${PDF_INC} ${ZATHURA_INC} ${GIRARA_INC}
+LIBS = ${GIRARA_LIB} ${CAIRO_LIB} ${PDF_LIB}
 
 # flags
 CFLAGS += -std=c99 -fPIC -pedantic -Wall -Wno-format-zero-length $(INCS)
