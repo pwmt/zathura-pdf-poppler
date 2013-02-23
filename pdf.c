@@ -820,8 +820,8 @@ pdf_page_render(zathura_page_t* page, PopplerPage* poppler_page,
 
   /* calculate sizes */
   double scale             = zathura_document_get_scale(document);
-  unsigned int page_width  = scale * zathura_page_get_width(page);
-  unsigned int page_height = scale * zathura_page_get_height(page);
+  unsigned int page_width  = ceil(scale * zathura_page_get_width(page));
+  unsigned int page_height = ceil(scale * zathura_page_get_height(page));
 
   /* create pixbuf */
   GdkPixbuf* pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8,
