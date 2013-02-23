@@ -28,6 +28,9 @@ poppler_link_to_zathura_link(PopplerDocument* poppler_document, PopplerAction*
 
   /* extract link */
   switch (poppler_action->type) {
+    case POPPLER_ACTION_NONE:
+      type = ZATHURA_LINK_NONE;
+      break;
     case POPPLER_ACTION_GOTO_DEST: {
       PopplerDest* poppler_destination = poppler_action->goto_dest.dest;
       if (poppler_destination == NULL) {
