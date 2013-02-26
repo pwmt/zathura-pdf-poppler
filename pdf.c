@@ -46,7 +46,7 @@ poppler_link_to_zathura_link(PopplerDocument* poppler_document, PopplerAction*
         }
       }
 
-      PopplerPage* poppler_page = poppler_document_get_page(poppler_document, poppler_destination->page_num);
+      PopplerPage* poppler_page = poppler_document_get_page(poppler_document, poppler_destination->page_num - 1);
       double height = 0;
       poppler_page_get_size(poppler_page, NULL, &height);
 
