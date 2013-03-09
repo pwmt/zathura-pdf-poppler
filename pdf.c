@@ -54,9 +54,15 @@ poppler_link_to_zathura_link(PopplerDocument* poppler_document, PopplerAction*
         case POPPLER_DEST_XYZ:
           target.destination_type = ZATHURA_LINK_DESTINATION_XYZ;
           target.page_number      = poppler_destination->page_num - 1;
-          target.scale            = poppler_destination->zoom;
-          target.left             = poppler_destination->left;
-          target.top              = height - MIN(height, poppler_destination->top);
+          if (poppler_destination->change_zoom != 0) {
+            target.scale          = poppler_destination->zoom;
+          }
+          if (poppler_destination->change_left != 0) {
+            target.left           = poppler_destination->left;
+          }
+          if (poppler_destination->change_top != 0) {
+            target.top            = height - MIN(height, poppler_destination->top);
+          }
           break;
         case POPPLER_DEST_FIT:
           target.destination_type = ZATHURA_LINK_DESTINATION_FIT;
@@ -65,18 +71,26 @@ poppler_link_to_zathura_link(PopplerDocument* poppler_document, PopplerAction*
         case POPPLER_DEST_FITH:
           target.destination_type = ZATHURA_LINK_DESTINATION_FITH;
           target.page_number      = poppler_destination->page_num - 1;
-          target.top              = height - MIN(height, poppler_destination->top);
+          if (poppler_destination->change_top != 0) {
+            target.top            = height - MIN(height, poppler_destination->top);
+          }
           break;
         case POPPLER_DEST_FITV:
           target.destination_type = ZATHURA_LINK_DESTINATION_FITV;
           target.page_number      = poppler_destination->page_num - 1;
-          target.left             = poppler_destination->left;
+          if (poppler_destination->change_left != 0) {
+            target.left           = poppler_destination->left;
+          }
           break;
         case POPPLER_DEST_FITR:
           target.destination_type = ZATHURA_LINK_DESTINATION_FITR;
           target.page_number      = poppler_destination->page_num - 1;
-          target.left             = poppler_destination->left;
-          target.top              = height - MIN(height, poppler_destination->top);
+          if (poppler_destination->change_left != 0) {
+            target.left           = poppler_destination->left;
+          }
+          if (poppler_destination->change_top != 0) {
+            target.top            = height - MIN(height, poppler_destination->top);
+          }
           target.right            = poppler_destination->right;
           target.bottom           = height - MIN(height, poppler_destination->bottom);
           break;
@@ -87,7 +101,9 @@ poppler_link_to_zathura_link(PopplerDocument* poppler_document, PopplerAction*
         case POPPLER_DEST_FITBH:
           target.destination_type = ZATHURA_LINK_DESTINATION_FITBH;
           target.page_number      = poppler_destination->page_num - 1;
-          target.top              = height - MIN(height, poppler_destination->top);
+          if (poppler_destination->change_top != 0) {
+            target.top            = height - MIN(height, poppler_destination->top);
+          }
           break;
         case POPPLER_DEST_FITBV:
           target.destination_type = ZATHURA_LINK_DESTINATION_FITBV;
