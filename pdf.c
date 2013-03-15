@@ -573,7 +573,7 @@ pdf_document_get_information(zathura_document_t* document, PopplerDocument*
     if (tmp != NULL) {
       string_value = g_strndup(tmp, strlen(tmp) - 1);
       zathura_document_information_entry_t* entry = zathura_document_information_entry_new(
-          string_values[i].type, string_value);
+          time_values[i].type, string_value);
       if (entry != NULL) {
         girara_list_append(list, entry);
       }
