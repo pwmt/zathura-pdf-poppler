@@ -13,6 +13,7 @@ ZATHURA_GTK_VERSION ?= $(shell pkg-config --variable=GTK_VERSION zathura)
 # paths
 PREFIX ?= /usr
 LIBDIR ?= ${PREFIX}/lib
+DESKTOPPREFIX ?= ${PREFIX}/share/applications
 
 # libs
 CAIRO_INC ?= $(shell pkg-config --cflags cairo)
