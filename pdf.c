@@ -242,11 +242,6 @@ error_free:
       g_free(file_uri);
     }
 
-    if (poppler_document != NULL) {
-      g_free(poppler_document);
-      zathura_document_set_data(document, NULL);
-    }
-
   return error;
 }
 
