@@ -531,7 +531,7 @@ pdf_document_get_information(zathura_document_t* document, PopplerDocument*
 
   /* get string values */
   typedef struct info_value_s {
-    char* property;
+    const char* property;
     zathura_document_information_type_t type;
   } info_value_t;
 
@@ -560,11 +560,13 @@ pdf_document_get_information(zathura_document_t* document, PopplerDocument*
     { "mod-date",      ZATHURA_DOCUMENT_INFORMATION_MODIFICATION_DATE }
   };
 
-  char* tmp;
-  time_t time_value;
   for (unsigned int i = 0; i < LENGTH(time_values); i++) {
-    g_object_get(poppler_document, string_values[i].property, &time_value, NULL);
-    tmp = ctime(&time_value);
+    /* the properties stored in PopplerDocument are gints */
+    gint time_value;
+    g_object_get(poppler_document, time_values[i].property, &time_value, NULL);
+    /* but we need time_ts */
+    time_t r_time_value = time_value;
+    char* tmp = ctime(&r_time_value);
     if (tmp != NULL) {
       string_value = g_strndup(tmp, strlen(tmp) - 1);
       zathura_document_information_entry_t* entry = zathura_document_information_entry_new(
