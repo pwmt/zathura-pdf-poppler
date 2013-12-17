@@ -46,6 +46,7 @@ pdf_page_search_text(zathura_page_t* page, PopplerPage* poppler_page, const
     rectangle->y2 = zathura_page_get_height(page) - poppler_rectangle->y1;
 
     girara_list_append(list, rectangle);
+    poppler_rectangle_free(poppler_rectangle);
   }
 
   g_list_free(results);
