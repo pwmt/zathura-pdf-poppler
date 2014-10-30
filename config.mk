@@ -1,51 +1,77 @@
 # See LICENSE file for license and copyright information
 
+PROJECT  = zathura-pdf-poppler
+PLUGIN   = pdf
+
 VERSION_MAJOR = 0
 VERSION_MINOR = 2
 VERSION_REV = 5
 VERSION = ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_REV}
 
 # minimum required zathura version
-ZATHURA_MIN_VERSION = 0.2.0
-ZATHURA_VERSION_CHECK ?= $(shell pkg-config --atleast-version=$(ZATHURA_MIN_VERSION) zathura; echo $$?)
-ZATHURA_GTK_VERSION ?= $(shell pkg-config --variable=GTK_VERSION zathura)
+LIBZATHURA_MIN_VERSION = 0.0.1
+LIBZATHURA_VERSION_CHECK ?= $(shell pkg-config --atleast-version=$(LIBZATHURA_MIN_VERSION) libzathura; echo $$?)
 
 # paths
 PREFIX ?= /usr
 LIBDIR ?= ${PREFIX}/lib
+DEPENDDIR=.depend
+BUILDDIR=build
+BUILDDIR_RELEASE=${BUILDDIR}/release
+BUILDDIR_DEBUG=${BUILDDIR}/debug
+BUILDDIR_GCOV=${BUILDDIR}/gcov
 DESKTOPPREFIX ?= ${PREFIX}/share/applications
+PLUGINDIR ?= $(shell pkg-config --variable=plugindir libzathura)
+TARFILE = ${PROJECT}-${VERSION}.tar.gz
+TARDIR = ${PROJECT}-${VERSION}
 
 # libs
 CAIRO_INC ?= $(shell pkg-config --cflags cairo)
 CAIRO_LIB ?= $(shell pkg-config --libs cairo)
 
-PDF_INC ?= $(shell pkg-config --cflags poppler-glib)
-PDF_LIB ?= $(shell pkg-config --libs poppler-glib)
+POPPLER_INC ?= $(shell pkg-config --cflags poppler-glib)
+POPPLER_LIB ?= $(shell pkg-config --libs poppler-glib)
 
-GIRARA_INC ?= $(shell pkg-config --cflags girara-gtk${ZATHURA_GTK_VERSION})
-GIRARA_LIB ?= $(shell pkg-config --libs girara-gtk${ZATHURA_GTK_VERSION})
+LIBZATHURA_INC ?= $(shell pkg-config --cflags libzathura)
+LIBZATHURA_LIB ?= $(shell pkg-config --libs libzathura)
 
-ZATHURA_INC ?= $(shell pkg-config --cflags zathura)
-PLUGINDIR ?= $(shell pkg-config --variable=plugindir zathura)
-ifeq (,${PLUGINDIR})
-PLUGINDIR = ${LIBDIR}/zathura
-endif
-
-INCS = ${CAIRO_INC} ${PDF_INC} ${ZATHURA_INC} ${GIRARA_INC}
-LIBS = ${GIRARA_LIB} ${CAIRO_LIB} ${PDF_LIB}
+INCS = ${POPPLER_INC} ${LIBZATHURA_INC}
+LIBS = ${POPPLER_LIB} ${LIBZATHURA_LIB}
 
 # flags
-CFLAGS += -std=c99 -fPIC -pedantic -Wall -Wno-format-zero-length $(INCS)
+CFLAGS += -std=c99 -pedantic -Wall -Wextra -fPIC $(INCS)
+
+# linker flags
+LDFLAGS += -fPIC
 
 # debug
 DFLAGS ?= -g
 
-# build with cairo support?
-WITH_CAIRO ?= 1
-
 # compiler
 CC ?= gcc
-LD ?= ld
+
+# strip
+SFLAGS ?= -s
+
+# gcov & lcov
+GCOV_CFLAGS=-fprofile-arcs -ftest-coverage
+GCOV_LDFLAGS=-fprofile-arcs
+LCOV_OUTPUT=gcov
+LCOV_EXEC=lcov
+LCOV_FLAGS=--base-directory . --directory ${BUILDDIR_GCOV} --capture --rc \
+					 lcov_branch_coverage=1 --output-file ${BUILDDIR_GCOV}/$(PROJECT).info
+GENHTML_EXEC=genhtml
+GENHTML_FLAGS=--rc lcov_branch_coverage=1 --output-directory ${LCOV_OUTPUT} ${BUILDDIR_GCOV}/$(PROJECT).info
+
+# cairo support
+WITH_CAIRO ?= 1
+
+# libfiu
+WITH_LIBFIU ?= 1
+FIU_RUN ?= fiu-run -x
 
 # set to something != 0 if you want verbose build output
 VERBOSE ?= 0
+
+# enable colors
+COLOR ?= 1
