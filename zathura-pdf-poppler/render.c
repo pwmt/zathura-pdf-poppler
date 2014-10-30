@@ -6,6 +6,7 @@
 #error "Cannot render without cairo and poppler >= 0.18"
 #endif
 
+#if 0
 #ifdef HAVE_CAIRO
 zathura_error_t
 pdf_page_render_cairo(zathura_page_t* page, PopplerPage* poppler_page, cairo_t*
@@ -91,4 +92,5 @@ pdf_page_render(zathura_page_t* page, PopplerPage* poppler_page,
 
   return image_buffer;
 }
+#endif
 #endif

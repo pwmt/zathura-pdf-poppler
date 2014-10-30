@@ -3,6 +3,7 @@
 #include "plugin.h"
 #include "utils.h"
 
+#if 0
 static void build_index(PopplerDocument* poppler_document, girara_tree_node_t*
     root, PopplerIndexIter* iter);
 
@@ -77,3 +78,4 @@ build_index(PopplerDocument* poppler_document, girara_tree_node_t* root, Poppler
 
   } while (poppler_index_iter_next(iter));
 }
+#endif

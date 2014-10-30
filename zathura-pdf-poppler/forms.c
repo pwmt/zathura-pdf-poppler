@@ -2,12 +2,14 @@
 
 #include "plugin.h"
 
-girara_list_t*
-pdf_page_form_fields_get(zathura_page_t* page, PopplerPage* poppler_page,
-    zathura_error_t* error)
+#if 0
+zathura_error_t
+pdf_page_get_form_fields_t(zathura_page_t* page, zathura_list_t** form_fields)
 {
-  if (error != NULL) {
-    *error = ZATHURA_ERROR_NOT_IMPLEMENTED;
+  if (page == NULL || form_fields == NULL) {
+    return ZATHURA_ERROR_INVALID_ARGUMENTS;
   }
-  return NULL;
+
+  return ZATHURA_ERROR_PLUGIN_NOT_IMPLEMENTED;
 }
+#endif

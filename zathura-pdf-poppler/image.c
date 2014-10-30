@@ -3,6 +3,7 @@
 #include "plugin.h"
 #include "utils.h"
 
+#if 0
 static void pdf_zathura_image_free(zathura_image_t* image);
 
 girara_list_t*
@@ -119,3 +120,4 @@ pdf_zathura_image_free(zathura_image_t* image)
 
   g_free(image);
 }
+#endif

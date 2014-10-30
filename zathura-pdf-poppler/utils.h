@@ -5,6 +5,7 @@
 
 #include "plugin.h"
 
+#if 0
 /**
  * Convert a poppler link object to a zathura link object
  *
@@ -16,5 +17,6 @@
  */
 zathura_link_t* poppler_link_to_zathura_link(PopplerDocument* poppler_document,
     PopplerAction* poppler_action, zathura_rectangle_t position);
+#endif
 
 #endif // UTILS_H

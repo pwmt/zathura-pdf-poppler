@@ -2,6 +2,7 @@
 
 #include "plugin.h"
 
+#if 0
 zathura_error_t
 pdf_page_init(zathura_page_t* page)
 {
@@ -49,3 +50,4 @@ pdf_page_clear(zathura_page_t* page, PopplerPage* poppler_page)
 
   return ZATHURA_ERROR_OK;
 }
+#endif

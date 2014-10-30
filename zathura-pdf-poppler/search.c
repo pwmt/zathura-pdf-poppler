@@ -4,6 +4,7 @@
 
 #include "plugin.h"
 
+#if 0
 girara_list_t*
 pdf_page_search_text(zathura_page_t* page, PopplerPage* poppler_page, const
     char* text, zathura_error_t* error)
@@ -66,3 +67,4 @@ error_ret:
 
   return NULL;
 }
+#endif

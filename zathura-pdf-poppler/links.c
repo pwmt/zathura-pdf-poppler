@@ -3,6 +3,7 @@
 #include "plugin.h"
 #include "utils.h"
 
+#if 0
 girara_list_t*
 pdf_page_links_get(zathura_page_t* page, PopplerPage* poppler_page, zathura_error_t* error)
 {
@@ -72,3 +73,4 @@ error_ret:
 
   return NULL;
 }
+#endif

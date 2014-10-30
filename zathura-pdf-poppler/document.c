@@ -3,6 +3,7 @@
 #include "plugin.h"
 #include "utils.h"
 
+#if 0
 zathura_error_t
 pdf_document_open(zathura_document_t* document)
 {
@@ -62,6 +63,8 @@ pdf_document_free(zathura_document_t* document, PopplerDocument* poppler_documen
     return ZATHURA_ERROR_INVALID_ARGUMENTS;
   }
 
+  PopplerDocument* poppler_document = zathura_document_get_data(
+
   if (poppler_document != NULL) {
     g_object_unref(poppler_document);
     zathura_document_set_data(document, NULL);
@@ -83,3 +86,4 @@ pdf_document_save_as(zathura_document_t* document, PopplerDocument* poppler_docu
 
   return (ret == true ? ZATHURA_ERROR_OK : ZATHURA_ERROR_UNKNOWN);
 }
+#endif

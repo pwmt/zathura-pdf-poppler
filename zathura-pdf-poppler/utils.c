@@ -2,6 +2,7 @@
 
 #include "utils.h"
 
+#if 0
 zathura_link_t*
 poppler_link_to_zathura_link(PopplerDocument* poppler_document, PopplerAction*
     poppler_action, zathura_rectangle_t position)
@@ -126,3 +127,4 @@ poppler_link_to_zathura_link(PopplerDocument* poppler_document, PopplerAction*
 
   return zathura_link_new(type, position, target);
 }
+#endif

@@ -6,6 +6,7 @@
 
 #define LENGTH(x) (sizeof(x)/sizeof((x)[0]))
 
+#if 0
 girara_list_t*
 pdf_document_get_information(zathura_document_t* document, PopplerDocument*
     poppler_document, zathura_error_t* error)
@@ -73,3 +74,4 @@ pdf_document_get_information(zathura_document_t* document, PopplerDocument*
 
   return list;
 }
+#endif

@@ -4,6 +4,7 @@
 
 #include "plugin.h"
 
+#if 0
 girara_list_t*
 pdf_document_attachments_get(zathura_document_t* document, PopplerDocument* poppler_document, zathura_error_t* error)
 {
@@ -70,3 +71,4 @@ pdf_document_attachment_save(zathura_document_t* document,
 
   return ZATHURA_ERROR_OK;
 }
+#endif
