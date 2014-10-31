@@ -1,6 +1,8 @@
 /* See LICENSE file for license and copyright information */
 
 #include <check.h>
+#include <stdio.h>
+#include <glib/gstdio.h>
 
 #include <libzathura/plugin-manager.h>
 #include <libzathura/plugin-api.h>
@@ -41,6 +43,24 @@ START_TEST(test_pdf_document_free) {
   fail_unless(pdf_document_free(NULL) == ZATHURA_ERROR_INVALID_ARGUMENTS);
 } END_TEST
 
+START_TEST(test_pdf_document_save_as) {
+  /* basic invalid arguments */
+  fail_unless(pdf_document_save_as(NULL, NULL)     == ZATHURA_ERROR_INVALID_ARGUMENTS);
+  fail_unless(pdf_document_save_as(document, NULL) == ZATHURA_ERROR_INVALID_ARGUMENTS);
+  fail_unless(pdf_document_save_as(document, "")   == ZATHURA_ERROR_INVALID_ARGUMENTS);
+
+  /* valid arguments */
+  char* path;
+  gint file_handle;
+  if ((file_handle = g_file_open_tmp(NULL, &path, NULL)) != -1) {
+    fail_unless(pdf_document_save_as(document, path) == ZATHURA_ERROR_OK);
+    close(file_handle);
+
+    g_remove(path);
+    g_free(path);
+  }
+} END_TEST
+
 Suite*
 suite_document(void)
 {
@@ -51,6 +71,11 @@ suite_document(void)
   tcase_add_checked_fixture(tcase, setup_document, teardown_document);
   tcase_add_test(tcase, test_pdf_document_open);
   tcase_add_test(tcase, test_pdf_document_free);
+  suite_add_tcase(suite, tcase);
+
+  tcase = tcase_create("save-as");
+  tcase_add_checked_fixture(tcase, setup_document, teardown_document);
+  tcase_add_test(tcase, test_pdf_document_save_as);
   suite_add_tcase(suite, tcase);
 
   return suite;
