@@ -8,6 +8,7 @@
 #include <libzathura/plugin-api.h>
 
 #include "plugin.h"
+#include "utils.h"
 
 zathura_document_t* document;
 zathura_plugin_manager_t* plugin_manager;
@@ -15,7 +16,7 @@ zathura_plugin_manager_t* plugin_manager;
 static void setup_document(void) {
   fail_unless(zathura_plugin_manager_new(&plugin_manager) == ZATHURA_ERROR_OK);
   fail_unless(plugin_manager != NULL);
-  fail_unless(zathura_plugin_manager_load(plugin_manager, "../build/gcov/pdf.so") == ZATHURA_ERROR_OK);
+  fail_unless(zathura_plugin_manager_load(plugin_manager, get_plugin_path()) == ZATHURA_ERROR_OK);
 
   zathura_plugin_t* plugin = NULL;
   fail_unless(zathura_plugin_manager_get_plugin(plugin_manager, &plugin, "application/pdf") == ZATHURA_ERROR_OK);
