@@ -1,6 +1,7 @@
 /* See LICENSE file for license and copyright information */
 
 #include <string.h>
+#include <stdio.h>
 
 #include "plugin.h"
 #include "utils.h"

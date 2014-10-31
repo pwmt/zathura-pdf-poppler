@@ -1,0 +1,4 @@
+# binaries
+tests
+tests-debug
+tests-gcov

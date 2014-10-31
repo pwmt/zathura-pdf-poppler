@@ -52,7 +52,7 @@ ${BUILDDIR_RELEASE}/%.o: %.c
 
 ${PLUGIN}.so: ${OBJECTS}
 	$(call colorecho,LD,$@)
-	$(QUIET)${CC} -Wl,-soname,${PROJECT}.so -shared ${LDFLAGS} \
+	$(QUIET)${CC} -shared ${LDFLAGS} \
 		-o ${BUILDDIR_RELEASE}/$@ ${OBJECTS} ${LIBS}
 
 # debug build
@@ -68,7 +68,7 @@ ${BUILDDIR_DEBUG}/%.o: %.c
 
 ${PLUGIN}-debug.so: ${OBJECTS_DEBUG}
 	$(call colorecho,LD,${PLUGIN}-debug.so)
-	$(QUIET)${CC} -Wl,-soname,${PROJECT}.so -shared ${LDFLAGS} \
+	$(QUIET)${CC} -shared ${LDFLAGS} \
 		-o ${BUILDDIR_DEBUG}/${PLUGIN}.so ${OBJECTS_DEBUG} ${LIBS}
 
 debug: options ${PLUGIN}-debug.so
@@ -86,7 +86,7 @@ ${BUILDDIR_GCOV}/%.o: %.c
 
 ${PLUGIN}-gcov.so: ${OBJECTS_GCOV}
 	$(call colorecho,LD,${PLUGIN}-gcov.so)
-	$(QUIET)${CC} -Wl,-soname,${PROJECT}.so -shared ${LDFLAGS} \
+	$(QUIET)${CC} -shared ${LDFLAGS} \
 		-o ${BUILDDIR_GCOV}/${PLUGIN}.so ${OBJECTS_GCOV} ${LIBS}
 
 gcov: options ${PLUGIN}-gcov.so
