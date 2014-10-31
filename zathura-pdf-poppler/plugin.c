@@ -8,8 +8,8 @@ register_functions(zathura_plugin_functions_t* functions)
   functions->document_open            = (zathura_plugin_document_open_t) pdf_document_open;
   functions->document_free            = (zathura_plugin_document_free_t) pdf_document_free;
   functions->document_save_as         = (zathura_plugin_document_save_as_t) pdf_document_save_as;
-#if 0
   functions->document_get_outline     = (zathura_plugin_document_get_outline_t) pdf_document_get_outline;
+#if 0
   functions->document_get_attachments = (zathura_plugin_document_get_attachments_t) pdf_document_get_attachments;
   functions->document_get_metadata    = (zathura_plugin_document_get_metadata_t) pdf_document_get_metadata;
 #endif

@@ -2,6 +2,13 @@
 
 #include "utils.h"
 
+zathura_error_t
+poppler_action_to_zathura_action(PopplerDocument* poppler_document,
+    PopplerAction* poppler_action, zathura_action_t** action)
+{
+  return ZATHURA_ERROR_OK;
+}
+
 #if 0
 zathura_link_t*
 poppler_link_to_zathura_link(PopplerDocument* poppler_document, PopplerAction*
