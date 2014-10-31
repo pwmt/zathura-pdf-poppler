@@ -3,7 +3,7 @@
 *~
 .depend
 *.so
-*.swp
+*.sw[a-z]
 zathura-version-check
 tags
 compile_commands.json
