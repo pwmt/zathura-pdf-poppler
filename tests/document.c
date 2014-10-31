@@ -6,6 +6,7 @@
 
 #include <libzathura/plugin-manager.h>
 #include <libzathura/plugin-api.h>
+#include <libzathura/libzathura.h>
 
 #include "plugin.h"
 #include "utils.h"
@@ -80,9 +81,36 @@ START_TEST(test_pdf_document_get_outline_does_not_exist) {
   fail_unless(pdf_document_get_outline(document, &outline) == ZATHURA_ERROR_DOCUMENT_OUTLINE_DOES_NOT_EXIST);
 } END_TEST
 
+static void compare_outline_element(zathura_node_t* node, const char* title)
+{
+  fail_unless(node != NULL);
+  zathura_outline_element_t* element = zathura_node_get_data(node);
+  const char* tmp_title;
+  fail_unless(zathura_outline_element_get_title(element, &tmp_title) == ZATHURA_ERROR_OK);
+  fail_unless(strcmp(title, tmp_title) == 0);
+}
+
 START_TEST(test_pdf_document_get_outline_simple) {
   zathura_node_t* outline;
   fail_unless(pdf_document_get_outline(document, &outline) == ZATHURA_ERROR_OK);
+
+  /* check number of root childs */
+  unsigned int number_of_children =
+    zathura_node_get_number_of_children(outline);
+  fail_unless(number_of_children == 2);
+
+  zathura_node_t* node = zathura_node_get_nth_child(outline, 0);
+  compare_outline_element(node, "Heading 1");
+
+  node = zathura_node_get_nth_child(outline, 1);
+  compare_outline_element(node, "Heading 2");
+
+  number_of_children = zathura_node_get_number_of_children(node);
+  fail_unless(number_of_children == 1);
+  node = zathura_node_get_nth_child(node, 0);
+  compare_outline_element(node, "Heading 2.1");
+
+  fail_unless(zathura_outline_free(outline) == ZATHURA_ERROR_OK);
 } END_TEST
 
 Suite*
