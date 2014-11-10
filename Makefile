@@ -20,7 +20,7 @@ CPPFLAGS += "-DVERSION_MAJOR=${VERSION_MAJOR}"
 CPPFLAGS += "-DVERSION_MINOR=${VERSION_MINOR}"
 CPPFLAGS += "-DVERSION_REV=${VERSION_REV}"
 
-all: options ${PLUGIN}.so
+all: options ${BUILDDIR_RELEASE}/${PLUGIN}.so
 
 options:
 ifeq "$(VERBOSE)" "1"
@@ -50,10 +50,10 @@ ${BUILDDIR_RELEASE}/%.o: %.c
 	$(QUIET)${CC} -c ${CPPFLAGS} ${CFLAGS} \
 		-o $@ $< -MMD -MF ${DEPENDDIR}/$(abspath $@).dep
 
-${PLUGIN}.so: ${OBJECTS}
+${BUILDDIR_RELEASE}/${PLUGIN}.so: ${OBJECTS}
 	$(call colorecho,LD,$@)
 	$(QUIET)${CC} -shared ${LDFLAGS} \
-		-o ${BUILDDIR_RELEASE}/$@ ${OBJECTS} ${LIBS}
+		-o ${BUILDDIR_RELEASE}/${PLUGIN}.so ${OBJECTS} ${LIBS}
 
 # debug build
 
@@ -66,12 +66,12 @@ ${BUILDDIR_DEBUG}/%.o: %.c
 	$(QUIET)${CC} -c ${CPPFLAGS} ${CFLAGS} ${DFLAGS} \
 		-o $@ $< -MMD -MF ${DEPENDDIR}/$(abspath $@).dep
 
-${PLUGIN}-debug.so: ${OBJECTS_DEBUG}
-	$(call colorecho,LD,${PLUGIN}-debug.so)
+${BUILDDIR_DEBUG}/${PLUGIN}.so: ${OBJECTS_DEBUG}
+	$(call colorecho,LD,${PLUGIN}.so)
 	$(QUIET)${CC} -shared ${LDFLAGS} \
 		-o ${BUILDDIR_DEBUG}/${PLUGIN}.so ${OBJECTS_DEBUG} ${LIBS}
 
-debug: options ${PLUGIN}-debug.so
+debug: options ${BUILDDIR_DEBUG}/${PLUGIN}.so
 
 # gcov build
 
@@ -84,12 +84,12 @@ ${BUILDDIR_GCOV}/%.o: %.c
 	$(QUIET)${CC} -c ${CPPFLAGS} ${CFLAGS} ${DFLAGS} \
 		-o $@ $< -MMD -MF ${DEPENDDIR}/$(abspath $@).dep
 
-${PLUGIN}-gcov.so: ${OBJECTS_GCOV}
-	$(call colorecho,LD,${PLUGIN}-gcov.so)
+${BUILDDIR_GCOV}/${PLUGIN}.so: ${OBJECTS_GCOV}
+	$(call colorecho,LD,${PLUGIN}.so)
 	$(QUIET)${CC} -shared ${LDFLAGS} \
 		-o ${BUILDDIR_GCOV}/${PLUGIN}.so ${OBJECTS_GCOV} ${LIBS}
 
-gcov: options ${PLUGIN}-gcov.so
+gcov: options ${BUILDDIR_GCOV}/${PLUGIN}.so
 	$(QUIET)${MAKE} -C tests run-gcov
 	$(call colorecho,LCOV,"Analyse data")
 	$(QUIET)${LCOV_EXEC} ${LCOV_FLAGS}

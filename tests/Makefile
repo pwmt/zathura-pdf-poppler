@@ -38,7 +38,7 @@ options:
 # release
 
 ${PROJECT}: options ${OBJECTS}
-	$(QUIET)${MAKE} WITH_LIBFIU=1 -C .. ${PLUGIN}.so
+	$(QUIET)${MAKE} WITH_LIBFIU=1 -C .. ${BUILDDIR_RELEASE}/${PLUGIN}.so
 	$(call colorecho,CC,$@)
 	$(QUIET)${CC} ${SFLAGS} ${LDFLAGS} -o $@ \
 		${OBJECTS} ${LIBS} ${PLUGIN_RELEASE}
@@ -60,7 +60,7 @@ run: ${PROJECT}
 debug: options ${PROJECT}-debug
 
 ${PROJECT}-debug: ${OBJECTS_DEBUG}
-	$(QUIET)${MAKE} WITH_LIBFIU=1 -C .. ${PLUGIN}-debug.so
+	$(QUIET)${MAKE} WITH_LIBFIU=1 -C .. ${BUILDDIR_DEBUG}/${PLUGIN}.so
 	$(call colorecho,CC,$@)
 	$(QUIET)${CC} ${LDFLAGS} -o $@ \
 		${OBJECTS_DEBUG} ${LIBS} ${PLUGIN_DEBUG}
@@ -82,7 +82,7 @@ run-debug: ${PROJECT}-debug
 gcov: options ${PROJECT}-gcov
 
 ${PROJECT}-gcov: options ${OBJECTS_GCOV}
-	$(QUIET)${MAKE} WITH_LIBFIU=1 -C .. ${PLUGIN}-gcov.so
+	$(QUIET)${MAKE} WITH_LIBFIU=1 -C .. ${BUILDDIR_GCOV}/${PLUGIN}.so
 	$(call colorecho,CC,$@)
 	$(QUIET)${CC} ${LDFLAGS} ${GCOV_LDFLAGS} -o $@ \
 		${OBJECTS_GCOV} ${LIBS} ${PLUGIN_GCOV}
