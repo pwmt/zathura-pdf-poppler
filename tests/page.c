@@ -42,6 +42,22 @@ START_TEST(test_pdf_page_clear) {
   fail_unless(pdf_page_clear(NULL) == ZATHURA_ERROR_INVALID_ARGUMENTS);
 } END_TEST
 
+START_TEST(test_pdf_page_get_width) {
+  zathura_page_t* page;
+  fail_unless(zathura_document_get_page(document, 0, &page) == ZATHURA_ERROR_OK);
+  unsigned int width;
+  fail_unless(zathura_page_get_width(page, &width) == ZATHURA_ERROR_OK);
+  fail_unless(width == 595);
+} END_TEST
+
+START_TEST(test_pdf_page_get_height) {
+  zathura_page_t* page;
+  fail_unless(zathura_document_get_page(document, 0, &page) == ZATHURA_ERROR_OK);
+  unsigned int height;
+  fail_unless(zathura_page_get_height(page, &height) == ZATHURA_ERROR_OK);
+  fail_unless(height == 842);
+} END_TEST
+
 Suite*
 suite_page(void)
 {
@@ -52,6 +68,8 @@ suite_page(void)
   tcase_add_checked_fixture(tcase, setup_document, teardown_document);
   tcase_add_test(tcase, test_pdf_page_init);
   tcase_add_test(tcase, test_pdf_page_clear);
+  tcase_add_test(tcase, test_pdf_page_get_width);
+  tcase_add_test(tcase, test_pdf_page_get_height);
   suite_add_tcase(suite, tcase);
 
   return suite;
