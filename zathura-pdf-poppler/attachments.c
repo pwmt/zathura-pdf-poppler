@@ -4,25 +4,41 @@
 #include <girara/utils.h>
 
 #include "plugin.h"
+#include "macros.h"
 
-static void add_attachment(PopplerAttachment* poppler_attachment, zathura_list_t* list)
+zathura_error_t pdf_attachment_save(zathura_attachment_t* UNUSED(attachment), const char* path, void* user_data)
+{
+    if (poppler_attachment_save((PopplerAttachment*) user_data, path, NULL) ==
+        FALSE) {
+      return ZATHURA_ERROR_UNKNOWN;
+    }
+
+    return ZATHURA_ERROR_OK;
+}
+
+static void add_attachment(PopplerAttachment* poppler_attachment, zathura_list_t** list)
 {
   zathura_attachment_t* attachment;
   if (zathura_attachment_new(&attachment) != ZATHURA_ERROR_OK) {
     goto error_out;
   }
 
-  if (zathura_attachment_set_name(attachment, poppler_attachment->name) 
+  if (zathura_attachment_set_name(attachment, poppler_attachment->name)
       != ZATHURA_ERROR_OK) {
     goto error_free;
   }
 
-  if (zathura_attachment_set_data(attachment, poppler_attachment) 
+  if (zathura_attachment_set_user_data(attachment, poppler_attachment)
       != ZATHURA_ERROR_OK) {
     goto error_free;
   }
 
-  zathura_list_append(list, attachment);
+  if (zathura_attachment_set_save_function(attachment, pdf_attachment_save) !=
+      ZATHURA_ERROR_OK) {
+    goto error_free;
+  }
+
+  *list = zathura_list_append(*list, attachment);
 
   return;
 
@@ -54,13 +70,10 @@ pdf_document_get_attachments(zathura_document_t* document, zathura_list_t** atta
     return ZATHURA_ERROR_DOCUMENT_HAS_NO_ATTACHMENTS;
   }
 
-  *attachments = zathura_list_alloc();
-  if (*attachments == NULL) {
-    return ZATHURA_ERROR_OUT_OF_MEMORY;
-  }
+  *attachments = NULL;
 
   GList* attachment_list = poppler_document_get_attachments(poppler_document);
-  zathura_list_foreach(attachment_list, (GFunc) add_attachment, *attachments);
+  zathura_list_foreach(attachment_list, (GFunc) add_attachment, attachments);
 
   return error;
 }

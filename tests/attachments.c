@@ -38,6 +38,26 @@ START_TEST(test_pdf_document_get_attachments_invalid) {
 START_TEST(test_pdf_document_get_attachments) {
   zathura_list_t* attachments;
   fail_unless(pdf_document_get_attachments(document, &attachments) == ZATHURA_ERROR_OK);
+  fail_unless(zathura_list_length(attachments) == 1);
+} END_TEST
+
+START_TEST(test_pdf_document_save_attachment) {
+  zathura_list_t* attachments;
+  fail_unless(pdf_document_get_attachments(document, &attachments) == ZATHURA_ERROR_OK);
+  fail_unless(zathura_list_length(attachments) == 1);
+
+  zathura_attachment_t* attachment = zathura_list_nth_data(attachments, 0);
+  fail_unless(attachment != NULL);
+
+  char* path;
+  gint file_handle;
+  if ((file_handle = g_file_open_tmp(NULL, &path, NULL)) != -1) {
+    fail_unless(zathura_attachment_save(attachment, path) == ZATHURA_ERROR_OK);
+    close(file_handle);
+
+    g_remove(path);
+    g_free(path);
+  }
 } END_TEST
 
 Suite*
@@ -54,6 +74,7 @@ suite_attachments(void)
   tcase = tcase_create("has-attachment");
   tcase_add_checked_fixture(tcase, setup_document_attachments, teardown_document);
   tcase_add_test(tcase, test_pdf_document_get_attachments);
+  tcase_add_test(tcase, test_pdf_document_save_attachment);
   suite_add_tcase(suite, tcase);
 
   return suite;
