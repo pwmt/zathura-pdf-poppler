@@ -10,9 +10,7 @@ register_functions(zathura_plugin_functions_t* functions)
   functions->document_save_as         = (zathura_plugin_document_save_as_t) pdf_document_save_as;
   functions->document_get_outline     = (zathura_plugin_document_get_outline_t) pdf_document_get_outline;
   functions->document_get_attachments = (zathura_plugin_document_get_attachments_t) pdf_document_get_attachments;
-#if 0
   functions->document_get_metadata    = (zathura_plugin_document_get_metadata_t) pdf_document_get_metadata;
-#endif
 
   functions->page_init                = (zathura_plugin_page_init_t) pdf_page_init;
   functions->page_clear               = (zathura_plugin_page_clear_t) pdf_page_clear;

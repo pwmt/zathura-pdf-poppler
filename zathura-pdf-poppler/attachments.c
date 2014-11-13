@@ -77,34 +77,3 @@ pdf_document_get_attachments(zathura_document_t* document, zathura_list_t** atta
 
   return error;
 }
-
-#if 0
-zathura_error_t
-pdf_document_attachment_save(zathura_document_t* document,
-    PopplerDocument* poppler_document, const char* attachmentname, const char* file)
-{
-  if (document == NULL || poppler_document == NULL) {
-    return ZATHURA_ERROR_INVALID_ARGUMENTS;
-  }
-
-  if (poppler_document_has_attachments(poppler_document) == FALSE) {
-    girara_warning("PDF file has no attachments");
-    return ZATHURA_ERROR_INVALID_ARGUMENTS;
-  }
-
-
-  GList* attachment_list = poppler_document_get_attachments(poppler_document);
-  GList* attachments;
-
-  for (attachments = attachment_list; attachments; attachments = g_list_next(attachments)) {
-    PopplerAttachment* attachment = (PopplerAttachment*) attachments->data;
-    if (g_strcmp0(attachment->name, attachmentname) != 0) {
-      continue;
-    }
-
-    return poppler_attachment_save(attachment, file, NULL);
-  }
-
-  return ZATHURA_ERROR_OK;
-}
-#endif
