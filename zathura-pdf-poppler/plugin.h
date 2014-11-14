@@ -21,7 +21,7 @@ zathura_error_t pdf_document_get_metadata(zathura_document_t* document, zathura_
 
 zathura_error_t pdf_page_init(zathura_page_t* page);
 zathura_error_t pdf_page_clear(zathura_page_t* page);
-zathura_error_t pdf_page_search_text(zathura_page_t* page, const char* text, zathura_list_t** results);
+zathura_error_t pdf_page_search_text(zathura_page_t* page, const char* text, zathura_search_flag_t flags, zathura_list_t** results);
 zathura_error_t pdf_page_get_text(zathura_page_t* page, char** text, zathura_rectangle_t rectangle);
 zathura_error_t pdf_page_get_links(zathura_page_t* page, zathura_list_t** links);
 zathura_error_t pdf_page_get_form_fields(zathura_page_t* page, zathura_list_t** form_fields);
