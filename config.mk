@@ -35,6 +35,9 @@ POPPLER_LIB ?= $(shell pkg-config --libs poppler-glib)
 LIBZATHURA_INC ?= $(shell pkg-config --cflags libzathura)
 LIBZATHURA_LIB ?= $(shell pkg-config --libs libzathura)
 
+FIU_INC ?= $(shell pkg-config --cflags libfiu)
+FIU_LIB ?= $(shell pkg-config --libs libfiu)
+
 INCS = ${POPPLER_INC} ${LIBZATHURA_INC}
 LIBS = ${POPPLER_LIB} ${LIBZATHURA_LIB}
 

@@ -1,7 +1,10 @@
 /* See LICENSE file for license and copyright information */
 
 #include <check.h>
+#include <fiu.h>
+#include <fiu-control.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <glib/gstdio.h>
 
 #include <libzathura/plugin-manager.h>
@@ -66,6 +69,14 @@ START_TEST(test_pdf_page_search_text_default) {
     zathura_rectangle_t* rectangle = zathura_list_nth_data(results, i);
     compare_rectangle(rectangle, &result_rectangles[i]);
   }
+
+  zathura_list_free_full(results, free);
+
+  /* fault injection */
+  fiu_enable("libc/mm/calloc", 1, NULL, 0);
+  fail_unless(pdf_page_search_text(page, "abc", ZATHURA_SEARCH_DEFAULT, &results) == ZATHURA_ERROR_OUT_OF_MEMORY);
+  fail_unless(results == NULL);
+  fiu_disable("libc/mm/calloc");
 } END_TEST
 
 START_TEST(test_pdf_page_search_text_case_sensitive) {
@@ -84,6 +95,8 @@ START_TEST(test_pdf_page_search_text_case_sensitive) {
     zathura_rectangle_t* rectangle = zathura_list_nth_data(results, i);
     compare_rectangle(rectangle, &result_rectangles[i]);
   }
+
+  zathura_list_free_full(results, free);
 } END_TEST
 
 START_TEST(test_pdf_page_search_text_case_whole_words) {
@@ -108,6 +121,8 @@ START_TEST(test_pdf_page_search_text_case_whole_words) {
     zathura_rectangle_t* rectangle = zathura_list_nth_data(results, i);
     compare_rectangle(rectangle, &result_rectangles[i]);
   }
+
+  zathura_list_free_full(results, free);
 } END_TEST
 
 Suite*

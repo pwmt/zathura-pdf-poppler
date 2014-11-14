@@ -46,7 +46,7 @@ zathura_error_t pdf_page_search_text(zathura_page_t* page, const char* text,
     zathura_rectangle_t* rectangle = calloc(1, sizeof(zathura_rectangle_t));
     if (rectangle == NULL) {
       error = ZATHURA_ERROR_OUT_OF_MEMORY;
-      goto error_out;
+      goto error_free;
     }
 
     rectangle->p1.x = poppler_rectangle->x1;
@@ -58,6 +58,13 @@ zathura_error_t pdf_page_search_text(zathura_page_t* page, const char* text,
   }
 
   *results = zathura_list_reverse(*results);
+
+  return error;
+
+error_free:
+
+  zathura_list_free_full(*results, free);
+  *results = NULL;
 
 error_out:
 
