@@ -9,6 +9,7 @@ Suite* suite_outline(void);
 Suite* suite_attachments(void);
 Suite* suite_metadata(void);
 Suite* suite_search(void);
+Suite* suite_select(void);
 
 int main(void)
 {
@@ -27,6 +28,7 @@ int main(void)
   srunner_add_suite(suite_runner, suite_attachments());
   srunner_add_suite(suite_runner, suite_metadata());
   srunner_add_suite(suite_runner, suite_search());
+  srunner_add_suite(suite_runner, suite_select());
 
   int number_failed = 0;
   srunner_run_all(suite_runner, CK_ENV);

@@ -15,8 +15,8 @@ register_functions(zathura_plugin_functions_t* functions)
   functions->page_init                = (zathura_plugin_page_init_t) pdf_page_init;
   functions->page_clear               = (zathura_plugin_page_clear_t) pdf_page_clear;
   functions->page_search_text         = (zathura_plugin_page_search_text_t) pdf_page_search_text;
-#if 0
   functions->page_get_text            = (zathura_plugin_page_get_text_t) pdf_page_get_text;
+#if 0
   functions->page_get_links           = (zathura_plugin_page_get_links_t) pdf_page_get_links;
   functions->page_get_form_fields     = (zathura_plugin_page_get_form_fields_t) pdf_page_get_form_fields;
   functions->page_get_images          = (zathura_plugin_page_get_images_t) pdf_page_get_images;

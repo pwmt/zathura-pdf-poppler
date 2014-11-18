@@ -6,31 +6,41 @@
 #define poppler_page_get_selected_text poppler_page_get_text
 #endif
 
-#if 0
-char*
-pdf_page_get_text(zathura_page_t* page, PopplerPage* poppler_page,
-    zathura_rectangle_t rectangle, zathura_error_t* error)
+zathura_error_t pdf_page_get_text(zathura_page_t* page, char** text, zathura_rectangle_t rectangle)
 {
-  if (page == NULL || poppler_page == NULL) {
-    if (error != NULL) {
-      *error = ZATHURA_ERROR_INVALID_ARGUMENTS;
-    }
-    return NULL;
+  if (page == NULL || text == NULL) {
+      return ZATHURA_ERROR_INVALID_ARGUMENTS;
+  }
+
+  zathura_error_t error = ZATHURA_ERROR_OK;
+
+  PopplerPage* poppler_page;
+  if ((error = zathura_page_get_data(page, (void**) &poppler_page)) != ZATHURA_ERROR_OK) {
+    goto error_out;
   }
 
   PopplerRectangle rect;
-  rect.x1 = rectangle.x1;
-  rect.x2 = rectangle.x2;
+  rect.x1 = rectangle.p1.x;
+  rect.x2 = rectangle.p2.x;
+
 #if !POPPLER_CHECK_VERSION(0,15,0)
   /* adapt y coordinates */
-  rect.y1 = zathura_page_get_height(page) - rectangle.y1;
-  rect.y2 = zathura_page_get_height(page) - rectangle.y2;
+  unsigned int page_height;
+  if ((error = zathura_page_get_height(page, &page_height)) != ZATHURA_ERROR_OK) {
+    goto error_out;
+  }
+
+  rect.y1 = height - rectangle.p1.y;
+  rect.y2 = height - rectangle.p2.y;
 #else
-  rect.y1 = rectangle.y1;
-  rect.y2 = rectangle.y2;
+  rect.y1 = rectangle.p1.y;
+  rect.y2 = rectangle.p2.y;
 #endif
 
   /* get selected text */
-  return poppler_page_get_selected_text(poppler_page, POPPLER_SELECTION_GLYPH, &rect);
+  *text = poppler_page_get_selected_text(poppler_page, POPPLER_SELECTION_GLYPH, &rect);
+
+error_out:
+
+  return error;
 }
-#endif

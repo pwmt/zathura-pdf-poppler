@@ -37,7 +37,7 @@ zathura_error_t pdf_page_search_text(zathura_page_t* page, const char* text,
   }
 
   unsigned int page_height;
-  if (zathura_page_get_height(page, &page_height) != ZATHURA_ERROR_OK) {
+  if ((error = zathura_page_get_height(page, &page_height)) != ZATHURA_ERROR_OK) {
     goto error_out;
   }
 
