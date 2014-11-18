@@ -33,13 +33,24 @@ static void teardown_document(void) {
 }
 
 START_TEST(test_pdf_page_get_text_invalid) {
-  zathura_rectangle_t rectangle;
-
-  fail_unless(pdf_page_get_text(NULL, NULL, rectangle) == ZATHURA_ERROR_INVALID_ARGUMENTS);
-  fail_unless(pdf_page_get_text(page, NULL, rectangle) == ZATHURA_ERROR_INVALID_ARGUMENTS);
+  fail_unless(pdf_page_get_text(NULL, NULL) == ZATHURA_ERROR_INVALID_ARGUMENTS);
+  fail_unless(pdf_page_get_text(page, NULL) == ZATHURA_ERROR_INVALID_ARGUMENTS);
 } END_TEST
 
 START_TEST(test_pdf_page_get_text_valid) {
+  char* text;
+  fail_unless(pdf_page_get_text(page, &text) == ZATHURA_ERROR_OK);
+  fail_unless(strcmp(text, "word") == 0);
+} END_TEST
+
+START_TEST(test_pdf_page_get_selected_text_invalid) {
+  zathura_rectangle_t rectangle;
+
+  fail_unless(pdf_page_get_selected_text(NULL, NULL, rectangle) == ZATHURA_ERROR_INVALID_ARGUMENTS);
+  fail_unless(pdf_page_get_selected_text(page, NULL, rectangle) == ZATHURA_ERROR_INVALID_ARGUMENTS);
+} END_TEST
+
+START_TEST(test_pdf_page_get_selected_text_valid) {
   unsigned int page_height;
   unsigned int page_width;
   fail_unless(zathura_page_get_height(page, &page_height) == ZATHURA_ERROR_OK);
@@ -48,12 +59,12 @@ START_TEST(test_pdf_page_get_text_valid) {
   char* text;
   zathura_rectangle_t rectangle = { {0,0}, {page_width,page_height}};
 
-  fail_unless(pdf_page_get_text(page, &text, rectangle) == ZATHURA_ERROR_OK);
+  fail_unless(pdf_page_get_selected_text(page, &text, rectangle) == ZATHURA_ERROR_OK);
   fail_unless(strcmp(text, "word") == 0);
 
   zathura_rectangle_t rectangle2 = { {0,0}, {0,0}};
 
-  fail_unless(pdf_page_get_text(page, &text, rectangle2) == ZATHURA_ERROR_OK);
+  fail_unless(pdf_page_get_selected_text(page, &text, rectangle2) == ZATHURA_ERROR_OK);
   fail_unless(strcmp(text, "") == 0);
 } END_TEST
 
@@ -67,6 +78,8 @@ suite_select(void)
   tcase_add_checked_fixture(tcase, setup_document_select, teardown_document);
   tcase_add_test(tcase, test_pdf_page_get_text_invalid);
   tcase_add_test(tcase, test_pdf_page_get_text_valid);
+  tcase_add_test(tcase, test_pdf_page_get_selected_text_invalid);
+  tcase_add_test(tcase, test_pdf_page_get_selected_text_valid);
   suite_add_tcase(suite, tcase);
 
   return suite;
