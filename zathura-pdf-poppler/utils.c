@@ -1,10 +1,11 @@
 /* See LICENSE file for license and copyright information */
 
 #include "utils.h"
+#include "macros.h"
 
 zathura_error_t
-poppler_action_to_zathura_action(PopplerDocument* poppler_document,
-    PopplerAction* poppler_action, zathura_action_t** action)
+poppler_action_to_zathura_action(PopplerDocument* UNUSED(poppler_document),
+    PopplerAction* UNUSED(poppler_action), zathura_action_t** UNUSED(action))
 {
   return ZATHURA_ERROR_OK;
 }
