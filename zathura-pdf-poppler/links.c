@@ -1,76 +1,92 @@
 /* See LICENSE file for license and copyright information */
 
+#include <stdlib.h>
+
 #include "plugin.h"
 #include "utils.h"
 
-#if 0
-girara_list_t*
-pdf_page_links_get(zathura_page_t* page, PopplerPage* poppler_page, zathura_error_t* error)
+zathura_error_t
+pdf_page_get_links(zathura_page_t* page, zathura_list_t** links)
 {
-  if (page == NULL || poppler_page == NULL) {
-    if (error != NULL) {
-      *error = ZATHURA_ERROR_INVALID_ARGUMENTS;
-    }
-    goto error_ret;
+  if (page == NULL || links == NULL) {
+    return ZATHURA_ERROR_INVALID_ARGUMENTS;
   }
 
-  girara_list_t* list = NULL;
-  GList* link_mapping = NULL;
+  zathura_error_t error = ZATHURA_ERROR_OK;
+  *links = NULL;
 
-  link_mapping = poppler_page_get_link_mapping(poppler_page);
+  zathura_document_t* document;
+  if ((error = zathura_page_get_document(page, &document)) != ZATHURA_ERROR_OK) {
+    goto error_out;
+  }
+
+  PopplerPage* poppler_page;
+  if ((error = zathura_page_get_data(page, (void**) &poppler_page)) != ZATHURA_ERROR_OK) {
+    goto error_out;
+  }
+
+  PopplerDocument* poppler_document;
+  if ((error = zathura_document_get_data(document, (void**) &poppler_document)) != ZATHURA_ERROR_OK
+      || poppler_document == NULL) {
+    goto error_out;
+  }
+
+  unsigned int page_height;
+  if ((error = zathura_page_get_height(page, &page_height)) != ZATHURA_ERROR_OK) {
+    goto error_out;
+  }
+
+  GList* link_mapping = poppler_page_get_link_mapping(poppler_page);
   if (link_mapping == NULL || g_list_length(link_mapping) == 0) {
-    if (error != NULL) {
-      *error = ZATHURA_ERROR_UNKNOWN;
-    }
+    error = ZATHURA_ERROR_UNKNOWN;
     goto error_free;
   }
+
   link_mapping = g_list_reverse(link_mapping);
 
-  list = girara_list_new2((girara_free_function_t) zathura_link_free);
-  if (list == NULL) {
-    if (error != NULL) {
-      *error = ZATHURA_ERROR_OUT_OF_MEMORY;
-    }
-    goto error_free;
-  }
-
-  zathura_document_t* zathura_document = (zathura_document_t*) zathura_page_get_document(page);
-  PopplerDocument* poppler_document    = zathura_document_get_data(zathura_document);
-
   for (GList* link = link_mapping; link != NULL; link = g_list_next(link)) {
-    PopplerLinkMapping* poppler_link       = (PopplerLinkMapping*) link->data;
+    PopplerLinkMapping* poppler_link = (PopplerLinkMapping*) link->data;
 
     /* extract position */
-    zathura_rectangle_t position = { 0, 0, 0, 0 };
-    position.x1 = poppler_link->area.x1;
-    position.x2 = poppler_link->area.x2;
-    position.y1 = zathura_page_get_height(page) - poppler_link->area.y2;
-    position.y2 = zathura_page_get_height(page) - poppler_link->area.y1;
+    zathura_rectangle_t position = { {0, 0}, {0, 0} };
+    position.p1.x = poppler_link->area.x1;
+    position.p2.x = poppler_link->area.x2;
+    position.p1.y = page_height - poppler_link->area.y2;
+    position.p2.y = page_height - poppler_link->area.y1;
 
-    zathura_link_t* zathura_link =
-      poppler_link_to_zathura_link(poppler_document, poppler_link->action,
-          position);
-    if (zathura_link != NULL) {
-      girara_list_append(list, zathura_link);
+    zathura_action_t* action = NULL;
+    if (poppler_action_to_zathura_action(poppler_document, poppler_link->action, &action)
+        != ZATHURA_ERROR_OK) {
+      continue;
     }
+
+    zathura_link_mapping_t* link_mapping = calloc(1, sizeof(zathura_link_mapping_t));
+    if (link_mapping == NULL) {
+      error = ZATHURA_ERROR_OUT_OF_MEMORY;
+      goto error_free;
+    }
+
+    link_mapping->position = position;
+    link_mapping->action = action;
+
+    *links = zathura_list_append(*links, link_mapping);
   }
 
   poppler_page_free_link_mapping(link_mapping);
 
-  return list;
+  return ZATHURA_ERROR_OK;
 
 error_free:
 
-  if (list != NULL) {
-    girara_list_free(list);
+  if (*links != NULL) {
+    zathura_list_free_full(*links, free);
   }
 
   if (link_mapping != NULL) {
     poppler_page_free_link_mapping(link_mapping);
   }
 
-error_ret:
+error_out:
 
-  return NULL;
+  return error;
 }
-#endif
