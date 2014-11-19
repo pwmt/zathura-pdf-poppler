@@ -74,7 +74,7 @@ ${BUILDDIR_DEBUG}/%.o: %.c
 	@mkdir -p ${DEPENDDIR}/$(dir $(abspath $@))
 	@mkdir -p $(dir $(abspath $@))
 	$(call colorecho,CC,$<)
-	$(QUIET)${CC} -c ${CPPFLAGS} ${CFLAGS} ${DFLAGS} \
+	$(QUIET)${CC} -c ${CPPFLAGS} -DBUILD_DEBUG=1 ${CFLAGS} ${DFLAGS} \
 		-o $@ $< -MMD -MF ${DEPENDDIR}/$(abspath $@).dep
 
 run-debug: ${PROJECT}-debug
@@ -96,7 +96,7 @@ ${BUILDDIR_GCOV}/%.o: %.c
 	@mkdir -p ${DEPENDDIR}/$(dir $(abspath $@))
 	@mkdir -p $(dir $(abspath $@))
 	$(call colorecho,CC,$<)
-	$(QUIET)${CC} -c ${CPPFLAGS} ${CFLAGS} ${GCOV_CFLAGS} ${DFLAGS} ${GCOV_DFLAGS} \
+	$(QUIET)${CC} -c ${CPPFLAGS} -DBUILD_GCOV=1 ${CFLAGS} ${GCOV_CFLAGS} ${DFLAGS} ${GCOV_DFLAGS} \
 		-o $@ $< -MMD -MF ${DEPENDDIR}/$(abspath $@).dep
 
 run-gcov: ${PROJECT}-gcov
