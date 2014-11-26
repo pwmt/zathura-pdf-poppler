@@ -130,6 +130,7 @@ poppler_form_field_to_zathura_form_field(PopplerFormField* poppler_form_field,
       {
         PopplerFormButtonType poppler_button_type = poppler_form_field_button_get_button_type(poppler_form_field);
         zathura_form_field_button_type_t button_type = ZATHURA_FORM_FIELD_BUTTON_TYPE_PUSH;
+
         switch (poppler_button_type) {
           case POPPLER_FORM_BUTTON_PUSH:
             button_type = ZATHURA_FORM_FIELD_BUTTON_TYPE_PUSH;
@@ -149,6 +150,65 @@ poppler_form_field_to_zathura_form_field(PopplerFormField* poppler_form_field,
         if ((error = zathura_form_field_button_set_state(*form_field,
                 (poppler_form_field_button_get_state(poppler_form_field) == TRUE) ? true : false))
             != ZATHURA_ERROR_OK) {
+          goto error_free;
+        }
+      }
+      break;
+    case POPPLER_FORM_FIELD_TEXT:
+      {
+        PopplerFormTextType poppler_text_type = poppler_form_field_text_get_text_type(poppler_form_field);
+        zathura_form_field_text_type_t text_type = ZATHURA_FORM_FIELD_TEXT_TYPE_NORMAL;
+
+        switch (poppler_text_type) {
+          case POPPLER_FORM_TEXT_NORMAL:
+            text_type = ZATHURA_FORM_FIELD_TEXT_TYPE_NORMAL;
+            break;
+          case POPPLER_FORM_TEXT_MULTILINE:
+            text_type = ZATHURA_FORM_FIELD_TEXT_TYPE_MULTILINE;
+            break;
+          case POPPLER_FORM_TEXT_FILE_SELECT:
+            text_type = ZATHURA_FORM_FIELD_TEXT_TYPE_FILE_SELECT;
+            break;
+        }
+
+        if ((error = zathura_form_field_text_set_type(*form_field, text_type)) != ZATHURA_ERROR_OK) {
+          goto error_free;
+        }
+
+        unsigned int max_length = (unsigned int) poppler_form_field_text_get_max_len(poppler_form_field);
+        if ((error = zathura_form_field_text_set_max_length(*form_field, max_length)) !=
+            ZATHURA_ERROR_OK) {
+          goto error_free;
+        }
+
+        gchar* text = poppler_form_field_text_get_text(poppler_form_field);
+        if (text != NULL && (error =
+              zathura_form_field_text_set_text(*form_field, text)) !=
+            ZATHURA_ERROR_OK) {
+          goto error_free;
+        }
+
+        bool do_scroll = (bool) poppler_form_field_text_do_scroll(poppler_form_field);
+        if ((error = zathura_form_field_text_set_scroll(*form_field, do_scroll)) !=
+            ZATHURA_ERROR_OK) {
+          goto error_free;
+        }
+
+        bool do_spell_check = (bool) poppler_form_field_text_do_spell_check(poppler_form_field);
+        if ((error = zathura_form_field_text_set_spell_check(*form_field, do_spell_check)) !=
+            ZATHURA_ERROR_OK) {
+          goto error_free;
+        }
+
+        bool is_password = (bool) poppler_form_field_text_is_password(poppler_form_field);
+        if ((error = zathura_form_field_text_set_password(*form_field, is_password)) !=
+            ZATHURA_ERROR_OK) {
+          goto error_free;
+        }
+
+        bool is_rich_text = (bool) poppler_form_field_text_is_rich_text(poppler_form_field);
+        if ((error = zathura_form_field_text_set_rich_text(*form_field, is_rich_text)) !=
+            ZATHURA_ERROR_OK) {
           goto error_free;
         }
       }
