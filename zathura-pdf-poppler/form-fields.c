@@ -93,7 +93,7 @@ poppler_form_field_to_zathura_form_field(PopplerFormField* poppler_form_field,
 
   /* create new form field */
   if ((error = zathura_form_field_new(form_field, zathura_type)) != ZATHURA_ERROR_OK) {
-    return error;
+    goto error_out;
   }
 
   /* set general properties */
@@ -125,6 +125,8 @@ poppler_form_field_to_zathura_form_field(PopplerFormField* poppler_form_field,
   }
 
   switch (zathura_type) {
+    case ZATHURA_FORM_FIELD_UNKNOWN:
+      break;
     /* button field */
     case ZATHURA_FORM_FIELD_BUTTON:
       {
@@ -154,7 +156,8 @@ poppler_form_field_to_zathura_form_field(PopplerFormField* poppler_form_field,
         }
       }
       break;
-    case POPPLER_FORM_FIELD_TEXT:
+    /* text field */
+    case ZATHURA_FORM_FIELD_TEXT:
       {
         PopplerFormTextType poppler_text_type = poppler_form_field_text_get_text_type(poppler_form_field);
         zathura_form_field_text_type_t text_type = ZATHURA_FORM_FIELD_TEXT_TYPE_NORMAL;
@@ -211,6 +214,77 @@ poppler_form_field_to_zathura_form_field(PopplerFormField* poppler_form_field,
             ZATHURA_ERROR_OK) {
           goto error_free;
         }
+      }
+      break;
+    /* choice field */
+    case ZATHURA_FORM_FIELD_CHOICE:
+      {
+        PopplerFormChoiceType poppler_choice_type = poppler_form_field_choice_get_choice_type(poppler_form_field);
+        zathura_form_field_choice_type_t choice_type = ZATHURA_FORM_FIELD_CHOICE_TYPE_COMBO;
+
+        switch (poppler_choice_type) {
+          case POPPLER_FORM_CHOICE_COMBO:
+            choice_type = ZATHURA_FORM_FIELD_CHOICE_TYPE_COMBO;
+            break;
+          case POPPLER_FORM_CHOICE_LIST:
+            choice_type = ZATHURA_FORM_FIELD_CHOICE_TYPE_LIST;
+            break;
+        }
+
+        if ((error = zathura_form_field_choice_set_type(*form_field, choice_type)) != ZATHURA_ERROR_OK) {
+          goto error_free;
+        }
+
+        bool can_select_multiple = (bool) poppler_form_field_choice_can_select_multiple(poppler_form_field);
+        if ((error = zathura_form_field_choice_set_multiselect(*form_field, can_select_multiple)) !=
+            ZATHURA_ERROR_OK) {
+          goto error_free;
+        }
+
+        bool is_editable = (bool) poppler_form_field_choice_is_editable(poppler_form_field);
+        if ((error = zathura_form_field_choice_set_editable(*form_field, is_editable)) !=
+            ZATHURA_ERROR_OK) {
+          goto error_free;
+        }
+
+        bool do_spell_check = (bool) poppler_form_field_choice_do_spell_check(poppler_form_field);
+        if ((error = zathura_form_field_choice_set_spell_check(*form_field, do_spell_check)) !=
+            ZATHURA_ERROR_OK) {
+          goto error_free;
+        }
+
+        zathura_list_t* items = NULL;
+        unsigned int number_of_items = poppler_form_field_choice_get_n_items(poppler_form_field);
+        for (unsigned int i = 0; i < number_of_items; i++) {
+          char* name = poppler_form_field_choice_get_item(poppler_form_field, i);
+
+          zathura_form_field_choice_item_t* item;
+          if ((error = zathura_form_field_choice_item_new(&item, name)) != ZATHURA_ERROR_OK) {
+            zathura_list_free_full(items, (GDestroyNotify) zathura_form_field_choice_item_free);
+            goto error_free;
+          }
+
+          gboolean is_item_selected = poppler_form_field_choice_is_item_selected(poppler_form_field, i);
+          if (is_item_selected == TRUE && (error = zathura_form_field_choice_item_select(item)) !=
+              ZATHURA_ERROR_OK) {
+            zathura_list_free_full(items, (GDestroyNotify) zathura_form_field_choice_item_free);
+            goto error_free;
+          }
+
+          items = zathura_list_append(items, item);
+        }
+
+        if ((error = zathura_form_field_choice_set_items(*form_field, items)) !=
+            ZATHURA_ERROR_OK) {
+          zathura_list_free_full(items, (GDestroyNotify) zathura_form_field_choice_item_free);
+          goto error_free;
+        }
+      }
+      break;
+    /* signature field */
+    case ZATHURA_FORM_FIELD_SIGNATURE:
+      {
+        error = ZATHURA_ERROR_PLUGIN_NOT_IMPLEMENTED;
       }
       break;
   }

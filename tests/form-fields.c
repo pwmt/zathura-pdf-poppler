@@ -45,7 +45,7 @@ START_TEST(test_pdf_page_get_form_fields_simple) {
   fail_unless(form_fields != NULL);
 
   unsigned int number_of_form_fields = zathura_list_length(form_fields);
-  fail_unless(number_of_form_fields == 2);
+  fail_unless(number_of_form_fields == 6);
   zathura_list_free_full(form_fields, free);
 } END_TEST
 
