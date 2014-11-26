@@ -1,6 +1,7 @@
 /* See LICENSE file for license and copyright information */
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "plugin.h"
 
@@ -41,12 +42,28 @@ pdf_page_get_form_fields(zathura_page_t* page, zathura_list_t** form_fields)
   }
 
   for (GList* form_field = form_field_mapping; form_field != NULL; form_field = g_list_next(form_field)) {
+    zathura_form_field_mapping_t* mapping = calloc(1, sizeof(zathura_form_field_mapping_t));
+    if (mapping == NULL) {
+      goto error_free;
+    }
+
     PopplerFormFieldMapping* poppler_form_field = (PopplerFormFieldMapping*) form_field->data;
     zathura_form_field_t* form_field;
     if (poppler_form_field_to_zathura_form_field(poppler_form_field->field,
-          &form_field) == ZATHURA_ERROR_OK) {
-      *form_fields = zathura_list_append(*form_fields, form_field);
+          &form_field) != ZATHURA_ERROR_OK) {
+      continue;
     }
+
+    zathura_rectangle_t position = { {0, 0}, {0, 0} };
+    position.p1.x = poppler_form_field->area.x1;
+    position.p2.x = poppler_form_field->area.x2;
+    position.p1.y = poppler_form_field->area.y2;
+    position.p2.y = poppler_form_field->area.y1;
+
+    mapping->position = position;
+    mapping->form_field = form_field;
+
+    *form_fields = zathura_list_append(*form_fields, mapping);
   }
 
   poppler_page_free_form_field_mapping(form_field_mapping);
