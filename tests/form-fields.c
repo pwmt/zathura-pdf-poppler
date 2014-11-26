@@ -46,7 +46,45 @@ START_TEST(test_pdf_page_get_form_fields_simple) {
 
   unsigned int number_of_form_fields = zathura_list_length(form_fields);
   fail_unless(number_of_form_fields == 6);
-  zathura_list_free_full(form_fields, free);
+
+  /* compare first form field */
+  zathura_form_field_t* form_field = zathura_list_nth_data(form_fields, 0);
+  fail_unless(form_field != NULL);
+
+  zathura_form_field_type_t type;
+  fail_unless(zathura_form_field_get_type(form_field, &type) == ZATHURA_ERROR_OK);
+  fail_unless(type == ZATHURA_FORM_FIELD_BUTTON);
+
+  zathura_form_field_button_type_t button_type;
+  fail_unless(zathura_form_field_button_get_type(form_field, &button_type) == ZATHURA_ERROR_OK);
+  fail_unless(button_type == ZATHURA_FORM_FIELD_BUTTON_TYPE_RADIO);
+
+  bool state;
+  fail_unless(zathura_form_field_button_get_state(form_field, &state) == ZATHURA_ERROR_OK);
+  fail_unless(state == false);
+
+  /* compare second form field */
+  form_field = zathura_list_nth_data(form_fields, 1);
+  fail_unless(form_field != NULL);
+
+  fail_unless(zathura_form_field_get_type(form_field, &type) == ZATHURA_ERROR_OK);
+  fail_unless(type == ZATHURA_FORM_FIELD_BUTTON);
+
+  fail_unless(zathura_form_field_button_get_type(form_field, &button_type) == ZATHURA_ERROR_OK);
+  fail_unless(button_type == ZATHURA_FORM_FIELD_BUTTON_TYPE_RADIO);
+
+  fail_unless(zathura_form_field_button_get_state(form_field, &state) == ZATHURA_ERROR_OK);
+  fail_unless(state == true);
+
+  /* compare third form field */
+  form_field = zathura_list_nth_data(form_fields, 2);
+  fail_unless(form_field != NULL);
+
+  fail_unless(zathura_form_field_get_type(form_field, &type) == ZATHURA_ERROR_OK);
+  fail_unless(type == ZATHURA_FORM_FIELD_CHOICE);
+
+  /* clean-up */
+  zathura_list_free_full(form_fields, zathura_form_field_free);
 } END_TEST
 
 Suite*
