@@ -4,8 +4,7 @@
 #include <stdio.h>
 
 #include "plugin.h"
-
-#define LENGTH(x) (sizeof(x)/sizeof((x)[0]))
+#include "utils.h"
 
 zathura_error_t
 pdf_document_get_metadata(zathura_document_t* document,
