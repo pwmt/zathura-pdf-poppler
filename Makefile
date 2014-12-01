@@ -33,15 +33,15 @@ endif
 
 # check libzathura version
 
-libzathura-version-check:
+${LIBZATHURA_VERSION_CHECK_FILE}:
 ifneq ($(LIBZATHURA_VERSION_CHECK), 0)
-	$(error "The minimum required version of zathura is ${LIBZATHURA_MIN_VERSION}")
+	$(error "The minimum required version of libzathura is ${LIBZATHURA_MIN_VERSION}")
 endif
-	$(QUIET)touch libzathura-version-check
+	$(QUIET)touch ${LIBZATHURA_VERSION_CHECK_FILE}
 
 # release build
 
-${OBJECTS}: config.mk libzathura-version-check
+${OBJECTS}: config.mk ${LIBZATHURA_VERSION_CHECK_FILE}
 
 ${BUILDDIR_RELEASE}/%.o: %.c
 	$(call colorecho,CC,$<)
@@ -57,7 +57,7 @@ ${BUILDDIR_RELEASE}/${PLUGIN}.so: ${OBJECTS}
 
 # debug build
 
-${OBJECTS_DEBUG}: config.mk libzathura-version-check
+${OBJECTS_DEBUG}: config.mk ${LIBZATHURA_VERSION_CHECK_FILE}
 
 ${BUILDDIR_DEBUG}/%.o: %.c
 	$(call colorecho,CC,$<)
@@ -75,7 +75,7 @@ debug: options ${BUILDDIR_DEBUG}/${PLUGIN}.so
 
 # gcov build
 
-${OBJECTS_GCOV}: config.mk libzathura-version-check
+${OBJECTS_GCOV}: config.mk ${LIBZATHURA_VERSION_CHECK_FILE}
 
 ${BUILDDIR_GCOV}/%.o: %.c
 	$(call colorecho,CC,$<)
@@ -101,7 +101,7 @@ gcov: options ${BUILDDIR_GCOV}/${PLUGIN}.so
 clean:
 	$(call colorecho,RM, "Clean objects and builds")
 	$(QUIET)rm -rf ${BUILDDIR}
-	$(QUIET)rm -rf libzathura-version-check
+	$(QUIET)rm -f ${LIBZATHURA_VERSION_CHECK_FILE}
 
 	$(call colorecho,RM, "Clean dependencies")
 	$(QUIET)rm -rf ${DEPENDDIR}

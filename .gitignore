@@ -1,10 +1,21 @@
-*.o
-*.do
+# build files
+*.info
+*.pc
 *~
+.libzathura-version-check
+
+# build dirs
 .depend
-*.so
+gcov/
+build/
+
+# development files
 *.sw[a-z]
-zathura-version-check
-tags
-compile_commands.json
+*.diff
 .ycm_extra_conf.*
+.clang_complete
+.lvimrc
+.ropeproject
+.frama-c
+compile_commands.json
+*.log

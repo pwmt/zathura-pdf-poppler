@@ -11,6 +11,7 @@ VERSION = ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_REV}
 # minimum required zathura version
 LIBZATHURA_MIN_VERSION = 0.0.1
 LIBZATHURA_VERSION_CHECK ?= $(shell pkg-config --atleast-version=$(LIBZATHURA_MIN_VERSION) libzathura; echo $$?)
+LIBZATHURA_VERSION_CHECK_FILE = .libzathura-version-check
 
 # paths
 PREFIX ?= /usr
