@@ -12,4 +12,7 @@
 zathura_error_t poppler_action_to_zathura_action(PopplerDocument*
     poppler_document, PopplerAction* poppler_action, zathura_action_t** action);
 
+zathura_error_t pdf_attachment_save(zathura_attachment_t* attachment, const
+    char* path, void* user_data);
+
 #endif // UTILS_H

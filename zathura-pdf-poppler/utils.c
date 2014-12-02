@@ -10,6 +10,17 @@ poppler_action_to_zathura_action(PopplerDocument* UNUSED(poppler_document),
   return ZATHURA_ERROR_OK;
 }
 
+zathura_error_t
+pdf_attachment_save(zathura_attachment_t* UNUSED(attachment), const char* path, void* user_data)
+{
+    if (poppler_attachment_save((PopplerAttachment*) user_data, path, NULL) ==
+        FALSE) {
+      return ZATHURA_ERROR_UNKNOWN;
+    }
+
+    return ZATHURA_ERROR_OK;
+}
+
 #if 0
 zathura_link_t*
 poppler_link_to_zathura_link(PopplerDocument* poppler_document, PopplerAction*

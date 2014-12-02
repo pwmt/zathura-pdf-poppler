@@ -5,16 +5,7 @@
 
 #include "plugin.h"
 #include "macros.h"
-
-zathura_error_t pdf_attachment_save(zathura_attachment_t* UNUSED(attachment), const char* path, void* user_data)
-{
-    if (poppler_attachment_save((PopplerAttachment*) user_data, path, NULL) ==
-        FALSE) {
-      return ZATHURA_ERROR_UNKNOWN;
-    }
-
-    return ZATHURA_ERROR_OK;
-}
+#include "utils.h"
 
 static void add_attachment(PopplerAttachment* poppler_attachment, zathura_list_t** list)
 {

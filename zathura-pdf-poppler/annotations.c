@@ -434,6 +434,50 @@ poppler_annotation_to_zathura_annotation(PopplerAnnot* poppler_annotation,
     case ZATHURA_ANNOTATION_POPUP:
       break;
     case ZATHURA_ANNOTATION_FILE_ATTACHMENT:
+      {
+        PopplerAnnotFileAttachment *poppler_annotation_file_attachment =
+          POPPLER_ANNOT_FILE_ATTACHMENT(poppler_annotation);
+
+        PopplerAttachment* poppler_attachment =
+          poppler_annot_file_attachment_get_attachment(poppler_annotation_file_attachment);
+        if (poppler_attachment != NULL) {
+          zathura_attachment_t* attachment;
+          if (zathura_attachment_new(&attachment) != ZATHURA_ERROR_OK) {
+            goto error_out;
+          }
+
+          if (zathura_attachment_set_name(attachment, poppler_attachment->name)
+              != ZATHURA_ERROR_OK) {
+            zathura_attachment_free(attachment);
+            goto error_free;
+          }
+
+          if (zathura_attachment_set_user_data(attachment, poppler_attachment)
+              != ZATHURA_ERROR_OK) {
+            zathura_attachment_free(attachment);
+            goto error_free;
+          }
+
+          if (zathura_attachment_set_save_function(attachment, pdf_attachment_save) !=
+              ZATHURA_ERROR_OK) {
+            zathura_attachment_free(attachment);
+            goto error_free;
+          }
+
+          char* icon_name = poppler_annot_file_attachment_get_name(poppler_annotation_file_attachment);
+          if (icon_name != NULL && (error =
+                zathura_annotation_file_set_icon_name(*annotation, icon_name)) !=
+              ZATHURA_ERROR_OK) {
+            goto error_free;
+          }
+
+          if (zathura_annotation_file_set_attachment(*annotation, attachment) !=
+              ZATHURA_ERROR_OK) {
+            zathura_attachment_free(attachment);
+            goto error_free;
+          }
+        }
+      }
       break;
     case ZATHURA_ANNOTATION_SOUND:
       break;
