@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
 #include "plugin.h"
@@ -311,10 +312,100 @@ poppler_annotation_to_zathura_annotation(PopplerAnnot* poppler_annotation,
     case ZATHURA_ANNOTATION_UNKNOWN:
       break;
     case ZATHURA_ANNOTATION_TEXT:
+      {
+        PopplerAnnotText* poppler_annotation_text = POPPLER_ANNOT_TEXT(poppler_annotation);
+
+        gchar* icon_text = poppler_annot_text_get_icon(poppler_annotation_text);
+        if (icon_text != NULL && (error = zathura_annotation_text_set_icon_name(*annotation, icon_text)) != ZATHURA_ERROR_OK) {
+          goto error_free;
+        }
+
+        gboolean is_open = poppler_annot_text_get_is_open(poppler_annotation_text);
+        if ((error = zathura_annotation_text_set_open(*annotation, (is_open
+                  == TRUE) ? true : false)) != ZATHURA_ERROR_OK) {
+            goto error_free;
+        }
+
+        PopplerAnnotTextState poppler_state = poppler_annot_text_get_state(poppler_annotation_text);
+        zathura_annotation_text_state_t state = ZATHURA_ANNOTATION_TEXT_STATE_UNKNOWN;
+        switch (poppler_state) {
+          case POPPLER_ANNOT_TEXT_STATE_MARKED:
+            state = ZATHURA_ANNOTATION_TEXT_STATE_MARKED;
+            break;
+          case POPPLER_ANNOT_TEXT_STATE_UNMARKED:
+            state = ZATHURA_ANNOTATION_TEXT_STATE_UNMARKED;
+            break;
+          case POPPLER_ANNOT_TEXT_STATE_ACCEPTED:
+            state = ZATHURA_ANNOTATION_TEXT_STATE_ACCEPTED;
+            break;
+          case POPPLER_ANNOT_TEXT_STATE_REJECTED:
+            state = ZATHURA_ANNOTATION_TEXT_STATE_REJECTED;
+            break;
+          case POPPLER_ANNOT_TEXT_STATE_CANCELLED:
+            state = ZATHURA_ANNOTATION_TEXT_STATE_CANCELLED;
+            break;
+          case POPPLER_ANNOT_TEXT_STATE_COMPLETED:
+            state = ZATHURA_ANNOTATION_TEXT_STATE_COMPLETED;
+            break;
+          case POPPLER_ANNOT_TEXT_STATE_NONE:
+            state = ZATHURA_ANNOTATION_TEXT_STATE_NONE;
+            break;
+          case POPPLER_ANNOT_TEXT_STATE_UNKNOWN:
+            state = ZATHURA_ANNOTATION_TEXT_STATE_UNKNOWN;
+            break;
+        }
+
+        if ((error = zathura_annotation_text_set_state(*annotation, state))
+              != ZATHURA_ERROR_OK) {
+            goto error_free;
+        }
+      }
       break;
     case ZATHURA_ANNOTATION_LINK:
       break;
     case ZATHURA_ANNOTATION_FREE_TEXT:
+      {
+        PopplerAnnotFreeText *poppler_annotation_free_text = POPPLER_ANNOT_FREE_TEXT(poppler_annotation);
+
+        /* callout line */
+        PopplerAnnotCalloutLine* poppler_callout_line =
+          poppler_annot_free_text_get_callout_line(poppler_annotation_free_text);
+
+        if (poppler_callout_line != NULL) {
+          zathura_annotation_callout_line_t callout_line = {
+            { poppler_callout_line->x1, poppler_callout_line->y1 },
+            { poppler_callout_line->x2, poppler_callout_line->y2 },
+            { poppler_callout_line->x3, poppler_callout_line->y3 }
+          };
+
+          if ((error = zathura_annotation_free_text_set_callout_line(*annotation, callout_line))
+                != ZATHURA_ERROR_OK) {
+              goto error_free;
+          }
+        }
+
+        /* quadding */
+        PopplerAnnotFreeTextQuadding poppler_quadding =
+          poppler_annot_free_text_get_quadding(poppler_annotation_free_text);
+        zathura_annotation_justification_t justification = ZATHURA_ANNOTATION_JUSTIFICATION_LEFT_JUSTIFIED;
+
+        switch (poppler_quadding) {
+          case POPPLER_ANNOT_FREE_TEXT_QUADDING_LEFT_JUSTIFIED:
+            justification = ZATHURA_ANNOTATION_JUSTIFICATION_LEFT_JUSTIFIED;
+            break;
+          case POPPLER_ANNOT_FREE_TEXT_QUADDING_CENTERED:
+            justification = ZATHURA_ANNOTATION_JUSTIFICATION_CENTERED;
+            break;
+          case POPPLER_ANNOT_FREE_TEXT_QUADDING_RIGHT_JUSTIFIED:
+            justification = ZATHURA_ANNOTATION_JUSTIFICATION_RIGHT_JUSTIFIED;
+            break;
+        }
+
+        if ((error = zathura_annotation_free_text_set_justification(*annotation, justification))
+              != ZATHURA_ERROR_OK) {
+            goto error_free;
+        }
+      }
       break;
     case ZATHURA_ANNOTATION_LINE:
       break;
