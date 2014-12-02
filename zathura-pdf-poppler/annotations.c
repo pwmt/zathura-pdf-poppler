@@ -203,6 +203,103 @@ poppler_annotation_to_zathura_annotation(PopplerAnnot* poppler_annotation,
     }
   }
 
+  /* markup annotation */
+  bool is_markup;
+  if ((error = zathura_annotation_is_markup_annotation(*annotation, &is_markup)) != ZATHURA_ERROR_OK) {
+    goto error_free;
+  }
+
+  if (is_markup == true && POPPLER_IS_ANNOT_MARKUP(poppler_annotation) == TRUE) {
+    PopplerAnnotMarkup* poppler_annotation_markup = POPPLER_ANNOT_MARKUP(poppler_annotation);
+    gchar* label = poppler_annot_markup_get_label(poppler_annotation_markup);
+    if (label != NULL && (error =
+          zathura_annotation_markup_set_label(*annotation, label) !=
+          ZATHURA_ERROR_OK)) {
+      goto error_free;
+    }
+
+    gchar* subject = poppler_annot_markup_get_subject(poppler_annotation_markup);
+    if (subject != NULL && (error =
+          zathura_annotation_markup_set_text(*annotation, subject) !=
+          ZATHURA_ERROR_OK)) {
+      goto error_free;
+    }
+
+    GDate* created = poppler_annot_markup_get_date(poppler_annotation_markup);
+    if (created != NULL) {
+      struct tm cd = { 0 };
+      cd.tm_year = g_date_get_year(created);
+      cd.tm_mon  = g_date_get_month(created);
+      cd.tm_mday = g_date_get_day(created);
+
+      time_t creation_date = mktime(&cd);
+
+      if ((error = zathura_annotation_markup_set_creation_date(*annotation,
+              creation_date) != ZATHURA_ERROR_OK)) {
+        goto error_free;
+      }
+    }
+
+    if (poppler_annot_markup_has_popup(poppler_annotation_markup) == TRUE) {
+      zathura_annotation_t* popup_annotation;
+      if ((error = zathura_annotation_new(&popup_annotation, ZATHURA_ANNOTATION_POPUP)) != ZATHURA_ERROR_OK) {
+        goto error_free;
+      }
+
+      PopplerRectangle annotation_rectangle;
+      if (poppler_annot_markup_get_popup_rectangle(poppler_annotation_markup, &annotation_rectangle) != TRUE) {
+        zathura_annotation_free(popup_annotation);
+        goto error_free;
+      }
+
+      zathura_rectangle_t position = { {0, 0}, {0, 0} };
+      position.p1.x = annotation_rectangle.x1;
+      position.p2.x = annotation_rectangle.x2;
+      position.p1.y = annotation_rectangle.y2;
+      position.p2.y = annotation_rectangle.y1;
+
+      if ((error = zathura_annotation_set_position(popup_annotation, position)) != ZATHURA_ERROR_OK) {
+        zathura_annotation_free(popup_annotation);
+        goto error_free;
+      }
+
+      gboolean is_open = poppler_annot_markup_get_popup_is_open(poppler_annotation_markup);
+      if ((error = zathura_annotation_popup_set_open(popup_annotation, (is_open
+                == TRUE) ? true : false)) != ZATHURA_ERROR_OK) {
+          zathura_annotation_free(popup_annotation);
+          goto error_free;
+      }
+
+      if ((error = zathura_annotation_popup_set_parent(popup_annotation, *annotation)) != ZATHURA_ERROR_OK) {
+        zathura_annotation_free(popup_annotation);
+        goto error_free;
+      }
+
+      if ((error = zathura_annotation_markup_set_popup_annotation(*annotation,
+              popup_annotation)) != ZATHURA_ERROR_OK) {
+        zathura_annotation_free(popup_annotation);
+        goto error_free;
+      }
+    }
+
+    PopplerAnnotMarkupReplyType poppler_reply_type = poppler_annot_markup_get_reply_to(poppler_annotation_markup);
+    zathura_annotation_markup_reply_type_t reply_type = ZATHURA_ANNOTATION_MARKUP_REPLY_TYPE_REPLY;
+
+    switch (poppler_reply_type) {
+      case POPPLER_ANNOT_MARKUP_REPLY_TYPE_R:
+        reply_type = ZATHURA_ANNOTATION_MARKUP_REPLY_TYPE_REPLY;
+        break;
+      case POPPLER_ANNOT_MARKUP_REPLY_TYPE_GROUP:
+        reply_type = ZATHURA_ANNOTATION_MARKUP_REPLY_TYPE_GROUP;
+        break;
+    }
+
+    if ((error = zathura_annotation_markup_set_reply_type(*annotation,
+            reply_type)) != ZATHURA_ERROR_OK) {
+      goto error_free;
+    }
+  }
+
   /* annotation type dependend properties */
   switch (zathura_type) {
     case ZATHURA_ANNOTATION_UNKNOWN:
