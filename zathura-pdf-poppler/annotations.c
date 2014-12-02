@@ -240,6 +240,12 @@ poppler_annotation_to_zathura_annotation(PopplerAnnot* poppler_annotation,
       }
     }
 
+    gdouble opacity = poppler_annot_markup_get_opacity(poppler_annotation_markup);
+    if ((error = zathura_annotation_markup_set_opacity(*annotation, opacity) !=
+          ZATHURA_ERROR_OK)) {
+      goto error_free;
+    }
+
     if (poppler_annot_markup_has_popup(poppler_annotation_markup) == TRUE) {
       zathura_annotation_t* popup_annotation;
       if ((error = zathura_annotation_new(&popup_annotation, ZATHURA_ANNOTATION_POPUP)) != ZATHURA_ERROR_OK) {
