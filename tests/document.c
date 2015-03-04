@@ -52,6 +52,7 @@ START_TEST(test_pdf_document_save_as) {
     g_remove(path);
     g_free(path);
   }
+  fail_unless(file_handle != -1);
 } END_TEST
 
 Suite*

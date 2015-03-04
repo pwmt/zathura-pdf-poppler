@@ -4,6 +4,7 @@
 
 #include "plugin.h"
 #include "utils.h"
+#include "internal.h"
 
 zathura_error_t
 pdf_page_get_links(zathura_page_t* page, zathura_list_t** links)
@@ -20,10 +21,12 @@ pdf_page_get_links(zathura_page_t* page, zathura_list_t** links)
     goto error_out;
   }
 
-  PopplerPage* poppler_page;
-  if ((error = zathura_page_get_data(page, (void**) &poppler_page)) != ZATHURA_ERROR_OK) {
+  pdf_page_t* pdf_page;
+  if ((error = zathura_page_get_data(page, (void**) &pdf_page)) != ZATHURA_ERROR_OK) {
     goto error_out;
   }
+
+  PopplerPage* poppler_page = pdf_page->poppler_page;
 
   PopplerDocument* poppler_document;
   if ((error = zathura_document_get_data(document, (void**) &poppler_document)) != ZATHURA_ERROR_OK

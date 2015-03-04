@@ -32,4 +32,6 @@ zathura_error_t pdf_page_get_annotations(zathura_page_t* page, zathura_list_t** 
 zathura_error_t pdf_page_render_cairo(zathura_page_t* page, cairo_t* cairo, double scale, int rotation, int flags);
 #endif
 
+zathura_error_t pdf_form_field_save(zathura_form_field_t* form_field);
+
 #endif // PDF_H

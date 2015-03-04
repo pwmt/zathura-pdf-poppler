@@ -5,6 +5,7 @@
 #include <stdlib.h>
 
 #include "plugin.h"
+#include "internal.h"
 
 zathura_error_t pdf_page_search_text(zathura_page_t* page, const char* text,
     zathura_search_flag_t flags, zathura_list_t** results)
@@ -16,10 +17,12 @@ zathura_error_t pdf_page_search_text(zathura_page_t* page, const char* text,
   zathura_error_t error = ZATHURA_ERROR_OK;
   *results = NULL;
 
-  PopplerPage* poppler_page;
-  if ((error = zathura_page_get_data(page, (void**) &poppler_page)) != ZATHURA_ERROR_OK) {
+  pdf_page_t* pdf_page;
+  if ((error = zathura_page_get_data(page, (void**) &pdf_page)) != ZATHURA_ERROR_OK) {
     goto error_out;
   }
+
+  PopplerPage* poppler_page = pdf_page->poppler_page;
 
   /* handle flags */
   PopplerFindFlags poppler_flags = POPPLER_FIND_DEFAULT;

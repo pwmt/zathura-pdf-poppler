@@ -24,6 +24,8 @@ register_functions(zathura_plugin_functions_t* functions)
 #if HAVE_CAIRO
   functions->page_render_cairo        = (zathura_plugin_page_render_cairo_t) pdf_page_render_cairo;
 #endif
+
+  functions->form_field_save          = (zathura_plugin_form_field_save_t) pdf_form_field_save;
 }
 
 /* LCOV_EXCL_START */

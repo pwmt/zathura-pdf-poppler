@@ -4,6 +4,7 @@
 
 #include "plugin.h"
 #include "utils.h"
+#include "internal.h"
 
 typedef struct pdf_image_s {
   PopplerPage* poppler_page;
@@ -39,10 +40,12 @@ pdf_page_get_images(zathura_page_t* page, zathura_list_t** images)
   zathura_error_t error = ZATHURA_ERROR_OK;
   *images = NULL;
 
-  PopplerPage* poppler_page;
-  if ((error = zathura_page_get_data(page, (void**) &poppler_page)) != ZATHURA_ERROR_OK) {
+  pdf_page_t* pdf_page;
+  if ((error = zathura_page_get_data(page, (void**) &pdf_page)) != ZATHURA_ERROR_OK) {
     goto error_out;
   }
+
+  PopplerPage* poppler_page = pdf_page->poppler_page;
 
   GList* image_mapping = poppler_page_get_image_mapping(poppler_page);
   if (image_mapping == NULL || g_list_length(image_mapping) == 0) {

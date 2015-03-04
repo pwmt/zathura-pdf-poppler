@@ -4,9 +4,10 @@
 #include <stdlib.h>
 
 #include "plugin.h"
+#include "internal.h"
 
 static zathura_error_t
-poppler_form_field_to_zathura_form_field(PopplerFormField* poppler_form_field,
+poppler_form_field_to_zathura_form_field(zathura_page_t* page, PopplerFormField* poppler_form_field,
     zathura_form_field_t** form_field);
 
 zathura_error_t
@@ -24,8 +25,15 @@ pdf_page_get_form_fields(zathura_page_t* page, zathura_list_t** form_fields)
     goto error_out;
   }
 
-  PopplerPage* poppler_page;
-  if ((error = zathura_page_get_data(page, (void**) &poppler_page)) != ZATHURA_ERROR_OK) {
+  pdf_page_t* pdf_page;
+  if ((error = zathura_page_get_data(page, (void**) &pdf_page)) != ZATHURA_ERROR_OK) {
+    goto error_out;
+  }
+
+  PopplerPage* poppler_page = pdf_page->poppler_page;
+
+  unsigned int page_height;
+  if ((error = zathura_page_get_height(page, &page_height)) != ZATHURA_ERROR_OK) {
     goto error_out;
   }
 
@@ -35,10 +43,14 @@ pdf_page_get_form_fields(zathura_page_t* page, zathura_list_t** form_fields)
     goto error_out;
   }
 
-  GList* form_field_mapping = poppler_page_get_form_field_mapping(poppler_page);
-  if (form_field_mapping == NULL || g_list_length(form_field_mapping) == 0) {
-    error = ZATHURA_ERROR_UNKNOWN;
-    goto error_free;
+  GList* form_field_mapping = pdf_page->form_field_mapping;
+
+  if (form_field_mapping == NULL) {
+    form_field_mapping = poppler_page_get_form_field_mapping(poppler_page);
+    if (form_field_mapping == NULL || g_list_length(form_field_mapping) == 0) {
+      error = ZATHURA_ERROR_UNKNOWN;
+      goto error_free;
+    }
   }
 
   for (GList* form_field = form_field_mapping; form_field != NULL; form_field = g_list_next(form_field)) {
@@ -49,7 +61,7 @@ pdf_page_get_form_fields(zathura_page_t* page, zathura_list_t** form_fields)
 
     PopplerFormFieldMapping* poppler_form_field = (PopplerFormFieldMapping*) form_field->data;
     zathura_form_field_t* form_field;
-    if (poppler_form_field_to_zathura_form_field(poppler_form_field->field,
+    if (poppler_form_field_to_zathura_form_field(page, poppler_form_field->field,
           &form_field) != ZATHURA_ERROR_OK) {
       continue;
     }
@@ -57,8 +69,8 @@ pdf_page_get_form_fields(zathura_page_t* page, zathura_list_t** form_fields)
     zathura_rectangle_t position = { {0, 0}, {0, 0} };
     position.p1.x = poppler_form_field->area.x1;
     position.p2.x = poppler_form_field->area.x2;
-    position.p1.y = poppler_form_field->area.y2;
-    position.p2.y = poppler_form_field->area.y1;
+    position.p1.y = page_height - poppler_form_field->area.y2;
+    position.p2.y = page_height - poppler_form_field->area.y1;
 
     mapping->position = position;
     mapping->form_field = form_field;
@@ -66,7 +78,7 @@ pdf_page_get_form_fields(zathura_page_t* page, zathura_list_t** form_fields)
     *form_fields = zathura_list_append(*form_fields, mapping);
   }
 
-  poppler_page_free_form_field_mapping(form_field_mapping);
+  pdf_page->form_field_mapping = form_field_mapping;
 
   return error;
 
@@ -81,8 +93,55 @@ error_out:
   return error;
 }
 
+zathura_error_t
+pdf_form_field_save(zathura_form_field_t* form_field)
+{
+  if (form_field == NULL) {
+    return ZATHURA_ERROR_INVALID_ARGUMENTS;
+  }
+
+  zathura_form_field_type_t type;
+  if (zathura_form_field_get_type(form_field, &type) != ZATHURA_ERROR_OK) {
+    return ZATHURA_ERROR_UNKNOWN;
+  }
+
+  PopplerFormField* poppler_form_field;
+  if (zathura_form_field_get_user_data(form_field, (void**) &poppler_form_field) != ZATHURA_ERROR_OK) {
+    return ZATHURA_ERROR_UNKNOWN;
+  }
+
+  switch (type) {
+    case ZATHURA_FORM_FIELD_UNKNOWN:
+      return ZATHURA_ERROR_INVALID_ARGUMENTS;
+    case ZATHURA_FORM_FIELD_BUTTON:
+      {
+        zathura_form_field_button_type_t button_type;
+        if (zathura_form_field_button_get_type(form_field, &button_type) !=
+            ZATHURA_ERROR_OK) {
+          return ZATHURA_ERROR_INVALID_ARGUMENTS;
+        }
+
+        bool state;
+        if (zathura_form_field_button_get_state(form_field, &state) != ZATHURA_ERROR_OK) {
+          return ZATHURA_ERROR_INVALID_ARGUMENTS;
+        }
+
+        poppler_form_field_button_set_state(poppler_form_field, state);
+      }
+      break;
+    case ZATHURA_FORM_FIELD_TEXT:
+      break;
+    case ZATHURA_FORM_FIELD_CHOICE:
+      break;
+    case ZATHURA_FORM_FIELD_SIGNATURE:
+      break;
+  }
+
+  return ZATHURA_ERROR_OK;
+}
+
 static zathura_error_t
-poppler_form_field_to_zathura_form_field(PopplerFormField* poppler_form_field,
+poppler_form_field_to_zathura_form_field(zathura_page_t* page, PopplerFormField* poppler_form_field,
     zathura_form_field_t** form_field)
 {
   PopplerFormFieldType poppler_type = poppler_form_field_get_field_type(poppler_form_field);
@@ -109,7 +168,12 @@ poppler_form_field_to_zathura_form_field(PopplerFormField* poppler_form_field,
   }
 
   /* create new form field */
-  if ((error = zathura_form_field_new(form_field, zathura_type)) != ZATHURA_ERROR_OK) {
+  if ((error = zathura_form_field_new(page, form_field, zathura_type)) != ZATHURA_ERROR_OK) {
+    goto error_out;
+  }
+
+  /* set user data */
+  if ((error = zathura_form_field_set_user_data(*form_field, poppler_form_field)) != ZATHURA_ERROR_OK) {
     goto error_out;
   }
 

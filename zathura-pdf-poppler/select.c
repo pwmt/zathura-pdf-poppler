@@ -3,6 +3,7 @@
 #include <stdio.h>
 
 #include "plugin.h"
+#include "internal.h"
 
 #if !POPPLER_CHECK_VERSION(0,15,0)
 #define poppler_page_get_selected_text poppler_page_get_text
@@ -17,10 +18,12 @@ pdf_page_get_text(zathura_page_t* page, char** text)
 
   zathura_error_t error = ZATHURA_ERROR_OK;
 
-  PopplerPage* poppler_page;
-  if ((error = zathura_page_get_data(page, (void**) &poppler_page)) != ZATHURA_ERROR_OK) {
+  pdf_page_t* pdf_page;
+  if ((error = zathura_page_get_data(page, (void**) &pdf_page)) != ZATHURA_ERROR_OK) {
     goto error_out;
   }
+
+  PopplerPage* poppler_page = pdf_page->poppler_page;
 
   *text = poppler_page_get_text(poppler_page);
 
@@ -38,10 +41,12 @@ pdf_page_get_selected_text(zathura_page_t* page, char** text, zathura_rectangle_
 
   zathura_error_t error = ZATHURA_ERROR_OK;
 
-  PopplerPage* poppler_page;
-  if ((error = zathura_page_get_data(page, (void**) &poppler_page)) != ZATHURA_ERROR_OK) {
+  pdf_page_t* pdf_page;
+  if ((error = zathura_page_get_data(page, (void**) &pdf_page)) != ZATHURA_ERROR_OK) {
     goto error_out;
   }
+
+  PopplerPage* poppler_page = pdf_page->poppler_page;
 
   PopplerRectangle rect;
   rect.x1 = rectangle.p1.x;
