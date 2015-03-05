@@ -130,8 +130,37 @@ pdf_form_field_save(zathura_form_field_t* form_field)
       }
       break;
     case ZATHURA_FORM_FIELD_TEXT:
+      {
+        char* text;
+        if (zathura_form_field_text_get_text(form_field, &text) != ZATHURA_ERROR_OK) {
+          return ZATHURA_ERROR_INVALID_ARGUMENTS;
+        }
+
+        poppler_form_field_text_set_text(poppler_form_field, text);
+      }
       break;
     case ZATHURA_FORM_FIELD_CHOICE:
+      {
+        zathura_list_t* choice_items;
+        if (zathura_form_field_choice_get_items(form_field, &choice_items) != ZATHURA_ERROR_OK) {
+          return ZATHURA_ERROR_INVALID_ARGUMENTS;
+        }
+
+        poppler_form_field_choice_unselect_all(poppler_form_field);
+
+        unsigned int i = 0;
+        zathura_form_field_choice_item_t* choice_item;
+        ZATHURA_LIST_FOREACH(choice_item, choice_items) {
+          bool is_selected;
+          if (zathura_form_field_choice_item_is_selected(choice_item, &is_selected) != ZATHURA_ERROR_OK) {
+            continue;
+          }
+
+          if (is_selected == true) {
+            poppler_form_field_choice_select_item(poppler_form_field, i++);
+          }
+        }
+      }
       break;
     case ZATHURA_FORM_FIELD_SIGNATURE:
       break;
