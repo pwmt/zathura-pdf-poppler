@@ -25,7 +25,7 @@ zathura_error_t pdf_page_render_cairo(zathura_page_t* page, cairo_t* cairo,
 
   PopplerPage* poppler_page = pdf_page->poppler_page;
 
-  poppler_page_render(poppler_page, cairo);
+  poppler_page_render_for_printing_with_options(poppler_page, cairo, POPPLER_PRINT_DOCUMENT);
 
 error_out:
 
