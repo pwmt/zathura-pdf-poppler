@@ -363,31 +363,21 @@ poppler_form_field_to_zathura_form_field(zathura_page_t* page, PopplerFormField*
           goto error_free;
         }
 
-        zathura_list_t* items = NULL;
         unsigned int number_of_items = poppler_form_field_choice_get_n_items(poppler_form_field);
         for (unsigned int i = 0; i < number_of_items; i++) {
           char* name = poppler_form_field_choice_get_item(poppler_form_field, i);
 
           zathura_form_field_choice_item_t* item;
-          if ((error = zathura_form_field_choice_item_new(&item, name)) != ZATHURA_ERROR_OK) {
-            zathura_list_free_full(items, (GDestroyNotify) zathura_form_field_choice_item_free);
+          if ((error = zathura_form_field_choice_item_new(*form_field, &item, name)) != ZATHURA_ERROR_OK) {
             goto error_free;
           }
 
           gboolean is_item_selected = poppler_form_field_choice_is_item_selected(poppler_form_field, i);
           if (is_item_selected == TRUE && (error = zathura_form_field_choice_item_select(item)) !=
               ZATHURA_ERROR_OK) {
-            zathura_list_free_full(items, (GDestroyNotify) zathura_form_field_choice_item_free);
             goto error_free;
           }
 
-          items = zathura_list_append(items, item);
-        }
-
-        if ((error = zathura_form_field_choice_set_items(*form_field, items)) !=
-            ZATHURA_ERROR_OK) {
-          zathura_list_free_full(items, (GDestroyNotify) zathura_form_field_choice_item_free);
-          goto error_free;
         }
       }
       break;
