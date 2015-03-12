@@ -157,8 +157,10 @@ pdf_form_field_save(zathura_form_field_t* form_field)
           }
 
           if (is_selected == true) {
-            poppler_form_field_choice_select_item(poppler_form_field, i++);
+            poppler_form_field_choice_select_item(poppler_form_field, i);
           }
+
+          i++;
         }
       }
       break;
