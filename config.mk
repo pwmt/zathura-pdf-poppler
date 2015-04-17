@@ -43,7 +43,7 @@ INCS = ${POPPLER_INC} ${LIBZATHURA_INC}
 LIBS = ${POPPLER_LIB} ${LIBZATHURA_LIB}
 
 # flags
-CFLAGS += -std=c99 -pedantic -Wall -Wextra -fPIC --coverage $(INCS)
+CFLAGS += -std=c11 -pedantic -Wall -Wextra -fPIC --coverage $(INCS)
 
 # linker flags
 LDFLAGS += -fPIC --coverage

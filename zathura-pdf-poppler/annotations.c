@@ -9,9 +9,11 @@
 #include "utils.h"
 #include "internal.h"
 
-static zathura_error_t
-poppler_annotation_to_zathura_annotation(PopplerAnnot* poppler_annotation,
-    zathura_annotation_t** annotation);
+static zathura_error_t poppler_annotation_to_zathura_annotation(PopplerAnnot*
+    poppler_annotation, zathura_annotation_t** annotation, zathura_rectangle_t position, double page_height);
+static zathura_list_t*
+create_quad_points_from_text_markup_annotation(PopplerAnnot*
+    poppler_annotation, zathura_rectangle_t position, double page_height);
 
 zathura_error_t
 pdf_page_get_annotations(zathura_page_t* page, zathura_list_t** annotations)
@@ -35,6 +37,11 @@ pdf_page_get_annotations(zathura_page_t* page, zathura_list_t** annotations)
 
   PopplerPage* poppler_page = pdf_page->poppler_page;
 
+  unsigned int page_height;
+  if ((error = zathura_page_get_height(page, &page_height)) != ZATHURA_ERROR_OK) {
+    goto error_out;
+  }
+
   PopplerDocument* poppler_document;
   if ((error = zathura_document_get_data(document, (void**) &poppler_document)) != ZATHURA_ERROR_OK
       || poppler_document == NULL) {
@@ -49,17 +56,21 @@ pdf_page_get_annotations(zathura_page_t* page, zathura_list_t** annotations)
 
   for (GList* annotation = annotation_mapping; annotation != NULL; annotation = g_list_next(annotation)) {
     PopplerAnnotMapping* poppler_annotation = (PopplerAnnotMapping*) annotation->data;
-    zathura_annotation_t* annotation;
-    if (poppler_annotation_to_zathura_annotation(poppler_annotation->annot,
-          &annotation) != ZATHURA_ERROR_OK) {
-      continue;
-    }
 
+    /* Position */
     zathura_rectangle_t position = { {0, 0}, {0, 0} };
+
     position.p1.x = poppler_annotation->area.x1;
     position.p2.x = poppler_annotation->area.x2;
-    position.p1.y = poppler_annotation->area.y2;
-    position.p2.y = poppler_annotation->area.y1;
+    position.p1.y = page_height - poppler_annotation->area.y2;
+    position.p2.y = page_height - poppler_annotation->area.y1;
+
+    /* Annotation data */
+    zathura_annotation_t* annotation;
+    if (poppler_annotation_to_zathura_annotation(poppler_annotation->annot,
+          &annotation, position, page_height) != ZATHURA_ERROR_OK) {
+      continue;
+    }
 
     if ((error = zathura_annotation_set_position(annotation, position)) != ZATHURA_ERROR_OK) {
       break;
@@ -85,7 +96,7 @@ error_out:
 
 static zathura_error_t
 poppler_annotation_to_zathura_annotation(PopplerAnnot* poppler_annotation,
-    zathura_annotation_t** annotation)
+    zathura_annotation_t** annotation, zathura_rectangle_t position, double page_height)
 {
   PopplerAnnotType poppler_type = poppler_annot_get_annot_type(poppler_annotation);
   zathura_annotation_type_t zathura_type = ZATHURA_ANNOTATION_UNKNOWN;
@@ -421,12 +432,36 @@ poppler_annotation_to_zathura_annotation(PopplerAnnot* poppler_annotation,
     case ZATHURA_ANNOTATION_POLY_LINE:
       break;
     case ZATHURA_ANNOTATION_HIGHLIGHT:
+      {
+        zathura_list_t* list = create_quad_points_from_text_markup_annotation(poppler_annotation, position, page_height);
+        if (zathura_annotation_highlight_set_quad_points(*annotation, list) != ZATHURA_ERROR_OK) {
+          goto error_free;
+        }
+      }
       break;
     case ZATHURA_ANNOTATION_UNDERLINE:
+      {
+        zathura_list_t* list = create_quad_points_from_text_markup_annotation(poppler_annotation, position, page_height);
+        if (zathura_annotation_underline_set_quad_points(*annotation, list) != ZATHURA_ERROR_OK) {
+          goto error_free;
+        }
+      }
       break;
     case ZATHURA_ANNOTATION_SQUIGGLY:
+      {
+        zathura_list_t* list = create_quad_points_from_text_markup_annotation(poppler_annotation, position, page_height);
+        if (zathura_annotation_squiggly_set_quad_points(*annotation, list) != ZATHURA_ERROR_OK) {
+          goto error_free;
+        }
+      }
       break;
     case ZATHURA_ANNOTATION_STRIKE_OUT:
+      {
+        zathura_list_t* list = create_quad_points_from_text_markup_annotation(poppler_annotation, position, page_height);
+        if (zathura_annotation_strike_out_set_quad_points(*annotation, list) != ZATHURA_ERROR_OK) {
+          goto error_free;
+        }
+      }
       break;
     case ZATHURA_ANNOTATION_STAMP:
       break;
@@ -509,4 +544,39 @@ error_free:
 error_out:
 
     return error;
+}
+
+static zathura_list_t*
+create_quad_points_from_text_markup_annotation(PopplerAnnot*
+    poppler_annotation, zathura_rectangle_t position, double page_height)
+{
+  PopplerAnnotTextMarkup* poppler_annotation_text_markup = POPPLER_ANNOT_TEXT_MARKUP(poppler_annotation);
+  GArray* quadrilaterals = poppler_annot_text_markup_get_quadrilaterals(poppler_annotation_text_markup);
+  PopplerQuadrilateral* quadrilateral;
+
+  zathura_list_t* list = NULL;
+
+  for (unsigned int i = 0; i < quadrilaterals->len; i++) {
+    quadrilateral = &g_array_index(quadrilaterals, PopplerQuadrilateral, i);
+
+    zathura_quad_point_t* quad_point = calloc(1, sizeof(zathura_quad_point_t));
+    if (quad_point == NULL) {
+      continue;
+    }
+
+    quad_point->p1.x = quadrilateral->p1.x - position.p1.x;
+    quad_point->p1.y = (page_height - quadrilateral->p1.y) - position.p1.y;
+    quad_point->p2.x = quadrilateral->p2.x - position.p1.x;
+    quad_point->p2.y = (page_height - quadrilateral->p2.y) - position.p1.y;
+    quad_point->p3.x = quadrilateral->p3.x - position.p1.x;
+    quad_point->p3.y = (page_height - quadrilateral->p3.y) - position.p1.y;
+    quad_point->p4.x = quadrilateral->p4.x - position.p1.x;
+    quad_point->p4.y = (page_height - quadrilateral->p4.y) - position.p1.y;
+
+    list = zathura_list_append(list, quad_point);
+  }
+
+  g_array_unref(quadrilaterals);
+
+  return list;
 }
