@@ -28,10 +28,11 @@ endif
 
 options:
 	$(ECHO) ${PLUGIN} build options:
-	$(ECHO) "CFLAGS  = ${CFLAGS}"
-	$(ECHO) "LDFLAGS = ${LDFLAGS}"
-	$(ECHO) "DFLAGS  = ${DFLAGS}"
-	$(ECHO) "CC      = ${CC}"
+	$(ECHO) "CFLAGS     = ${CFLAGS}"
+	$(ECHO) "LDFLAGS    = ${LDFLAGS}"
+	$(ECHO) "DFLAGS     = ${DFLAGS}"
+	$(ECHO) "CC         = ${CC}"
+	$(ECHO) "PKG_CONFIG = ${PKG_CONFIG}"
 
 %.o: %.c
 	$(ECHO) CC $<
