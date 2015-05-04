@@ -39,7 +39,7 @@ START_TEST(test_pdf_page_get_annotations_simple) {
   fail_unless(pdf_page_get_annotations(page, &annotations) == ZATHURA_ERROR_OK);
   fail_unless(annotations != NULL);
 
-  fail_unless(zathura_list_length(annotations) == 16);
+  fail_unless(zathura_list_length(annotations) == 23);
 } END_TEST
 
 Suite*
