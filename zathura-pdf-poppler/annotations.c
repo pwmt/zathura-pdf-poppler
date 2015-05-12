@@ -518,6 +518,10 @@ poppler_annotation_to_zathura_annotation(PopplerAnnot* poppler_annotation,
       }
       break;
     case ZATHURA_ANNOTATION_SOUND:
+      if ((error = zathura_annotation_sound_set_icon_name(*annotation, "Speaker"))
+        != ZATHURA_ERROR_OK) {
+        goto error_free;
+      }
       break;
     case ZATHURA_ANNOTATION_MOVIE:
       break;
