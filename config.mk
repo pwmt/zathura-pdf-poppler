@@ -37,7 +37,7 @@ INCS = ${CAIRO_INC} ${PDF_INC} ${ZATHURA_INC} ${GIRARA_INC}
 LIBS = ${GIRARA_LIB} ${CAIRO_LIB} ${PDF_LIB}
 
 # flags
-CFLAGS += -std=c99 -fPIC -pedantic -Wall -Wno-format-zero-length $(INCS)
+CFLAGS += -std=c11 -fPIC -pedantic -Wall -Wno-format-zero-length $(INCS)
 
 # debug
 DFLAGS ?= -g
