@@ -18,17 +18,6 @@ zathura_error_t pdf_page_render_cairo(zathura_page_t* page, cairo_t* cairo,
 
   zathura_error_t error = ZATHURA_ERROR_OK;
 
-  pdf_page_t* pdf_page;
-  if ((error = zathura_page_get_data(page, (void**) &pdf_page)) != ZATHURA_ERROR_OK) {
-    goto error_out;
-  }
-
-  PopplerPage* poppler_page = pdf_page->poppler_page;
-
-  poppler_page_render_for_printing_with_options(poppler_page, cairo, POPPLER_PRINT_DOCUMENT);
-
-error_out:
-
   return error;
 }
 #endif

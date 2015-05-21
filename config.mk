@@ -30,8 +30,8 @@ TARDIR = ${PROJECT}-${VERSION}
 CAIRO_INC ?= $(shell pkg-config --cflags cairo)
 CAIRO_LIB ?= $(shell pkg-config --libs cairo)
 
-POPPLER_INC ?= $(shell pkg-config --cflags poppler-glib)
-POPPLER_LIB ?= $(shell pkg-config --libs poppler-glib)
+POPPLER_INC ?= $(shell pkg-config --cflags poppler)
+POPPLER_LIB ?= $(shell pkg-config --libs poppler)
 
 LIBZATHURA_INC ?= $(shell pkg-config --cflags libzathura)
 LIBZATHURA_LIB ?= $(shell pkg-config --libs libzathura)
@@ -43,7 +43,7 @@ INCS = ${POPPLER_INC} ${LIBZATHURA_INC}
 LIBS = ${POPPLER_LIB} ${LIBZATHURA_LIB}
 
 # flags
-CFLAGS += -std=c11 -pedantic -Wall -Wextra -fPIC --coverage $(INCS)
+CXXFLAGS += -std=c++11 -pedantic -Wall -Wextra -fPIC --coverage $(INCS)
 
 # linker flags
 LDFLAGS += -fPIC --coverage
@@ -53,6 +53,7 @@ DFLAGS ?= -g
 
 # compiler
 CC ?= gcc
+CXX ?= g++
 
 # strip
 SFLAGS ?= -s

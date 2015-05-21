@@ -4,11 +4,11 @@ include config.mk
 include colors.mk
 include common.mk
 
-SOURCE        = $(wildcard ${PROJECT}/*.c)
+SOURCE        = $(wildcard ${PROJECT}/*.cpp)
 HEADER        = $(wildcard ${PROJECT}/*.h)
-OBJECTS       = $(addprefix ${BUILDDIR_RELEASE}/,${SOURCE:.c=.o})
-OBJECTS_DEBUG = $(addprefix ${BUILDDIR_DEBUG}/,${SOURCE:.c=.o})
-OBJECTS_GCOV  = $(addprefix ${BUILDDIR_GCOV}/,${SOURCE:.c=.o})
+OBJECTS       = $(addprefix ${BUILDDIR_RELEASE}/,${SOURCE:.cpp=.o})
+OBJECTS_DEBUG = $(addprefix ${BUILDDIR_DEBUG}/,${SOURCE:.cpp=.o})
+OBJECTS_GCOV  = $(addprefix ${BUILDDIR_GCOV}/,${SOURCE:.cpp=.o})
 
 ifneq (${WITH_CAIRO},0)
 INCS += ${CAIRO_INC}
@@ -25,10 +25,10 @@ all: options ${BUILDDIR_RELEASE}/${PLUGIN}.so
 options:
 ifeq "$(VERBOSE)" "1"
 	$(ECHO) ${PROJECT} build options:
-	$(ECHO) "CFLAGS  = ${CFLAGS}"
+	$(ECHO) "CXXFLAGS  = ${CXXFLAGS}"
 	$(ECHO) "LDFLAGS = ${LDFLAGS}"
 	$(ECHO) "DFLAGS  = ${DFLAGS}"
-	$(ECHO) "CC      = ${CC}"
+	$(ECHO) "CXX     = ${CXX}"
 endif
 
 # check libzathura version
@@ -43,32 +43,32 @@ endif
 
 ${OBJECTS}: config.mk ${LIBZATHURA_VERSION_CHECK_FILE}
 
-${BUILDDIR_RELEASE}/%.o: %.c
-	$(call colorecho,CC,$<)
+${BUILDDIR_RELEASE}/%.o: %.cpp
+	$(call colorecho,CXX,$<)
 	@mkdir -p ${DEPENDDIR}/$(dir $(abspath $@))
 	@mkdir -p $(dir $(abspath $@))
-	$(QUIET)${CC} -c ${CPPFLAGS} ${CFLAGS} \
+	$(QUIET)${CXX} -c ${CPPFLAGS} ${CXXFLAGS} \
 		-o $@ $< -MMD -MF ${DEPENDDIR}/$(abspath $@).dep
 
 ${BUILDDIR_RELEASE}/${PLUGIN}.so: ${OBJECTS}
 	$(call colorecho,LD,$@)
-	$(QUIET)${CC} -shared ${LDFLAGS} \
+	$(QUIET)${CXX} -shared ${LDFLAGS} \
 		-o ${BUILDDIR_RELEASE}/${PLUGIN}.so ${OBJECTS} ${LIBS}
 
 # debug build
 
 ${OBJECTS_DEBUG}: config.mk ${LIBZATHURA_VERSION_CHECK_FILE}
 
-${BUILDDIR_DEBUG}/%.o: %.c
-	$(call colorecho,CC,$<)
+${BUILDDIR_DEBUG}/%.o: %.cpp
+	$(call colorecho,CXX,$<)
 	@mkdir -p ${DEPENDDIR}/$(dir $(abspath $@))
 	@mkdir -p $(dir $(abspath $@))
-	$(QUIET)${CC} -c ${CPPFLAGS} ${CFLAGS} ${DFLAGS} \
+	$(QUIET)${CXX} -c ${CPPFLAGS} ${CXXFLAGS} ${DFLAGS} \
 		-o $@ $< -MMD -MF ${DEPENDDIR}/$(abspath $@).dep
 
 ${BUILDDIR_DEBUG}/${PLUGIN}.so: ${OBJECTS_DEBUG}
 	$(call colorecho,LD,${PLUGIN}.so)
-	$(QUIET)${CC} -shared ${LDFLAGS} \
+	$(QUIET)${CXX} -shared ${LDFLAGS} \
 		-o ${BUILDDIR_DEBUG}/${PLUGIN}.so ${OBJECTS_DEBUG} ${LIBS}
 
 debug: options ${BUILDDIR_DEBUG}/${PLUGIN}.so
@@ -77,16 +77,16 @@ debug: options ${BUILDDIR_DEBUG}/${PLUGIN}.so
 
 ${OBJECTS_GCOV}: config.mk ${LIBZATHURA_VERSION_CHECK_FILE}
 
-${BUILDDIR_GCOV}/%.o: %.c
-	$(call colorecho,CC,$<)
+${BUILDDIR_GCOV}/%.o: %.cpp
+	$(call colorecho,CXX,$<)
 	@mkdir -p ${DEPENDDIR}/$(dir $(abspath $@))
 	@mkdir -p $(dir $(abspath $@))
-	$(QUIET)${CC} -c ${CPPFLAGS} ${CFLAGS} ${DFLAGS} \
+	$(QUIET)${CXX} -c ${CPPFLAGS} ${CXXFLAGS} ${DFLAGS} \
 		-o $@ $< -MMD -MF ${DEPENDDIR}/$(abspath $@).dep
 
 ${BUILDDIR_GCOV}/${PLUGIN}.so: ${OBJECTS_GCOV}
 	$(call colorecho,LD,${PLUGIN}.so)
-	$(QUIET)${CC} -shared ${LDFLAGS} \
+	$(QUIET)${CXX} -shared ${LDFLAGS} \
 		-o ${BUILDDIR_GCOV}/${PLUGIN}.so ${OBJECTS_GCOV} ${LIBS}
 
 gcov: options ${BUILDDIR_GCOV}/${PLUGIN}.so
