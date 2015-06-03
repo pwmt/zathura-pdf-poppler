@@ -2,6 +2,7 @@
 
 #include <check.h>
 #include <stdio.h>
+#include <unistd.h>
 #include <glib/gstdio.h>
 
 #include <libzathura/plugin-manager.h>
@@ -11,8 +12,8 @@
 #include "plugin.h"
 #include "utils.h"
 
-zathura_document_t* document;
-zathura_plugin_manager_t* plugin_manager;
+static zathura_document_t* document;
+static zathura_plugin_manager_t* plugin_manager;
 
 static void setup_document_empty(void) {
   setup_document_with_path(&plugin_manager, &document, "files/empty.pdf");
@@ -46,7 +47,7 @@ START_TEST(test_pdf_document_save_attachment) {
   fail_unless(pdf_document_get_attachments(document, &attachments) == ZATHURA_ERROR_OK);
   fail_unless(zathura_list_length(attachments) == 1);
 
-  zathura_attachment_t* attachment = zathura_list_nth_data(attachments, 0);
+  zathura_attachment_t* attachment = (zathura_attachment_t*) zathura_list_nth_data(attachments, 0);
   fail_unless(attachment != NULL);
 
   char* path;

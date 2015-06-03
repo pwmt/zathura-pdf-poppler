@@ -11,9 +11,9 @@
 #include "plugin.h"
 #include "utils.h"
 
-zathura_document_t* document;
-zathura_plugin_manager_t* plugin_manager;
-zathura_page_t* page;
+static zathura_document_t* document;
+static zathura_plugin_manager_t* plugin_manager;
+static zathura_page_t* page;
 
 static void setup_document_empty(void) {
   setup_document_with_path(&plugin_manager, &document, "files/annotations.pdf");

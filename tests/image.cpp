@@ -15,9 +15,9 @@
 #include "plugin.h"
 #include "utils.h"
 
-zathura_document_t* document;
-zathura_plugin_manager_t* plugin_manager;
-zathura_page_t* page;
+static zathura_document_t* document;
+static zathura_plugin_manager_t* plugin_manager;
+static zathura_page_t* page;
 
 static void setup_document_images(void) {
   setup_document_with_path(&plugin_manager, &document, "files/images.pdf");
@@ -46,7 +46,7 @@ START_TEST(test_pdf_page_get_images) {
   fail_unless(images != NULL);
   fail_unless(zathura_list_length(images) == 1);
 
-  zathura_image_t* image = zathura_list_nth_data(images, 0);
+  zathura_image_t* image = (zathura_image_t*) zathura_list_nth_data(images, 0);
   fail_unless(image != NULL);
 
   zathura_rectangle_t position;
@@ -71,7 +71,7 @@ START_TEST(test_pdf_page_get_image_cairo_buffer) {
   fail_unless(images != NULL);
   fail_unless(zathura_list_length(images) == 1);
 
-  zathura_image_t* image = zathura_list_nth_data(images, 0);
+  zathura_image_t* image = (zathura_image_t*) zathura_list_nth_data(images, 0);
   fail_unless(image != NULL);
 
   cairo_surface_t* surface;

@@ -15,9 +15,9 @@
 #include "plugin.h"
 #include "utils.h"
 
-zathura_document_t* document;
-zathura_plugin_manager_t* plugin_manager;
-zathura_page_t* page;
+static zathura_document_t* document;
+static zathura_plugin_manager_t* plugin_manager;
+static zathura_page_t* page;
 
 static void setup_document_render(void) {
   setup_document_with_path(&plugin_manager, &document, "files/render.pdf");
@@ -82,10 +82,12 @@ START_TEST(test_pdf_page_render) {
   cairo_set_source_rgb(cairo, 1.0, 1.0, 1.0);
   cairo_paint(cairo);
 
-  fail_unless(compare_pixel(surface, 0, 0, (int[3]) {0,0,0})       == true);
-  fail_unless(compare_pixel(surface, 0, 1, (int[3]) {255,255,255}) == true);
-  fail_unless(compare_pixel(surface, 1, 0, (int[3]) {255,255,255}) == true);
-  fail_unless(compare_pixel(surface, 1, 1, (int[3]) {0,0,0})       == true);
+  int color_0[3] = {0,0,0};
+  int color_255[3] = {255,255,255};
+  fail_unless(compare_pixel(surface, 0, 0, color_0) == true);
+  fail_unless(compare_pixel(surface, 0, 1, color_255) == true);
+  fail_unless(compare_pixel(surface, 1, 0, color_255) == true);
+  fail_unless(compare_pixel(surface, 1, 1, color_0) == true);
 
   cairo_destroy(cairo);
   cairo_surface_destroy(surface);

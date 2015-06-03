@@ -29,12 +29,14 @@ register_functions(zathura_plugin_functions_t* functions)
 }
 
 /* LCOV_EXCL_START */
-ZATHURA_PLUGIN_REGISTER(
-  "pdf-poppler",
-  VERSION_MAJOR, VERSION_MINOR, VERSION_REV,
-  register_functions,
-  ZATHURA_PLUGIN_MIMETYPES({
-    "application/pdf"
-  })
-)
+extern "C" {
+  ZATHURA_PLUGIN_REGISTER(
+    "pdf-poppler",
+    VERSION_MAJOR, VERSION_MINOR, VERSION_REV,
+    register_functions,
+    ZATHURA_PLUGIN_MIMETYPES({
+      "application/pdf"
+    })
+  )
+}
 /* LCOV_EXCL_END */

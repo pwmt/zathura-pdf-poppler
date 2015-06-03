@@ -4,7 +4,6 @@
 #define PDF_H
 
 #include <stdbool.h>
-#include <poppler.h>
 
 #if HAVE_CAIRO
 #include <cairo.h>

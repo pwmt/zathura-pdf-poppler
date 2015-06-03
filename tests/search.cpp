@@ -15,9 +15,9 @@
 #include "plugin.h"
 #include "utils.h"
 
-zathura_document_t* document;
-zathura_plugin_manager_t* plugin_manager;
-zathura_page_t* page;
+static zathura_document_t* document;
+static zathura_plugin_manager_t* plugin_manager;
+static zathura_page_t* page;
 
 static void setup_document_empty(void) {
   setup_document_with_path(&plugin_manager, &document, "files/search.pdf");
@@ -66,7 +66,7 @@ START_TEST(test_pdf_page_search_text_default) {
 
   fail_unless(zathura_list_length(results) == LENGTH(result_rectangles));
   for (unsigned int i = 0; i < LENGTH(result_rectangles); i++) {
-    zathura_rectangle_t* rectangle = zathura_list_nth_data(results, i);
+    zathura_rectangle_t* rectangle = (zathura_rectangle_t*) zathura_list_nth_data(results, i);
     compare_rectangle(rectangle, &result_rectangles[i]);
   }
 
@@ -92,7 +92,7 @@ START_TEST(test_pdf_page_search_text_case_sensitive) {
 
   fail_unless(zathura_list_length(results) == LENGTH(result_rectangles));
   for (unsigned int i = 0; i < LENGTH(result_rectangles); i++) {
-    zathura_rectangle_t* rectangle = zathura_list_nth_data(results, i);
+    zathura_rectangle_t* rectangle = (zathura_rectangle_t*) zathura_list_nth_data(results, i);
     compare_rectangle(rectangle, &result_rectangles[i]);
   }
 
@@ -118,7 +118,7 @@ START_TEST(test_pdf_page_search_text_case_whole_words) {
 
   fail_unless(zathura_list_length(results) == LENGTH(result_rectangles));
   for (unsigned int i = 0; i < LENGTH(result_rectangles); i++) {
-    zathura_rectangle_t* rectangle = zathura_list_nth_data(results, i);
+    zathura_rectangle_t* rectangle = (zathura_rectangle_t*) zathura_list_nth_data(results, i);
     compare_rectangle(rectangle, &result_rectangles[i]);
   }
 

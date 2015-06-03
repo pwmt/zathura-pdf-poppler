@@ -5,10 +5,6 @@
 #include "plugin.h"
 #include "internal.h"
 
-#if !POPPLER_CHECK_VERSION(0,15,0)
-#define poppler_page_get_selected_text poppler_page_get_text
-#endif
-
 zathura_error_t
 pdf_page_get_text(zathura_page_t* page, char** text)
 {

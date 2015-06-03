@@ -8,8 +8,8 @@
 #include "plugin.h"
 #include "utils.h"
 
-zathura_document_t* document;
-zathura_plugin_manager_t* plugin_manager;
+static zathura_document_t* document;
+static zathura_plugin_manager_t* plugin_manager;
 
 static void setup_document(void) {
   fail_unless(zathura_plugin_manager_new(&plugin_manager) == ZATHURA_ERROR_OK);

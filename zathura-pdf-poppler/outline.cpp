@@ -4,9 +4,6 @@
 
 #include "plugin.h"
 
-static void build_index(PopplerDocument* poppler_document, zathura_node_t* root,
-    PopplerIndexIter* iter);
-
 zathura_error_t
 pdf_document_get_outline(zathura_document_t* document, zathura_node_t** outline)
 {

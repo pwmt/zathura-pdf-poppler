@@ -13,4 +13,23 @@
 # endif
 #endif
 
+#ifndef DO_PRAGMA
+# if defined(__GNUC__) || defined(__clang__)
+#  define DO_PRAGMA(x) _Pragma(#x)
+# else
+#  define DO_PRAGMA(x)
+# endif
+#endif
+
+#ifndef IGNORE_UNUSED_PARAMETER_BEGIN
+#define IGNORE_UNUSED_PARAMETER_BEGIN \
+  DO_PRAGMA(GCC diagnostic push) \
+  DO_PRAGMA(GCC diagnostic ignored "-Wunused-parameter")
+#endif
+
+#ifndef IGNORE_UNUSED_PARAMETER_END
+#define IGNORE_UNUSED_PARAMETER_END \
+  DO_PRAGMA(GCC diagnostic pop)
+#endif
+
 #endif /* MACROS_H */

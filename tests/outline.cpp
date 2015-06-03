@@ -11,8 +11,8 @@
 #include "plugin.h"
 #include "utils.h"
 
-zathura_document_t* document;
-zathura_plugin_manager_t* plugin_manager;
+static zathura_document_t* document;
+static zathura_plugin_manager_t* plugin_manager;
 
 static void setup_document_empty(void) {
   setup_document_with_path(&plugin_manager, &document, "files/empty.pdf");
@@ -43,7 +43,7 @@ START_TEST(test_pdf_document_get_outline_does_not_exist) {
 static void compare_outline_element(zathura_node_t* node, const char* title)
 {
   fail_unless(node != NULL);
-  zathura_outline_element_t* element = zathura_node_get_data(node);
+  zathura_outline_element_t* element = (zathura_outline_element_t*) zathura_node_get_data(node);
   const char* tmp_title;
   fail_unless(zathura_outline_element_get_title(element, &tmp_title) == ZATHURA_ERROR_OK);
   fail_unless(strcmp(title, tmp_title) == 0);

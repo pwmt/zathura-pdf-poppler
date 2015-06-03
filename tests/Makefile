@@ -7,10 +7,10 @@ include ../common.mk
 include config.mk
 
 PROJECT       = tests
-SOURCE        = $(wildcard *.c)
-OBJECTS       = $(addprefix ${BUILDDIR_RELEASE}/,${SOURCE:.c=.o})
-OBJECTS_DEBUG = $(addprefix ${BUILDDIR_DEBUG}/,${SOURCE:.c=.o})
-OBJECTS_GCOV  = $(addprefix ${BUILDDIR_GCOV}/,${SOURCE:.c=.o})
+SOURCE        = $(wildcard *.cpp)
+OBJECTS       = $(addprefix ${BUILDDIR_RELEASE}/,${SOURCE:.cpp=.o})
+OBJECTS_DEBUG = $(addprefix ${BUILDDIR_DEBUG}/,${SOURCE:.cpp=.o})
+OBJECTS_GCOV  = $(addprefix ${BUILDDIR_GCOV}/,${SOURCE:.cpp=.o})
 
 ifneq (${WITH_CAIRO},0)
 INCS += ${CAIRO_INC}
@@ -33,26 +33,26 @@ all: ${PROJECT}
 
 options:
 	$(ECHO) ${PROJECT} build options:
-	$(ECHO) "CFLAGS  = ${CFLAGS}"
+	$(ECHO) "CXXFLAGS  = ${CXXFLAGS}"
 	$(ECHO) "LDFLAGS = ${LDFLAGS}"
 	$(ECHO) "DFLAGS  = ${DFLAGS}"
-	$(ECHO) "CC      = ${CC}"
+	$(ECHO) "CXX      = ${CXX}"
 
 # release
 
 ${PROJECT}: options ${OBJECTS}
 	$(QUIET)${MAKE} WITH_LIBFIU=1 -C .. ${BUILDDIR_RELEASE}/${PLUGIN}.so
-	$(call colorecho,CC,$@)
-	$(QUIET)${CC} ${SFLAGS} ${LDFLAGS} -o $@ \
+	$(call colorecho,CXX,$@)
+	$(QUIET)${CXX} ${SFLAGS} ${LDFLAGS} -o $@ \
 		${OBJECTS} ${LIBS} ${PLUGIN_RELEASE}
 
 ${OBJECTS}: config.mk ../config.mk
 
-${BUILDDIR_RELEASE}/%.o: %.c
-	$(call colorecho,CC,$<)
+${BUILDDIR_RELEASE}/%.o: %.cpp
+	$(call colorecho,CXX,$<)
 	@mkdir -p ${DEPENDDIR}/$(dir $(abspath $@))
 	@mkdir -p $(dir $(abspath $@))
-	$(QUIET)${CC} -c ${CPPFLAGS} ${CFLAGS} \
+	$(QUIET)${CXX} -c ${CPPFLAGS} ${CXXFLAGS} \
 		-o $@ $< -MMD -MF ${DEPENDDIR}/$(abspath $@).dep
 
 run: ${PROJECT}
@@ -64,17 +64,17 @@ debug: options ${PROJECT}-debug
 
 ${PROJECT}-debug: ${OBJECTS_DEBUG}
 	$(QUIET)${MAKE} WITH_LIBFIU=1 -C .. ${BUILDDIR_DEBUG}/${PLUGIN}.so
-	$(call colorecho,CC,$@)
-	$(QUIET)${CC} ${LDFLAGS} -o $@ \
+	$(call colorecho,CXX,$@)
+	$(QUIET)${CXX} ${LDFLAGS} -o $@ \
 		${OBJECTS_DEBUG} ${LIBS} ${PLUGIN_DEBUG}
 
 ${OBJECTS_DEBUG}: config.mk ../config.mk
 
-${BUILDDIR_DEBUG}/%.o: %.c
+${BUILDDIR_DEBUG}/%.o: %.cpp
 	@mkdir -p ${DEPENDDIR}/$(dir $(abspath $@))
 	@mkdir -p $(dir $(abspath $@))
-	$(call colorecho,CC,$<)
-	$(QUIET)${CC} -c ${CPPFLAGS} -DBUILD_DEBUG=1 ${CFLAGS} ${DFLAGS} \
+	$(call colorecho,CXX,$<)
+	$(QUIET)${CXX} -c ${CPPFLAGS} -DBUILD_DEBUG=1 ${CXXFLAGS} ${DFLAGS} \
 		-o $@ $< -MMD -MF ${DEPENDDIR}/$(abspath $@).dep
 
 run-debug: ${PROJECT}-debug
@@ -86,17 +86,17 @@ gcov: options ${PROJECT}-gcov
 
 ${PROJECT}-gcov: options ${OBJECTS_GCOV}
 	$(QUIET)${MAKE} WITH_LIBFIU=1 -C .. ${BUILDDIR_GCOV}/${PLUGIN}.so
-	$(call colorecho,CC,$@)
-	$(QUIET)${CC} ${LDFLAGS} ${GCOV_LDFLAGS} -o $@ \
+	$(call colorecho,CXX,$@)
+	$(QUIET)${CXX} ${LDFLAGS} ${GCOV_LDFLAGS} -o $@ \
 		${OBJECTS_GCOV} ${LIBS} ${PLUGIN_GCOV}
 
 ${OBJECTS_GCOV}: config.mk ../config.mk
 
-${BUILDDIR_GCOV}/%.o: %.c
+${BUILDDIR_GCOV}/%.o: %.cpp
 	@mkdir -p ${DEPENDDIR}/$(dir $(abspath $@))
 	@mkdir -p $(dir $(abspath $@))
-	$(call colorecho,CC,$<)
-	$(QUIET)${CC} -c ${CPPFLAGS} -DBUILD_GCOV=1 ${CFLAGS} ${GCOV_CFLAGS} ${DFLAGS} ${GCOV_DFLAGS} \
+	$(call colorecho,CXX,$<)
+	$(QUIET)${CXX} -c ${CPPFLAGS} -DBUILD_GCOV=1 ${CXXFLAGS} ${GCOV_CXXFLAGS} ${DFLAGS} ${GCOV_DFLAGS} \
 		-o $@ $< -MMD -MF ${DEPENDDIR}/$(abspath $@).dep
 
 run-gcov: ${PROJECT}-gcov

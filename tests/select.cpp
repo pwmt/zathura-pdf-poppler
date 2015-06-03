@@ -15,9 +15,9 @@
 #include "plugin.h"
 #include "utils.h"
 
-zathura_document_t* document;
-zathura_plugin_manager_t* plugin_manager;
-zathura_page_t* page;
+static zathura_document_t* document;
+static zathura_plugin_manager_t* plugin_manager;
+static zathura_page_t* page;
 
 static void setup_document_select(void) {
   setup_document_with_path(&plugin_manager, &document, "files/select.pdf");
@@ -57,7 +57,7 @@ START_TEST(test_pdf_page_get_selected_text_valid) {
   fail_unless(zathura_page_get_width(page, &page_width) == ZATHURA_ERROR_OK);
 
   char* text;
-  zathura_rectangle_t rectangle = { {0,0}, {page_width,page_height}};
+  zathura_rectangle_t rectangle = { {0,0}, {(float)page_width,(float)page_height}};
 
   fail_unless(pdf_page_get_selected_text(page, &text, rectangle) == ZATHURA_ERROR_OK);
   fail_unless(strcmp(text, "word") == 0);

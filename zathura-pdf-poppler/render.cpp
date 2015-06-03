@@ -4,10 +4,6 @@
 #include "macros.h"
 #include "internal.h"
 
-#if !defined(HAVE_CAIRO) && POPPLER_CHECK_VERSION(0,18,0)
-#error "Cannot render without cairo and poppler >= 0.18"
-#endif
-
 #ifdef HAVE_CAIRO
 zathura_error_t pdf_page_render_cairo(zathura_page_t* page, cairo_t* cairo,
     double UNUSED(scale), int UNUSED(rotation), int UNUSED(flags))
@@ -17,6 +13,15 @@ zathura_error_t pdf_page_render_cairo(zathura_page_t* page, cairo_t* cairo,
   }
 
   zathura_error_t error = ZATHURA_ERROR_OK;
+
+  pdf_page_t* pdf_page;
+  if ((error = zathura_page_get_data(page, (void**) &pdf_page)) != ZATHURA_ERROR_OK) {
+    goto error_out;
+  }
+
+  return ZATHURA_ERROR_UNKNOWN;
+
+error_out:
 
   return error;
 }

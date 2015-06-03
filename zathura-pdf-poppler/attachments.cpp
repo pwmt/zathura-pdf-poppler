@@ -1,7 +1,6 @@
 /* See LICENSE file for license and copyright information */
 
 #include <stdio.h>
-#include <girara/utils.h>
 
 #include "plugin.h"
 #include "macros.h"
