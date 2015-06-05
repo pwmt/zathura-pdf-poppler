@@ -46,7 +46,6 @@ pdf_document_open(zathura_document_t* document)
   }
 
   delete password_goo;
-  delete path_goo;
 
   if (poppler_document->isOk() == gFalse) {
     error = ZATHURA_ERROR_UNKNOWN;
@@ -87,7 +86,6 @@ pdf_document_open(zathura_document_t* document)
   pdf_document->output_device->startDoc(poppler_document);
 #endif
 
-
   return error;
 }
 
@@ -102,6 +100,7 @@ pdf_document_free(zathura_document_t* document)
   if (zathura_document_get_data(document, (void**) &pdf_document) == ZATHURA_ERROR_OK) {
     if (pdf_document != NULL) {
       delete pdf_document->poppler_document;
+      delete pdf_document;
       zathura_document_set_data(document, NULL);
     }
   }

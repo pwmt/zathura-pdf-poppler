@@ -13,7 +13,7 @@ pdf_document_get_metadata(zathura_document_t* document,
     return ZATHURA_ERROR_INVALID_ARGUMENTS;
   }
 
-  zathura_error_t error = ZATHURA_ERROR_OK;
+  zathura_error_t error = ZATHURA_ERROR_PLUGIN_NOT_IMPLEMENTED;
 
-  return ZATHURA_ERROR_OK;
+  return error;
 }

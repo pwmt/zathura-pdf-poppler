@@ -6,9 +6,19 @@
 #include "macros.h"
 
 IGNORE_UNUSED_PARAMETER_BEGIN
+#include <goo/GooList.h>
+#include <splash/SplashBitmap.h>
 #include <GlobalParams.h>
 #include <PDFDoc.h>
+#include <Outline.h>
 #include <ErrorCodes.h>
+#include <UnicodeMap.h>
+#include <GfxState.h>
+#include <SplashOutputDev.h>
+#include <Stream.h>
+#include <FontInfo.h>
+#include <PDFDocEncoding.h>
+#include <OptionalContent.h>
 #ifdef HAVE_CAIRO
 #include <CairoOutputDev.h>
 #endif

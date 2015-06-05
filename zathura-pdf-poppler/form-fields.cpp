@@ -13,7 +13,7 @@ pdf_page_get_form_fields(zathura_page_t* page, zathura_list_t** form_fields)
     return ZATHURA_ERROR_INVALID_ARGUMENTS;
   }
 
-  zathura_error_t error = ZATHURA_ERROR_OK;
+  zathura_error_t error = ZATHURA_ERROR_PLUGIN_NOT_IMPLEMENTED;
 
   return error;
 }
@@ -25,7 +25,7 @@ pdf_form_field_save(zathura_form_field_t* form_field)
     return ZATHURA_ERROR_INVALID_ARGUMENTS;
   }
 
-  zathura_error_t error = ZATHURA_ERROR_OK;
+  zathura_error_t error = ZATHURA_ERROR_PLUGIN_NOT_IMPLEMENTED;
 
   return error;
 }

@@ -1,5 +1,4 @@
 # See LICENSE file for license and copyright information
-
 PROJECT  = zathura-pdf-poppler
 PLUGIN   = pdf
 
@@ -46,10 +45,10 @@ INCS = ${POPPLER_INC} ${LIBZATHURA_INC}
 LIBS = ${POPPLER_LIB} ${LIBZATHURA_LIB}
 
 # flags
-CXXFLAGS += -std=c++11 -pedantic -Wall -Wextra -fPIC --coverage $(INCS)
+CXXFLAGS += -std=c++11 -pedantic -Wall -Wextra -fPIC $(INCS)
 
 # linker flags
-LDFLAGS += -fPIC --coverage
+LDFLAGS += -fPIC
 
 # debug
 DFLAGS ?= -g

@@ -80,11 +80,5 @@ pdf_page_clear(zathura_page_t* page)
     return error;
   }
 
-  if (pdf_page != NULL) {
-    if (pdf_page->poppler_page != NULL) {
-      delete pdf_page->poppler_page;
-    }
-  }
-
   return ZATHURA_ERROR_OK;
 }

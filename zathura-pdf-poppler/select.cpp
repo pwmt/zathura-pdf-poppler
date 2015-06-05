@@ -12,7 +12,7 @@ pdf_page_get_text(zathura_page_t* page, char** text)
       return ZATHURA_ERROR_INVALID_ARGUMENTS;
   }
 
-  zathura_error_t error = ZATHURA_ERROR_OK;
+  zathura_error_t error = ZATHURA_ERROR_PLUGIN_NOT_IMPLEMENTED;
 
   return error;
 }
@@ -24,7 +24,7 @@ pdf_page_get_selected_text(zathura_page_t* page, char** text, zathura_rectangle_
       return ZATHURA_ERROR_INVALID_ARGUMENTS;
   }
 
-  zathura_error_t error = ZATHURA_ERROR_OK;
+  zathura_error_t error = ZATHURA_ERROR_PLUGIN_NOT_IMPLEMENTED;
 
   return error;
 }

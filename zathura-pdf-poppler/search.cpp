@@ -14,7 +14,7 @@ zathura_error_t pdf_page_search_text(zathura_page_t* page, const char* text,
     return ZATHURA_ERROR_INVALID_ARGUMENTS;
   }
 
-  zathura_error_t error = ZATHURA_ERROR_OK;
+  zathura_error_t error = ZATHURA_ERROR_PLUGIN_NOT_IMPLEMENTED;
 
   return error;
 }

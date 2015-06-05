@@ -12,7 +12,7 @@ pdf_page_get_links(zathura_page_t* page, zathura_list_t** links)
     return ZATHURA_ERROR_INVALID_ARGUMENTS;
   }
 
-  zathura_error_t error = ZATHURA_ERROR_OK;
+  zathura_error_t error = ZATHURA_ERROR_PLUGIN_NOT_IMPLEMENTED;
 
   return error;
 }
