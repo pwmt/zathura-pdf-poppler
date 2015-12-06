@@ -80,6 +80,9 @@ install: all
 	$(QUIET)mkdir -m 755 -p ${DESTDIR}${DESKTOPPREFIX}
 	$(ECHO) installing desktop file
 	$(QUIET)install -m 644 ${PROJECT}.desktop ${DESTDIR}${DESKTOPPREFIX}
+	$(ECHO) installing AppData file
+	$(QUIET)mkdir -m 755 -p $(DESTDIR)$(APPDATAPREFIX)
+	$(QUIET)install -m 644 data/$(PROJECT).metainfo.xml $(DESTDIR)$(APPDATAPREFIX)
 
 uninstall:
 	$(ECHO) uninstalling ${PLUGIN} plugin
@@ -88,6 +91,8 @@ uninstall:
 	$(ECHO) removing desktop file
 	$(QUIET)rm -f ${DESTDIR}${DESKTOPPREFIX}/${PROJECT}.desktop
 	$(QUIET)rmdir --ignore-fail-on-non-empty ${DESTDIR}${DESKTOPPREFIX} 2> /dev/null
+	$(ECHO) removing AppData file
+	$(QUIET)rm -f $(DESTDIR)$(APPDATAPREFIX)/$(PROJECT).metainfo.xml
 
 -include $(wildcard .depend/*.dep)
 
