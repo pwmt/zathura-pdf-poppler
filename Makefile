@@ -82,7 +82,7 @@ install: all
 	$(QUIET)install -m 644 ${PROJECT}.desktop ${DESTDIR}${DESKTOPPREFIX}
 	$(ECHO) installing AppData file
 	$(QUIET)mkdir -m 755 -p $(DESTDIR)$(APPDATAPREFIX)
-	$(QUIET)install -m 644 data/$(PROJECT).metainfo.xml $(DESTDIR)$(APPDATAPREFIX)
+	$(QUIET)install -m 644 $(PROJECT).metainfo.xml $(DESTDIR)$(APPDATAPREFIX)
 
 uninstall:
 	$(ECHO) uninstalling ${PLUGIN} plugin
