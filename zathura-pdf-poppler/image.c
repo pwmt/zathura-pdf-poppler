@@ -41,7 +41,7 @@ pdf_page_get_images(zathura_page_t* page, zathura_list_t** images)
   *images = NULL;
 
   pdf_page_t* pdf_page;
-  if ((error = zathura_page_get_data(page, (void**) &pdf_page)) != ZATHURA_ERROR_OK) {
+  if ((error = zathura_page_get_user_data(page, (void**) &pdf_page)) != ZATHURA_ERROR_OK) {
     goto error_out;
   }
 
@@ -84,7 +84,7 @@ pdf_page_get_images(zathura_page_t* page, zathura_list_t** images)
     pdf_image->poppler_page = poppler_page;
     pdf_image->image_id = poppler_image->image_id;
 
-    if (zathura_image_set_user_data(zathura_image, pdf_image) != ZATHURA_ERROR_OK) {
+    if (zathura_image_set_user_data(zathura_image, pdf_image, free) != ZATHURA_ERROR_OK) {
       free(pdf_image);
       zathura_image_free(zathura_image);
       error = ZATHURA_ERROR_UNKNOWN;

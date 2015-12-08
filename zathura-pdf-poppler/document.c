@@ -46,7 +46,7 @@ pdf_document_open(zathura_document_t* document)
     goto error_free;
   }
 
-  zathura_document_set_data(document, poppler_document);
+  zathura_document_set_user_data(document, poppler_document);
 
   zathura_document_set_number_of_pages(document,
       poppler_document_get_n_pages(poppler_document));
@@ -76,10 +76,10 @@ pdf_document_free(zathura_document_t* document)
   }
 
   PopplerDocument* poppler_document;
-  if (zathura_document_get_data(document, (void**) &poppler_document) == ZATHURA_ERROR_OK) {
+  if (zathura_document_get_user_data(document, (void**) &poppler_document) == ZATHURA_ERROR_OK) {
     if (poppler_document != NULL) {
       g_object_unref(poppler_document);
-      zathura_document_set_data(document, NULL);
+      zathura_document_set_user_data(document, NULL);
     }
   }
 
@@ -96,7 +96,7 @@ pdf_document_save_as(zathura_document_t* document, const char* path)
   zathura_error_t error = ZATHURA_ERROR_OK;
 
   PopplerDocument* poppler_document;
-  if ((error = zathura_document_get_data(document, (void**) &poppler_document)) != ZATHURA_ERROR_OK) {
+  if ((error = zathura_document_get_user_data(document, (void**) &poppler_document)) != ZATHURA_ERROR_OK) {
     return error;
   }
 

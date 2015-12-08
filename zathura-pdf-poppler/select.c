@@ -19,7 +19,7 @@ pdf_page_get_text(zathura_page_t* page, char** text)
   zathura_error_t error = ZATHURA_ERROR_OK;
 
   pdf_page_t* pdf_page;
-  if ((error = zathura_page_get_data(page, (void**) &pdf_page)) != ZATHURA_ERROR_OK) {
+  if ((error = zathura_page_get_user_data(page, (void**) &pdf_page)) != ZATHURA_ERROR_OK) {
     goto error_out;
   }
 
@@ -42,7 +42,7 @@ pdf_page_get_selected_text(zathura_page_t* page, char** text, zathura_rectangle_
   zathura_error_t error = ZATHURA_ERROR_OK;
 
   pdf_page_t* pdf_page;
-  if ((error = zathura_page_get_data(page, (void**) &pdf_page)) != ZATHURA_ERROR_OK) {
+  if ((error = zathura_page_get_user_data(page, (void**) &pdf_page)) != ZATHURA_ERROR_OK) {
     goto error_out;
   }
 

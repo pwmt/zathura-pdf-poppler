@@ -18,7 +18,7 @@ zathura_error_t pdf_page_search_text(zathura_page_t* page, const char* text,
   *results = NULL;
 
   pdf_page_t* pdf_page;
-  if ((error = zathura_page_get_data(page, (void**) &pdf_page)) != ZATHURA_ERROR_OK) {
+  if ((error = zathura_page_get_user_data(page, (void**) &pdf_page)) != ZATHURA_ERROR_OK) {
     goto error_out;
   }
 

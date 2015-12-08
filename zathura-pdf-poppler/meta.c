@@ -17,7 +17,7 @@ pdf_document_get_metadata(zathura_document_t* document,
   zathura_error_t error = ZATHURA_ERROR_OK;
 
   PopplerDocument* poppler_document;
-  if ((error = zathura_document_get_data(document, (void**) &poppler_document)) != ZATHURA_ERROR_OK
+  if ((error = zathura_document_get_user_data(document, (void**) &poppler_document)) != ZATHURA_ERROR_OK
       || poppler_document == NULL) {
     return ZATHURA_ERROR_UNKNOWN;
   }

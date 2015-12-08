@@ -31,7 +31,7 @@ pdf_page_get_annotations(zathura_page_t* page, zathura_list_t** annotations)
   }
 
   pdf_page_t* pdf_page;
-  if ((error = zathura_page_get_data(page, (void**) &pdf_page)) != ZATHURA_ERROR_OK) {
+  if ((error = zathura_page_get_user_data(page, (void**) &pdf_page)) != ZATHURA_ERROR_OK) {
     goto error_out;
   }
 
@@ -43,7 +43,7 @@ pdf_page_get_annotations(zathura_page_t* page, zathura_list_t** annotations)
   }
 
   PopplerDocument* poppler_document;
-  if ((error = zathura_document_get_data(document, (void**) &poppler_document)) != ZATHURA_ERROR_OK
+  if ((error = zathura_document_get_user_data(document, (void**) &poppler_document)) != ZATHURA_ERROR_OK
       || poppler_document == NULL) {
     goto error_out;
   }
@@ -490,7 +490,7 @@ poppler_annotation_to_zathura_annotation(PopplerAnnot* poppler_annotation,
             goto error_free;
           }
 
-          if (zathura_attachment_set_user_data(attachment, poppler_attachment)
+          if (zathura_attachment_set_user_data(attachment, poppler_attachment, g_object_unref)
               != ZATHURA_ERROR_OK) {
             zathura_attachment_free(attachment);
             goto error_free;

@@ -19,7 +19,7 @@ static void add_attachment(PopplerAttachment* poppler_attachment, zathura_list_t
     goto error_free;
   }
 
-  if (zathura_attachment_set_user_data(attachment, poppler_attachment)
+  if (zathura_attachment_set_user_data(attachment, poppler_attachment, NULL)
       != ZATHURA_ERROR_OK) {
     goto error_free;
   }
@@ -52,7 +52,7 @@ pdf_document_get_attachments(zathura_document_t* document, zathura_list_t** atta
   zathura_error_t error = ZATHURA_ERROR_OK;
 
   PopplerDocument* poppler_document;
-  if ((error = zathura_document_get_data(document, (void**) &poppler_document)) != ZATHURA_ERROR_OK
+  if ((error = zathura_document_get_user_data(document, (void**) &poppler_document)) != ZATHURA_ERROR_OK
       || poppler_document == NULL) {
     return ZATHURA_ERROR_UNKNOWN;
   }
