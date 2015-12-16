@@ -65,6 +65,7 @@ dist: clean
 	$(QUIET)mkdir -p ${PROJECT}-${VERSION}
 	$(QUIET)cp -R LICENSE Makefile config.mk common.mk Doxyfile \
 		${HEADER} ${SOURCE} AUTHORS ${PROJECT}.desktop \
+		${PROJECT}.metainfo.xml \
 		${PROJECT}-${VERSION}
 	$(QUIET)tar -cf ${PROJECT}-${VERSION}.tar ${PROJECT}-${VERSION}
 	$(QUIET)gzip ${PROJECT}-${VERSION}.tar
