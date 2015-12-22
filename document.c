@@ -25,7 +25,7 @@ pdf_document_open(zathura_document_t* document)
       zathura_document_get_password(document), &gerror);
 
   if (poppler_document == NULL) {
-    if(gerror != NULL && gerror->code == POPPLER_ERROR_ENCRYPTED) {
+    if (gerror != NULL && gerror->code == POPPLER_ERROR_ENCRYPTED) {
       error = ZATHURA_ERROR_INVALID_PASSWORD;
     } else {
       error = ZATHURA_ERROR_UNKNOWN;

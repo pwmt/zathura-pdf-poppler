@@ -28,10 +28,11 @@ endif
 
 options:
 	$(ECHO) ${PLUGIN} build options:
-	$(ECHO) "CFLAGS  = ${CFLAGS}"
-	$(ECHO) "LDFLAGS = ${LDFLAGS}"
-	$(ECHO) "DFLAGS  = ${DFLAGS}"
-	$(ECHO) "CC      = ${CC}"
+	$(ECHO) "CFLAGS     = ${CFLAGS}"
+	$(ECHO) "LDFLAGS    = ${LDFLAGS}"
+	$(ECHO) "DFLAGS     = ${DFLAGS}"
+	$(ECHO) "CC         = ${CC}"
+	$(ECHO) "PKG_CONFIG = ${PKG_CONFIG}"
 
 %.o: %.c
 	$(ECHO) CC $<
@@ -64,6 +65,7 @@ dist: clean
 	$(QUIET)mkdir -p ${PROJECT}-${VERSION}
 	$(QUIET)cp -R LICENSE Makefile config.mk common.mk Doxyfile \
 		${HEADER} ${SOURCE} AUTHORS ${PROJECT}.desktop \
+		${PROJECT}.metainfo.xml \
 		${PROJECT}-${VERSION}
 	$(QUIET)tar -cf ${PROJECT}-${VERSION}.tar ${PROJECT}-${VERSION}
 	$(QUIET)gzip ${PROJECT}-${VERSION}.tar
@@ -79,6 +81,9 @@ install: all
 	$(QUIET)mkdir -m 755 -p ${DESTDIR}${DESKTOPPREFIX}
 	$(ECHO) installing desktop file
 	$(QUIET)install -m 644 ${PROJECT}.desktop ${DESTDIR}${DESKTOPPREFIX}
+	$(ECHO) installing AppData file
+	$(QUIET)mkdir -m 755 -p $(DESTDIR)$(APPDATAPREFIX)
+	$(QUIET)install -m 644 $(PROJECT).metainfo.xml $(DESTDIR)$(APPDATAPREFIX)
 
 uninstall:
 	$(ECHO) uninstalling ${PLUGIN} plugin
@@ -87,6 +92,8 @@ uninstall:
 	$(ECHO) removing desktop file
 	$(QUIET)rm -f ${DESTDIR}${DESKTOPPREFIX}/${PROJECT}.desktop
 	$(QUIET)rmdir --ignore-fail-on-non-empty ${DESTDIR}${DESKTOPPREFIX} 2> /dev/null
+	$(ECHO) removing AppData file
+	$(QUIET)rm -f $(DESTDIR)$(APPDATAPREFIX)/$(PROJECT).metainfo.xml
 
 -include $(wildcard .depend/*.dep)
 
