@@ -102,7 +102,7 @@ uninstall:
 	$(QUIET)find ${DESTDIR}${PLUGINDIR} -type d -empty -delete 2> /dev/null
 	$(ECHO) removing desktop file
 	$(QUIET)rm -f ${DESTDIR}${DESKTOPPREFIX}/${PROJECT}.desktop
-	$(QUIET)find ${DESTDIR}${DESKTOPPREFIX} -type d -empty -delete 2> /dev/null;
+	$(QUIET)find ${DESTDIR}${DESKTOPPREFIX} -type d -empty -delete 2> /dev/null
 	$(ECHO) removing AppData file
 	$(QUIET)rm -f $(DESTDIR)$(APPDATAPREFIX)/$(PROJECT).metainfo.xml
 
