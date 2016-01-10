@@ -14,11 +14,22 @@ ifneq "$(WITH_CAIRO)" "0"
 CPPFLAGS += -DHAVE_CAIRO
 endif
 
+ifeq ($(UNAME), Darwin)
+SOFILE = ${PLUGIN}.dylib
+SODEBUGFILE = ${PLUGIN}-debug.dylib
+ZATHURAFILE = ${PREFIX}/bin/zathura
+PLATFORMFLAGS = -Wl,-dylib_install_name,${DESTDIR}${PLUGINDIR}/pdf.dylib -Wl,-bundle_loader,${ZATHURAFILE} -bundle
+else
+SOFILE = ${PLUGIN}.so
+SODEBUGFILE = ${PLUGIN}-debug.so
+PLATFORMFLAGS = -shared
+endif
+
 CPPFLAGS += "-DVERSION_MAJOR=${VERSION_MAJOR}"
 CPPFLAGS += "-DVERSION_MINOR=${VERSION_MINOR}"
 CPPFLAGS += "-DVERSION_REV=${VERSION_REV}"
 
-all: options ${PLUGIN}.so
+all: options ${SOFILE}
 
 zathura-version-check:
 ifneq ($(ZATHURA_VERSION_CHECK), 0)
@@ -47,19 +58,19 @@ options:
 ${OBJECTS}:  config.mk zathura-version-check
 ${DOBJECTS}: config.mk zathura-version-check
 
-${PLUGIN}.so: ${OBJECTS}
+${SOFILE}: ${OBJECTS}
 	$(ECHO) LD $@
-	$(QUIET)${CC} -shared ${LDFLAGS} -o $@ ${OBJECTS} ${LIBS}
+	$(QUIET)${CC} ${PLATFORMFLAGS} ${LDFLAGS} -o $@ ${OBJECTS} ${LIBS}
 
-${PLUGIN}-debug.so: ${DOBJECTS}
+${SODEBUGFILE}: ${DOBJECTS}
 	$(ECHO) LD $@
-	$(QUIET)${CC} -shared ${LDFLAGS} -o $@ ${DOBJECTS} ${LIBS}
+	$(QUIET)${CC} ${PLATFORMFLAGS} ${LDFLAGS} -o $@ ${OBJECTS} ${LIBS}
 
 clean:
-	$(QUIET)rm -rf ${OBJECTS} ${DOBJECTS} $(PLUGIN).so $(PLUGIN)-debug.so \
+	$(QUIET)rm -rf ${OBJECTS} ${DOBJECTS} ${SOFILE} ${SODEBUGFILE} \
 		doc .depend ${PROJECT}-${VERSION}.tar.gz zathura-version-check
 
-debug: options ${PLUGIN}-debug.so
+debug: options ${SODEBUGFILE}
 
 dist: clean
 	$(QUIET)mkdir -p ${PROJECT}-${VERSION}
@@ -77,7 +88,7 @@ doc: clean
 install: all
 	$(ECHO) installing ${PLUGIN} plugin
 	$(QUIET)mkdir -p ${DESTDIR}${PLUGINDIR}
-	$(QUIET)cp -f ${PLUGIN}.so ${DESTDIR}${PLUGINDIR}
+	$(QUIET)cp -f ${SOFILE} ${DESTDIR}${PLUGINDIR}
 	$(QUIET)mkdir -m 755 -p ${DESTDIR}${DESKTOPPREFIX}
 	$(ECHO) installing desktop file
 	$(QUIET)install -m 644 ${PROJECT}.desktop ${DESTDIR}${DESKTOPPREFIX}
@@ -87,11 +98,11 @@ install: all
 
 uninstall:
 	$(ECHO) uninstalling ${PLUGIN} plugin
-	$(QUIET)rm -f ${DESTDIR}${PLUGINDIR}/${PLUGIN}.so
-	$(QUIET)rmdir --ignore-fail-on-non-empty ${DESTDIR}${PLUGINDIR} 2> /dev/null
+	$(QUIET)rm -f ${DESTDIR}${PLUGINDIR}/${SOFILE}
+	$(QUIET)find ${DESTDIR}${PLUGINDIR} -type d -empty -delete 2> /dev/null
 	$(ECHO) removing desktop file
 	$(QUIET)rm -f ${DESTDIR}${DESKTOPPREFIX}/${PROJECT}.desktop
-	$(QUIET)rmdir --ignore-fail-on-non-empty ${DESTDIR}${DESKTOPPREFIX} 2> /dev/null
+	$(QUIET)find ${DESTDIR}${DESKTOPPREFIX} -type d -empty -delete 2> /dev/null;
 	$(ECHO) removing AppData file
 	$(QUIET)rm -f $(DESTDIR)$(APPDATAPREFIX)/$(PROJECT).metainfo.xml
 
