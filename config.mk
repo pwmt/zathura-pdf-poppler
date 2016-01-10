@@ -37,8 +37,11 @@ endif
 INCS = ${CAIRO_INC} ${PDF_INC} ${ZATHURA_INC} ${GIRARA_INC}
 LIBS = ${GIRARA_LIB} ${CAIRO_LIB} ${PDF_LIB}
 
-# flags
+# compiler flags
 CFLAGS += -std=c11 -fPIC -pedantic -Wall -Wno-format-zero-length $(INCS)
+
+# linker flags
+LDFLAGS += -fPIC
 
 # debug
 DFLAGS ?= -g
