@@ -5,7 +5,7 @@ include common.mk
 
 PROJECT  = zathura-pdf-poppler
 PLUGIN   = pdf
-SOURCE   = $(wildcard *.c)
+SOURCE   = $(sort $(wildcard *.c))
 HEADER   = $(wildcard *.h)
 OBJECTS  = ${SOURCE:.c=.o}
 DOBJECTS = ${SOURCE:.c=.do}
