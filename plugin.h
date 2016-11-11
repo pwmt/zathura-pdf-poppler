@@ -177,20 +177,6 @@ girara_list_t* pdf_page_form_fields_get(zathura_page_t* page,
 char* pdf_page_get_text(zathura_page_t* page, PopplerPage* poppler_page,
     zathura_rectangle_t rectangle, zathura_error_t* error);
 
-#if !POPPLER_CHECK_VERSION(0,18,0)
-/**
- * Renders a page and returns a allocated image buffer which has to be freed
- * with zathura_image_buffer_free
- *
- * @param page Page
- * @param error Set to an error value (see zathura_error_t) if an
- *   error occured
- * @return Image buffer or NULL if an error occurred
- */
-zathura_image_buffer_t* pdf_page_render(zathura_page_t* page,
-    PopplerPage* poppler_page, zathura_error_t* error);
-#endif
-
 #if HAVE_CAIRO
 /**
  * Renders a page onto a cairo object
