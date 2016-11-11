@@ -7,7 +7,7 @@ Requirements
 ------------
 zathura (>= 0.2.0)
 girara
-poppler-glib
+poppler-glib (>= 0.18)
 
 Installation
 ------------

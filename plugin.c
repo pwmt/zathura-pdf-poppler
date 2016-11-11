@@ -19,13 +19,8 @@ register_functions(zathura_plugin_functions_t* functions)
   functions->page_form_fields_get     = (zathura_plugin_page_form_fields_get_t) pdf_page_form_fields_get;
   functions->page_images_get          = (zathura_plugin_page_images_get_t) pdf_page_images_get;
   functions->page_get_text            = (zathura_plugin_page_get_text_t) pdf_page_get_text;
-#if !POPPLER_CHECK_VERSION(0,18,0)
-  functions->page_render              = (zathura_plugin_page_render_t) pdf_page_render;
-#endif
-#if HAVE_CAIRO
   functions->page_render_cairo        = (zathura_plugin_page_render_cairo_t) pdf_page_render_cairo;
   functions->page_image_get_cairo     = (zathura_plugin_page_image_get_cairo_t) pdf_page_image_get_cairo;
-#endif
 }
 
 ZATHURA_PLUGIN_REGISTER(

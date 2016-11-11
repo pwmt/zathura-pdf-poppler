@@ -75,7 +75,6 @@ error_ret:
   return NULL;
 }
 
-#if HAVE_CAIRO
 cairo_surface_t*
 pdf_page_image_get_cairo(zathura_page_t* page, PopplerPage* poppler_page,
     zathura_image_t* image, zathura_error_t* error)
@@ -103,8 +102,6 @@ error_ret:
 
   return NULL;
 }
-#endif
-
 
 static void
 pdf_zathura_image_free(zathura_image_t* image)

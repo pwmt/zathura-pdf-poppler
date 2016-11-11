@@ -7,10 +7,18 @@ VERSION = ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_REV}
 
 PKG_CONFIG ?= pkg-config
 
-# minimum required zathura version
+# version checks
+# If you want to disable any of the checks, set *_VERSION_CHECK to 0.
+
+# zathura
+ZATHURA_VERSION_CHECK ?= 1
 ZATHURA_MIN_VERSION = 0.2.0
-ZATHURA_VERSION_CHECK ?= $(shell $(PKG_CONFIG) --atleast-version=$(ZATHURA_MIN_VERSION) zathura; echo $$?)
-ZATHURA_GTK_VERSION ?= $(shell $(PKG_CONFIG) --variable=GTK_VERSION zathura)
+ZATHURA_PKG_CONFIG_NAME = zathura
+
+# poppler
+POPPLER_VERSION_CHECK ?= 1
+POPPLER_MIN_VERSION = 0.18
+POPPLER_PKG_CONFIG_NAME = poppler-glib
 
 # paths
 PREFIX ?= /usr
@@ -51,9 +59,6 @@ endif
 
 # debug
 DFLAGS ?= -g
-
-# build with cairo support?
-WITH_CAIRO ?= 1
 
 # compiler
 CC ?= gcc
