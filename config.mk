@@ -51,9 +51,6 @@ CFLAGS += -std=c11 -fPIC -pedantic -Wall -Wno-format-zero-length $(INCS)
 # debug
 DFLAGS ?= -g
 
-# build with cairo support?
-WITH_CAIRO ?= 1
-
 # compiler
 CC ?= gcc
 LD ?= ld

@@ -2,11 +2,6 @@
 
 #include "plugin.h"
 
-#if !defined(HAVE_CAIRO)
-#error "Cannot render without cairo"
-#endif
-
-#ifdef HAVE_CAIRO
 zathura_error_t
 pdf_page_render_cairo(zathura_page_t* page, PopplerPage* poppler_page, cairo_t*
     cairo, bool printing)
@@ -23,4 +18,3 @@ pdf_page_render_cairo(zathura_page_t* page, PopplerPage* poppler_page, cairo_t*
 
   return ZATHURA_ERROR_OK;
 }
-#endif

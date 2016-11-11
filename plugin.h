@@ -6,9 +6,7 @@
 #include <stdbool.h>
 #include <poppler.h>
 
-#if HAVE_CAIRO
 #include <cairo.h>
-#endif
 
 #include <zathura/page.h>
 #include <zathura/document.h>
@@ -107,7 +105,6 @@ zathura_error_t pdf_document_attachment_save(zathura_document_t*
 girara_list_t* pdf_page_images_get(zathura_page_t* page,
     PopplerPage* poppler_page, zathura_error_t* error);
 
-#if HAVE_CAIRO
 /**
  * Gets the content of the image in a cairo surface
  *
@@ -119,7 +116,6 @@ girara_list_t* pdf_page_images_get(zathura_page_t* page,
  */
 cairo_surface_t* pdf_page_image_get_cairo(zathura_page_t* page,
     PopplerPage* poppler_page, zathura_image_t* image, zathura_error_t* error);
-#endif
 
 /**
  * Returns a list of document information entries of the document
@@ -177,7 +173,6 @@ girara_list_t* pdf_page_form_fields_get(zathura_page_t* page,
 char* pdf_page_get_text(zathura_page_t* page, PopplerPage* poppler_page,
     zathura_rectangle_t rectangle, zathura_error_t* error);
 
-#if HAVE_CAIRO
 /**
  * Renders a page onto a cairo object
  *
@@ -189,6 +184,5 @@ char* pdf_page_get_text(zathura_page_t* page, PopplerPage* poppler_page,
  */
 zathura_error_t pdf_page_render_cairo(zathura_page_t* page, PopplerPage*
     poppler_page, cairo_t* cairo, bool printing);
-#endif
 
 #endif // PDF_H
