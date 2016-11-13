@@ -13,11 +13,12 @@ pdf_page_get_text(zathura_page_t* page, PopplerPage* poppler_page,
     return NULL;
   }
 
-  PopplerRectangle rect;
-  rect.x1 = rectangle.x1;
-  rect.x2 = rectangle.x2;
-  rect.y1 = rectangle.y1;
-  rect.y2 = rectangle.y2;
+  PopplerRectangle rect = {
+    .x1 = rectangle.x1,
+    .x2 = rectangle.x2,
+    .y1 = rectangle.y1,
+    .y2 = rectangle.y2
+  };
 
   /* get selected text */
   return poppler_page_get_selected_text(poppler_page, POPPLER_SELECTION_GLYPH, &rect);
