@@ -36,15 +36,18 @@ pdf_page_links_get(zathura_page_t* page, PopplerPage* poppler_page, zathura_erro
   zathura_document_t* zathura_document = (zathura_document_t*) zathura_page_get_document(page);
   PopplerDocument* poppler_document    = zathura_document_get_data(zathura_document);
 
+  const double page_height = zathura_page_get_height(page);
+
   for (GList* link = link_mapping; link != NULL; link = g_list_next(link)) {
     PopplerLinkMapping* poppler_link       = (PopplerLinkMapping*) link->data;
 
     /* extract position */
-    zathura_rectangle_t position = { 0, 0, 0, 0 };
-    position.x1 = poppler_link->area.x1;
-    position.x2 = poppler_link->area.x2;
-    position.y1 = zathura_page_get_height(page) - poppler_link->area.y2;
-    position.y2 = zathura_page_get_height(page) - poppler_link->area.y1;
+    const zathura_rectangle_t position = {
+      .x1 = poppler_link->area.x1,
+      .x2 = poppler_link->area.x2,
+      .y1 = page_height - poppler_link->area.y2,
+      .y2 = page_height - poppler_link->area.y1
+    };
 
     zathura_link_t* zathura_link =
       poppler_link_to_zathura_link(poppler_document, poppler_link->action,
