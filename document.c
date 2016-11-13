@@ -77,9 +77,16 @@ pdf_document_save_as(zathura_document_t* document, PopplerDocument* poppler_docu
     return ZATHURA_ERROR_INVALID_ARGUMENTS;
   }
 
-  char* file_path = g_strdup_printf("file://%s", path);
-  gboolean ret = poppler_document_save(poppler_document, file_path, NULL);
-  g_free(file_path);
+  /* format path */
+  GError* gerror  = NULL;
+  char* file_uri = g_filename_to_uri(zathura_document_get_path(document), NULL, &gerror);
+
+  if (file_uri == NULL) {
+    return ZATHURA_ERROR_UNKNOWN;
+  }
+
+  gboolean ret = poppler_document_save(poppler_document, file_uri, NULL);
+  g_free(file_uri);
 
   return (ret == true ? ZATHURA_ERROR_OK : ZATHURA_ERROR_UNKNOWN);
 }
