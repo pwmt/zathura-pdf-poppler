@@ -14,7 +14,7 @@ pdf_document_open(zathura_document_t* document)
 
   /* format path */
   GError* gerror  = NULL;
-  char* file_uri = g_filename_to_uri(zathura_document_get_path(document), NULL, &gerror);
+  char* file_uri = g_filename_to_uri(zathura_document_get_path(document), NULL, NULL);
 
   if (file_uri == NULL) {
     error = ZATHURA_ERROR_UNKNOWN;
@@ -44,13 +44,13 @@ pdf_document_open(zathura_document_t* document)
 
 error_free:
 
-    if (gerror != NULL) {
-      g_error_free(gerror);
-    }
+  if (gerror != NULL) {
+    g_error_free(gerror);
+  }
 
-    if (file_uri != NULL) {
-      g_free(file_uri);
-    }
+  if (file_uri != NULL) {
+    g_free(file_uri);
+  }
 
   return error;
 }
@@ -78,9 +78,7 @@ pdf_document_save_as(zathura_document_t* document, PopplerDocument* poppler_docu
   }
 
   /* format path */
-  GError* gerror  = NULL;
-  char* file_uri = g_filename_to_uri(zathura_document_get_path(document), NULL, &gerror);
-
+  char* file_uri = g_filename_to_uri(path, NULL, NULL);
   if (file_uri == NULL) {
     return ZATHURA_ERROR_UNKNOWN;
   }
@@ -88,5 +86,5 @@ pdf_document_save_as(zathura_document_t* document, PopplerDocument* poppler_docu
   gboolean ret = poppler_document_save(poppler_document, file_uri, NULL);
   g_free(file_uri);
 
-  return (ret == true ? ZATHURA_ERROR_OK : ZATHURA_ERROR_UNKNOWN);
+  return (ret == TRUE ? ZATHURA_ERROR_OK : ZATHURA_ERROR_UNKNOWN);
 }
