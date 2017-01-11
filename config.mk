@@ -33,8 +33,8 @@ CAIRO_LIB ?= $(shell $(PKG_CONFIG) --libs cairo)
 PDF_INC ?= $(shell $(PKG_CONFIG) --cflags poppler-glib)
 PDF_LIB ?= $(shell $(PKG_CONFIG) --libs poppler-glib)
 
-GIRARA_INC ?= $(shell $(PKG_CONFIG) --cflags girara-gtk${ZATHURA_GTK_VERSION})
-GIRARA_LIB ?= $(shell $(PKG_CONFIG) --libs girara-gtk${ZATHURA_GTK_VERSION})
+GIRARA_INC ?= $(shell $(PKG_CONFIG) --cflags girara-gtk3)
+GIRARA_LIB ?= $(shell $(PKG_CONFIG) --libs girara-gtk3)
 
 ZATHURA_INC ?= $(shell $(PKG_CONFIG) --cflags zathura)
 PLUGINDIR ?= $(shell $(PKG_CONFIG) --variable=plugindir zathura)
