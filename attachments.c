@@ -32,9 +32,7 @@ pdf_document_attachments_get(zathura_document_t* document, PopplerDocument* popp
   }
 
   GList* attachment_list = poppler_document_get_attachments(poppler_document);
-  GList* attachments;
-
-  for (attachments = attachment_list; attachments; attachments = g_list_next(attachments)) {
+  for (GList* attachments = attachment_list; attachments != NULL; attachments = g_list_next(attachments)) {
     PopplerAttachment* attachment = (PopplerAttachment*) attachments->data;
     girara_list_append(res, g_strdup(attachment->name));
   }
@@ -57,9 +55,7 @@ pdf_document_attachment_save(zathura_document_t* document,
 
 
   GList* attachment_list = poppler_document_get_attachments(poppler_document);
-  GList* attachments;
-
-  for (attachments = attachment_list; attachments; attachments = g_list_next(attachments)) {
+  for (GList* attachments = attachment_list; attachments != NULL; attachments = g_list_next(attachments)) {
     PopplerAttachment* attachment = (PopplerAttachment*) attachments->data;
     if (g_strcmp0(attachment->name, attachmentname) != 0) {
       continue;

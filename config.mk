@@ -2,15 +2,23 @@
 
 VERSION_MAJOR = 0
 VERSION_MINOR = 2
-VERSION_REV = 6
+VERSION_REV = 7
 VERSION = ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_REV}
 
 PKG_CONFIG ?= pkg-config
 
-# minimum required zathura version
+# version checks
+# If you want to disable any of the checks, set *_VERSION_CHECK to 0.
+
+# zathura
+ZATHURA_VERSION_CHECK ?= 1
 ZATHURA_MIN_VERSION = 0.2.0
-ZATHURA_VERSION_CHECK ?= $(shell $(PKG_CONFIG) --atleast-version=$(ZATHURA_MIN_VERSION) zathura; echo $$?)
-ZATHURA_GTK_VERSION ?= $(shell $(PKG_CONFIG) --variable=GTK_VERSION zathura)
+ZATHURA_PKG_CONFIG_NAME = zathura
+
+# poppler
+POPPLER_VERSION_CHECK ?= 1
+POPPLER_MIN_VERSION = 0.18
+POPPLER_PKG_CONFIG_NAME = poppler-glib
 
 # paths
 PREFIX ?= /usr
@@ -25,8 +33,8 @@ CAIRO_LIB ?= $(shell $(PKG_CONFIG) --libs cairo)
 PDF_INC ?= $(shell $(PKG_CONFIG) --cflags poppler-glib)
 PDF_LIB ?= $(shell $(PKG_CONFIG) --libs poppler-glib)
 
-GIRARA_INC ?= $(shell $(PKG_CONFIG) --cflags girara-gtk${ZATHURA_GTK_VERSION})
-GIRARA_LIB ?= $(shell $(PKG_CONFIG) --libs girara-gtk${ZATHURA_GTK_VERSION})
+GIRARA_INC ?= $(shell $(PKG_CONFIG) --cflags girara-gtk3)
+GIRARA_LIB ?= $(shell $(PKG_CONFIG) --libs girara-gtk3)
 
 ZATHURA_INC ?= $(shell $(PKG_CONFIG) --cflags zathura)
 PLUGINDIR ?= $(shell $(PKG_CONFIG) --variable=plugindir zathura)
@@ -37,14 +45,20 @@ endif
 INCS = ${CAIRO_INC} ${PDF_INC} ${ZATHURA_INC} ${GIRARA_INC}
 LIBS = ${GIRARA_LIB} ${CAIRO_LIB} ${PDF_LIB}
 
-# flags
+# uname
+UNAME := $(shell uname -s)
+
+# compiler flags
 CFLAGS += -std=c11 -fPIC -pedantic -Wall -Wno-format-zero-length $(INCS)
+
+# linker flags
+LDFLAGS += -fPIC
+ifeq ($(UNAME), Darwin)
+LDFLAGS += -fno-common
+endif
 
 # debug
 DFLAGS ?= -g
-
-# build with cairo support?
-WITH_CAIRO ?= 1
 
 # compiler
 CC ?= gcc
