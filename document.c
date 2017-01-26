@@ -56,12 +56,13 @@ error_free:
 }
 
 zathura_error_t
-pdf_document_free(zathura_document_t* document, PopplerDocument* poppler_document)
+pdf_document_free(zathura_document_t* document, void* data)
 {
   if (document == NULL) {
     return ZATHURA_ERROR_INVALID_ARGUMENTS;
   }
 
+  PopplerDocument* poppler_document = data;
   if (poppler_document != NULL) {
     g_object_unref(poppler_document);
     zathura_document_set_data(document, NULL);
@@ -71,9 +72,9 @@ pdf_document_free(zathura_document_t* document, PopplerDocument* poppler_documen
 }
 
 zathura_error_t
-pdf_document_save_as(zathura_document_t* document, PopplerDocument* poppler_document, const char* path)
+pdf_document_save_as(zathura_document_t* document, void* data, const char* path)
 {
-  if (document == NULL || poppler_document == NULL || path == NULL) {
+  if (document == NULL || data == NULL || path == NULL) {
     return ZATHURA_ERROR_INVALID_ARGUMENTS;
   }
 
@@ -83,7 +84,9 @@ pdf_document_save_as(zathura_document_t* document, PopplerDocument* poppler_docu
     return ZATHURA_ERROR_UNKNOWN;
   }
 
-  gboolean ret = poppler_document_save(poppler_document, file_uri, NULL);
+  PopplerDocument* poppler_document = data;
+
+  const gboolean ret = poppler_document_save(poppler_document, file_uri, NULL);
   g_free(file_uri);
 
   return (ret == TRUE ? ZATHURA_ERROR_OK : ZATHURA_ERROR_UNKNOWN);

@@ -6,9 +6,9 @@
 static void pdf_zathura_image_free(zathura_image_t* image);
 
 girara_list_t*
-pdf_page_images_get(zathura_page_t* page, PopplerPage* poppler_page, zathura_error_t* error)
+pdf_page_images_get(zathura_page_t* page, void* data, zathura_error_t* error)
 {
-  if (page == NULL || poppler_page == NULL) {
+  if (page == NULL || data == NULL) {
     if (error != NULL) {
       *error = ZATHURA_ERROR_INVALID_ARGUMENTS;
     }
@@ -18,6 +18,7 @@ pdf_page_images_get(zathura_page_t* page, PopplerPage* poppler_page, zathura_err
   girara_list_t* list  = NULL;
   GList* image_mapping = NULL;
 
+  PopplerPage* poppler_page = data;
   image_mapping = poppler_page_get_image_mapping(poppler_page);
   if (image_mapping == NULL || g_list_length(image_mapping) == 0) {
     if (error != NULL) {
@@ -76,10 +77,10 @@ error_ret:
 }
 
 cairo_surface_t*
-pdf_page_image_get_cairo(zathura_page_t* page, PopplerPage* poppler_page,
+pdf_page_image_get_cairo(zathura_page_t* page, void* data,
     zathura_image_t* image, zathura_error_t* error)
 {
-  if (page == NULL || poppler_page == NULL || image == NULL || image->data == NULL) {
+  if (page == NULL || data == NULL || image == NULL || image->data == NULL) {
     if (error != NULL) {
       *error = ZATHURA_ERROR_INVALID_ARGUMENTS;
     }
@@ -88,6 +89,7 @@ pdf_page_image_get_cairo(zathura_page_t* page, PopplerPage* poppler_page,
 
   gint* image_id = (gint*) image->data;
 
+  PopplerPage* poppler_page = data;
   cairo_surface_t* surface = poppler_page_get_image(poppler_page, *image_id);
   if (surface == NULL) {
     if (error != NULL) {

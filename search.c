@@ -5,18 +5,19 @@
 #include "plugin.h"
 
 girara_list_t*
-pdf_page_search_text(zathura_page_t* page, PopplerPage* poppler_page, const
+pdf_page_search_text(zathura_page_t* page, void* data, const
     char* text, zathura_error_t* error)
 {
-  if (page == NULL || poppler_page == NULL || text == NULL || strlen(text) == 0) {
+  if (page == NULL || data == NULL || text == NULL || strlen(text) == 0) {
     if (error != NULL) {
       *error = ZATHURA_ERROR_INVALID_ARGUMENTS;
     }
     goto error_ret;
   }
 
-  GList* results      = NULL;
-  girara_list_t* list = NULL;
+  PopplerPage* poppler_page = data;
+  GList* results            = NULL;
+  girara_list_t* list       = NULL;
 
   /* search text */
   results = poppler_page_find_text(poppler_page, text);

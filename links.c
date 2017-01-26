@@ -4,17 +4,18 @@
 #include "utils.h"
 
 girara_list_t*
-pdf_page_links_get(zathura_page_t* page, PopplerPage* poppler_page, zathura_error_t* error)
+pdf_page_links_get(zathura_page_t* page, void* data, zathura_error_t* error)
 {
-  if (page == NULL || poppler_page == NULL) {
+  if (page == NULL || data == NULL) {
     if (error != NULL) {
       *error = ZATHURA_ERROR_INVALID_ARGUMENTS;
     }
     goto error_ret;
   }
 
-  girara_list_t* list = NULL;
-  GList* link_mapping = NULL;
+  girara_list_t* list       = NULL;
+  GList* link_mapping       = NULL;
+  PopplerPage* poppler_page = data;
 
   link_mapping = poppler_page_get_link_mapping(poppler_page);
   if (link_mapping == NULL || g_list_length(link_mapping) == 0) {
