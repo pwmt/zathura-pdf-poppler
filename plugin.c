@@ -2,7 +2,7 @@
 
 #include "plugin.h"
 
-void
+static void
 register_functions(zathura_plugin_functions_t* functions)
 {
   functions->document_open            = pdf_document_open;
