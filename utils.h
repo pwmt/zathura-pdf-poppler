@@ -14,7 +14,7 @@
  *
  * @return Zathura link object 
  */
-zathura_link_t* poppler_link_to_zathura_link(PopplerDocument* poppler_document,
+GIRARA_HIDDEN zathura_link_t* poppler_link_to_zathura_link(PopplerDocument* poppler_document,
     PopplerAction* poppler_action, zathura_rectangle_t position);
 
 #endif // UTILS_H
