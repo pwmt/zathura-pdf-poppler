@@ -3,7 +3,7 @@
 #include "plugin.h"
 #include "utils.h"
 
-static void pdf_zathura_image_free(zathura_image_t* image);
+static void pdf_zathura_image_free(void* image);
 
 girara_list_t*
 pdf_page_images_get(zathura_page_t* page, void* data, zathura_error_t* error)
@@ -35,7 +35,7 @@ pdf_page_images_get(zathura_page_t* page, void* data, zathura_error_t* error)
     goto error_free;
   }
 
-  girara_list_set_free_function(list, (girara_free_function_t) pdf_zathura_image_free);
+  girara_list_set_free_function(list, pdf_zathura_image_free);
 
   for (GList* image = image_mapping; image != NULL; image = g_list_next(image)) {
     zathura_image_t* zathura_image = g_malloc0(sizeof(zathura_image_t));
@@ -106,12 +106,13 @@ error_ret:
 }
 
 static void
-pdf_zathura_image_free(zathura_image_t* image)
+pdf_zathura_image_free(void* data)
 {
-  if (image == NULL) {
+  if (data == NULL) {
     return;
   }
 
+  zathura_image_t* image = data;
   if (image->data != NULL) {
     g_free(image->data);
   }

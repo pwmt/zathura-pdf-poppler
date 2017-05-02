@@ -23,8 +23,7 @@ pdf_document_attachments_get(zathura_document_t* document, void* data, zathura_e
     return NULL;
   }
 
-  girara_list_t* res = girara_sorted_list_new2((girara_compare_function_t) g_strcmp0,
-      (girara_free_function_t) g_free);
+  girara_list_t* res = girara_sorted_list_new2((girara_compare_function_t) g_strcmp0, g_free);
   if (res == NULL) {
     if (error != NULL) {
       *error = ZATHURA_ERROR_OUT_OF_MEMORY;
