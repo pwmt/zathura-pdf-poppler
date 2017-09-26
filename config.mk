@@ -24,7 +24,7 @@ POPPLER_PKG_CONFIG_NAME = poppler-glib
 PREFIX ?= /usr
 LIBDIR ?= ${PREFIX}/lib
 DESKTOPPREFIX ?= ${PREFIX}/share/applications
-APPDATAPREFIX ?= ${PREFIX}/share/appdata
+APPDATAPREFIX ?= ${PREFIX}/share/metainfo
 
 # libs
 CAIRO_INC ?= $(shell $(PKG_CONFIG) --cflags cairo)
