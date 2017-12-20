@@ -7,15 +7,16 @@ static void build_index(PopplerDocument* poppler_document, girara_tree_node_t*
     root, PopplerIndexIter* iter);
 
 girara_tree_node_t*
-pdf_document_index_generate(zathura_document_t* document, PopplerDocument* poppler_document, zathura_error_t* error)
+pdf_document_index_generate(zathura_document_t* document, void* data, zathura_error_t* error)
 {
-  if (document == NULL || poppler_document == NULL) {
+  if (document == NULL || data == NULL) {
     if (error != NULL) {
       *error = ZATHURA_ERROR_INVALID_ARGUMENTS;
     }
     return NULL;
   }
 
+  PopplerDocument* poppler_document = data;
   PopplerIndexIter* iter = poppler_index_iter_new(poppler_document);
 
   if (iter == NULL) {

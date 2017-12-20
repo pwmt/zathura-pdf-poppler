@@ -5,15 +5,16 @@
 #include "plugin.h"
 
 girara_list_t*
-pdf_document_attachments_get(zathura_document_t* document, PopplerDocument* poppler_document, zathura_error_t* error)
+pdf_document_attachments_get(zathura_document_t* document, void* data, zathura_error_t* error)
 {
-  if (document == NULL || poppler_document == NULL) {
+  if (document == NULL || data == NULL) {
     if (error != NULL) {
       *error = ZATHURA_ERROR_INVALID_ARGUMENTS;
     }
     return NULL;
   }
 
+  PopplerDocument* poppler_document = data;
   if (poppler_document_has_attachments(poppler_document) == FALSE) {
     girara_warning("PDF file has no attachments");
     if (error != NULL) {
@@ -22,8 +23,7 @@ pdf_document_attachments_get(zathura_document_t* document, PopplerDocument* popp
     return NULL;
   }
 
-  girara_list_t* res = girara_sorted_list_new2((girara_compare_function_t) g_strcmp0,
-      (girara_free_function_t) g_free);
+  girara_list_t* res = girara_sorted_list_new2((girara_compare_function_t) g_strcmp0, g_free);
   if (res == NULL) {
     if (error != NULL) {
       *error = ZATHURA_ERROR_OUT_OF_MEMORY;
@@ -42,12 +42,13 @@ pdf_document_attachments_get(zathura_document_t* document, PopplerDocument* popp
 
 zathura_error_t
 pdf_document_attachment_save(zathura_document_t* document,
-    PopplerDocument* poppler_document, const char* attachmentname, const char* file)
+    void* data, const char* attachmentname, const char* file)
 {
-  if (document == NULL || poppler_document == NULL) {
+  if (document == NULL || data == NULL) {
     return ZATHURA_ERROR_INVALID_ARGUMENTS;
   }
 
+  PopplerDocument* poppler_document = data;
   if (poppler_document_has_attachments(poppler_document) == FALSE) {
     girara_warning("PDF file has no attachments");
     return ZATHURA_ERROR_INVALID_ARGUMENTS;

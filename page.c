@@ -9,7 +9,7 @@ pdf_page_init(zathura_page_t* page)
     return ZATHURA_ERROR_INVALID_ARGUMENTS;
   }
 
-  zathura_document_t* document           = zathura_page_get_document(page);
+  zathura_document_t* document      = zathura_page_get_document(page);
   PopplerDocument* poppler_document = zathura_document_get_data(document);
 
   if (poppler_document == NULL) {
@@ -37,12 +37,13 @@ pdf_page_init(zathura_page_t* page)
 }
 
 zathura_error_t
-pdf_page_clear(zathura_page_t* page, PopplerPage* poppler_page)
+pdf_page_clear(zathura_page_t* page, void* data)
 {
   if (page == NULL) {
     return ZATHURA_ERROR_INVALID_ARGUMENTS;
   }
 
+  PopplerPage* poppler_page = data;
   if (poppler_page != NULL) {
     g_object_unref(poppler_page);
   }

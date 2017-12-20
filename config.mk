@@ -2,7 +2,7 @@
 
 VERSION_MAJOR = 0
 VERSION_MINOR = 2
-VERSION_REV = 7
+VERSION_REV = 8
 VERSION = ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_REV}
 
 PKG_CONFIG ?= pkg-config
@@ -12,7 +12,7 @@ PKG_CONFIG ?= pkg-config
 
 # zathura
 ZATHURA_VERSION_CHECK ?= 1
-ZATHURA_MIN_VERSION = 0.2.0
+ZATHURA_MIN_VERSION = 0.3.8
 ZATHURA_PKG_CONFIG_NAME = zathura
 
 # poppler
@@ -24,7 +24,7 @@ POPPLER_PKG_CONFIG_NAME = poppler-glib
 PREFIX ?= /usr
 LIBDIR ?= ${PREFIX}/lib
 DESKTOPPREFIX ?= ${PREFIX}/share/applications
-APPDATAPREFIX ?= ${PREFIX}/share/appdata
+APPDATAPREFIX ?= ${PREFIX}/share/metainfo
 
 # libs
 CAIRO_INC ?= $(shell $(PKG_CONFIG) --cflags cairo)

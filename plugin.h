@@ -8,6 +8,8 @@
 
 #include <cairo.h>
 
+#include <girara/macros.h>
+
 #include <zathura/page.h>
 #include <zathura/document.h>
 #include <zathura/plugin-api.h>
@@ -19,7 +21,7 @@
  * @return ZATHURA_ERROR_OK when no error occurred, otherwise see
  *    zathura_error_t
  */
-zathura_error_t pdf_document_open(zathura_document_t* document);
+GIRARA_HIDDEN zathura_error_t pdf_document_open(zathura_document_t* document);
 
 /**
  * Closes and frees the internal document structure
@@ -28,7 +30,7 @@ zathura_error_t pdf_document_open(zathura_document_t* document);
  * @return ZATHURA_ERROR_OK when no error occurred, otherwise see
  *    zathura_error_t
  */
-zathura_error_t pdf_document_free(zathura_document_t* document, PopplerDocument* poppler_document);
+GIRARA_HIDDEN zathura_error_t pdf_document_free(zathura_document_t* document, void* poppler_document);
 
 /**
  * Initializes the page with the needed values
@@ -37,7 +39,7 @@ zathura_error_t pdf_document_free(zathura_document_t* document, PopplerDocument*
  * @return ZATHURA_ERROR_OK when no error occurred, otherwise see
  *    zathura_error_t
  */
-zathura_error_t pdf_page_init(zathura_page_t* page);
+GIRARA_HIDDEN zathura_error_t pdf_page_init(zathura_page_t* page);
 
 /**
  * Frees the data that is used by the plugin in the page
@@ -46,7 +48,7 @@ zathura_error_t pdf_page_init(zathura_page_t* page);
  * @return ZATHURA_ERROR_OK when no error occurred, otherwise see
  *    zathura_error_t
  */
-zathura_error_t pdf_page_clear(zathura_page_t* page, PopplerPage* poppler_page);
+GIRARA_HIDDEN zathura_error_t pdf_page_clear(zathura_page_t* page, void* poppler_page);
 
 /**
  * Saves the document to the given path
@@ -56,8 +58,8 @@ zathura_error_t pdf_page_clear(zathura_page_t* page, PopplerPage* poppler_page);
  * @return ZATHURA_ERROR_OK when no error occurred, otherwise see
  *    zathura_error_t
  */
-zathura_error_t pdf_document_save_as(zathura_document_t* document,
-    PopplerDocument* poppler_document, const char* path);
+GIRARA_HIDDEN zathura_error_t pdf_document_save_as(zathura_document_t* document,
+    void* poppler_document, const char* path);
 
 /**
  * Generates the index of the document
@@ -68,8 +70,8 @@ zathura_error_t pdf_document_save_as(zathura_document_t* document,
  * @return Tree node object or NULL if an error occurred (e.g.: the document has
  *   no index)
  */
-girara_tree_node_t* pdf_document_index_generate(zathura_document_t* document,
-    PopplerDocument* poppler_document, zathura_error_t* error);
+GIRARA_HIDDEN girara_tree_node_t* pdf_document_index_generate(zathura_document_t* document,
+    void* poppler_document, zathura_error_t* error);
 
 /**
  * Returns a list of attachments included in the zathura document
@@ -79,8 +81,8 @@ girara_tree_node_t* pdf_document_index_generate(zathura_document_t* document,
  *   error occurred
  * @return List of attachments or NULL if an error occurred
  */
-girara_list_t* pdf_document_attachments_get(zathura_document_t* document,
-    PopplerDocument* poppler_document, zathura_error_t* error);
+GIRARA_HIDDEN girara_list_t* pdf_document_attachments_get(zathura_document_t* document,
+    void* poppler_document, zathura_error_t* error);
 
 /**
  * Saves an attachment to a file
@@ -91,8 +93,8 @@ girara_list_t* pdf_document_attachments_get(zathura_document_t* document,
  * @return ZATHURA_ERROR_OK when no error occurred, otherwise see
  *    zathura_error_t
  */
-zathura_error_t pdf_document_attachment_save(zathura_document_t*
-    document, PopplerDocument* poppler_document, const char* attachment, const char* filename);
+GIRARA_HIDDEN zathura_error_t pdf_document_attachment_save(zathura_document_t*
+    document, void* poppler_document, const char* attachment, const char* filename);
 
 /**
  * Returns a list of images included on the zathura page
@@ -102,8 +104,8 @@ zathura_error_t pdf_document_attachment_save(zathura_document_t*
  *   error occurred
  * @return List of images
  */
-girara_list_t* pdf_page_images_get(zathura_page_t* page,
-    PopplerPage* poppler_page, zathura_error_t* error);
+GIRARA_HIDDEN girara_list_t* pdf_page_images_get(zathura_page_t* page,
+    void* poppler_page, zathura_error_t* error);
 
 /**
  * Gets the content of the image in a cairo surface
@@ -114,8 +116,8 @@ girara_list_t* pdf_page_images_get(zathura_page_t* page,
  *   error occurred
  * @return The cairo image surface or NULL if an error occurred
  */
-cairo_surface_t* pdf_page_image_get_cairo(zathura_page_t* page,
-    PopplerPage* poppler_page, zathura_image_t* image, zathura_error_t* error);
+GIRARA_HIDDEN cairo_surface_t* pdf_page_image_get_cairo(zathura_page_t* page,
+    void* poppler_page, zathura_image_t* image, zathura_error_t* error);
 
 /**
  * Returns a list of document information entries of the document
@@ -125,8 +127,8 @@ cairo_surface_t* pdf_page_image_get_cairo(zathura_page_t* page,
  *   error occurred
  * @return List of information entries or NULL if an error occurred
  */
-girara_list_t* pdf_document_get_information(zathura_document_t* document,
-    PopplerDocument* poppler_document, zathura_error_t* error);
+GIRARA_HIDDEN girara_list_t* pdf_document_get_information(zathura_document_t* document,
+    void* poppler_document, zathura_error_t* error);
 
 /**
  * Searches for a specific text on a page and returns a list of results
@@ -137,7 +139,7 @@ girara_list_t* pdf_document_get_information(zathura_document_t* document,
  *   error occurred
  * @return List of search results or NULL if an error occurred
  */
-girara_list_t* pdf_page_search_text(zathura_page_t* page, PopplerPage*
+GIRARA_HIDDEN girara_list_t* pdf_page_search_text(zathura_page_t* page, void*
     data, const char* text, zathura_error_t* error);
 
 /**
@@ -148,8 +150,8 @@ girara_list_t* pdf_page_search_text(zathura_page_t* page, PopplerPage*
  *   error occurred
  * @return List of links or NULL if an error occurred
  */
-girara_list_t* pdf_page_links_get(zathura_page_t* page,
-    PopplerPage* poppler_page, zathura_error_t* error);
+GIRARA_HIDDEN girara_list_t* pdf_page_links_get(zathura_page_t* page,
+    void* poppler_page, zathura_error_t* error);
 
 /**
  * Returns a list of form fields available on the given page
@@ -159,8 +161,8 @@ girara_list_t* pdf_page_links_get(zathura_page_t* page,
  *   error occurred
  * @return List of form fields or NULL if an error occurred
  */
-girara_list_t* pdf_page_form_fields_get(zathura_page_t* page,
-    PopplerPage* poppler_page, zathura_error_t* error);
+GIRARA_HIDDEN girara_list_t* pdf_page_form_fields_get(zathura_page_t* page,
+    void* poppler_page, zathura_error_t* error);
 
 /**
  * Get text for selection
@@ -170,7 +172,7 @@ girara_list_t* pdf_page_form_fields_get(zathura_page_t* page,
  * occurred
  * @return The selected text (needs to be deallocated with g_free)
  */
-char* pdf_page_get_text(zathura_page_t* page, PopplerPage* poppler_page,
+GIRARA_HIDDEN char* pdf_page_get_text(zathura_page_t* page, void* poppler_page,
     zathura_rectangle_t rectangle, zathura_error_t* error);
 
 /**
@@ -182,7 +184,7 @@ char* pdf_page_get_text(zathura_page_t* page, PopplerPage* poppler_page,
  * @return ZATHURA_ERROR_OK when no error occurred, otherwise see
  *    zathura_error_t
  */
-zathura_error_t pdf_page_render_cairo(zathura_page_t* page, PopplerPage*
+GIRARA_HIDDEN zathura_error_t pdf_page_render_cairo(zathura_page_t* page, void*
     poppler_page, cairo_t* cairo, bool printing);
 
 #endif // PDF_H
