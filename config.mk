@@ -12,7 +12,7 @@ PKG_CONFIG ?= pkg-config
 
 # zathura
 ZATHURA_VERSION_CHECK ?= 1
-ZATHURA_MIN_VERSION = 0.2.0
+ZATHURA_MIN_VERSION = 0.3.8
 ZATHURA_PKG_CONFIG_NAME = zathura
 
 # poppler
