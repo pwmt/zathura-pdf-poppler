@@ -187,4 +187,16 @@ GIRARA_HIDDEN char* pdf_page_get_text(zathura_page_t* page, void* poppler_page,
 GIRARA_HIDDEN zathura_error_t pdf_page_render_cairo(zathura_page_t* page, void*
     poppler_page, cairo_t* cairo, bool printing);
 
+/**
+ * Get the page label
+ *
+ * @param page Page
+ * @param poppler_page Internal page representation
+ * @param label Label
+ * @return ZATHURA_ERROR_OK when no error occurred, otherwise see
+ *    zathura_error_t
+ */
+GIRARA_HIDDEN zathura_error_t pdf_page_get_label(zathura_page_t* page,
+    void* data, char** label);
+
 #endif // PDF_H
