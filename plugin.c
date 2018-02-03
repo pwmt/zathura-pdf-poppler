@@ -21,7 +21,8 @@ ZATHURA_PLUGIN_REGISTER_WITH_FUNCTIONS(
     .page_images_get          = pdf_page_images_get,
     .page_get_text            = pdf_page_get_text,
     .page_render_cairo        = pdf_page_render_cairo,
-    .page_image_get_cairo     = pdf_page_image_get_cairo
+    .page_image_get_cairo     = pdf_page_image_get_cairo,
+    .page_get_label           = pdf_page_get_label
   }),
   ZATHURA_PLUGIN_MIMETYPES({
     "application/pdf"
