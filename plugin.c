@@ -22,7 +22,9 @@ ZATHURA_PLUGIN_REGISTER_WITH_FUNCTIONS(
     .page_get_text            = pdf_page_get_text,
     .page_render_cairo        = pdf_page_render_cairo,
     .page_image_get_cairo     = pdf_page_image_get_cairo,
+#if ZATHURA_API_VERSION >= 3
     .page_get_label           = pdf_page_get_label
+#endif
   }),
   ZATHURA_PLUGIN_MIMETYPES({
     "application/pdf"
