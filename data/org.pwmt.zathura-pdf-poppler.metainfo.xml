@@ -5,8 +5,8 @@
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>Zlib</project_license>
   <extends>org.pwmt.zathura</extends>
-  <name>PDF plugin for Zathura</name>
-  <summary>PDF plugin based on Poppler</summary>
+  <name>Zathura-PDF-Poppler</name>
+  <summary>PDF plugin for zathura based on Poppler</summary>
   <url type="homepage">https://pwmt.org/projects/zathura-pdf-poppler/</url>
   <update_contact>zathura@lists.pwmt.org</update_contact>
 </component>
