@@ -61,5 +61,4 @@ pdf = shared_module('pdf',
   install_dir: zathura.get_pkgconfig_variable('plugindir')
 )
 
-install_data('zathura-pdf-poppler.metainfo.xml', install_dir: metainfodir)
-install_data('zathura-pdf-poppler.desktop', install_dir: desktopdir)
+subdir('data')

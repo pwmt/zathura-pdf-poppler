@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright 2015 pwmt.org -->
-
+<!-- Copyright 2015-2018 pwmt.org -->
 <component type="addon">
-  <id>zathura-pdf-poppler.desktop</id>
+  <id>org.pwmt.zathura-pdf-poppler</id>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>Zlib</project_license>
-  <extends>zathura.desktop</extends>
+  <extends>org.pwmt.zathura</extends>
   <name>PDF plugin for Zathura</name>
   <summary>PDF plugin based on Poppler</summary>
   <url type="homepage">https://pwmt.org/projects/zathura-pdf-poppler/</url>
