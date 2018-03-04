@@ -16,9 +16,11 @@ desktopdir = join_paths(datadir, 'applications')
 
 # required dependencies
 zathura = dependency('zathura', version: '>=0.3.8')
+girara = dependency('girara-gtk3')
+glib = dependency('glib-2.0')
 poppler = dependency('poppler-glib', version: '>=0.18')
 
-build_dependencies = [zathura, poppler]
+build_dependencies = [zathura, girara, glib, poppler]
 
 # defines
 defines = [
