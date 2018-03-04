@@ -42,19 +42,19 @@ flags = [
 flags = cc.get_supported_arguments(flags)
 
 sources = files(
-  'attachments.c',
-  'document.c',
-  'forms.c',
-  'image.c',
-  'index.c',
-  'links.c',
-  'meta.c',
-  'page.c',
-  'plugin.c',
-  'render.c',
-  'search.c',
-  'select.c',
-  'utils.c'
+  'zathura-pdf-poppler/attachments.c',
+  'zathura-pdf-poppler/document.c',
+  'zathura-pdf-poppler/forms.c',
+  'zathura-pdf-poppler/image.c',
+  'zathura-pdf-poppler/index.c',
+  'zathura-pdf-poppler/links.c',
+  'zathura-pdf-poppler/meta.c',
+  'zathura-pdf-poppler/page.c',
+  'zathura-pdf-poppler/plugin.c',
+  'zathura-pdf-poppler/render.c',
+  'zathura-pdf-poppler/search.c',
+  'zathura-pdf-poppler/select.c',
+  'zathura-pdf-poppler/utils.c'
 )
 
 pdf = shared_module('pdf-poppler',
