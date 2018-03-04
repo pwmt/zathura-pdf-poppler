@@ -56,7 +56,7 @@ sources = files(
   'utils.c'
 )
 
-pdf = shared_module('pdf',
+pdf = shared_module('pdf-poppler',
   sources,
   dependencies: build_dependencies,
   c_args: defines + flags,
