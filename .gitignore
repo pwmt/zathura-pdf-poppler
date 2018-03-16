@@ -1,10 +1,8 @@
 *.o
 *.do
 *~
-.depend
 *.so
 *.swp
-zathura-version-check
-tags
+build
 compile_commands.json
 .ycm_extra_conf.*

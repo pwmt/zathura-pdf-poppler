@@ -73,3 +73,16 @@ pdf_document_get_information(zathura_document_t* document, void* data, zathura_e
 
   return list;
 }
+
+zathura_error_t
+pdf_page_get_label(zathura_page_t* page, void* data, char** label)
+{
+  if (page == NULL || data == NULL || label == NULL) {
+    return ZATHURA_ERROR_INVALID_ARGUMENTS;
+  }
+
+  PopplerPage* poppler_page = data;
+  *label = poppler_page_get_label(poppler_page);
+
+  return ZATHURA_ERROR_OK;
+}

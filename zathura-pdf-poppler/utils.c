@@ -38,7 +38,7 @@ poppler_link_to_zathura_link(PopplerDocument* poppler_document, PopplerAction*
           target.destination_type = ZATHURA_LINK_DESTINATION_XYZ;
           target.page_number      = poppler_destination->page_num - 1;
           if (poppler_destination->change_zoom != 0) {
-            target.scale          = poppler_destination->zoom;
+            target.zoom           = poppler_destination->zoom;
           }
           if (poppler_destination->change_left != 0) {
             target.left           = poppler_destination->left;
