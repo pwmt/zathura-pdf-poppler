@@ -34,7 +34,8 @@ pdf_document_get_information(zathura_document_t* document, void* data, zathura_e
     { "subject",  ZATHURA_DOCUMENT_INFORMATION_SUBJECT },
     { "keywords", ZATHURA_DOCUMENT_INFORMATION_KEYWORDS },
     { "creator",  ZATHURA_DOCUMENT_INFORMATION_CREATOR },
-    { "producer", ZATHURA_DOCUMENT_INFORMATION_PRODUCER }
+    { "producer", ZATHURA_DOCUMENT_INFORMATION_PRODUCER },
+    { "format",   ZATHURA_DOCUMENT_INFORMATION_FORMAT }
   };
 
   char* string_value;
