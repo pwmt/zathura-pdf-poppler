@@ -23,7 +23,12 @@ poppler = dependency('poppler-glib', version: '>=0.18')
 build_dependencies = [zathura, girara, glib, poppler]
 
 if get_option('plugindir') == ''
-  plugindir = zathura.get_pkgconfig_variable('plugindir')
+  if zathura.type_name() == 'pkgconfig'
+    plugindir = zathura.get_pkgconfig_variable('plugindir')
+  else
+    zathura_subproject = subproject('zathura')
+    plugindir = zathura_subproject.get_variable('plugindir')
+  endif
 else
   plugindir = get_option('plugindir')
 endif
