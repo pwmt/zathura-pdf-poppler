@@ -41,6 +41,8 @@ pdf_document_get_outline(zathura_document_t* document, zathura_node_t** outline)
 
   build_index(poppler_document, *outline, iter);
 
+  return ZATHURA_ERROR_OK;
+
 error_free:
 
   poppler_index_iter_free(iter);

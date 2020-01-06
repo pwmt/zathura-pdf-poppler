@@ -30,6 +30,10 @@ pdf_image_get_cairo_surface(zathura_image_t* image, cairo_surface_t** surface)
 }
 #endif
 
+static void zathura_image_free_void(zathura_image_t* image) {
+  zathura_image_free(image);
+}
+
 zathura_error_t
 pdf_page_get_images(zathura_page_t* page, zathura_list_t** images)
 {
@@ -100,7 +104,7 @@ pdf_page_get_images(zathura_page_t* page, zathura_list_t** images)
 
 error_free:
 
-  zathura_list_free_full(*images, (GDestroyNotify) zathura_image_free);
+  zathura_list_free_full(*images, (zathura_free_function_t) zathura_image_free_void);
 
 error_out:
 

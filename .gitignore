@@ -3,6 +3,7 @@
 *.pc
 *~
 .libzathura-version-check
+tags
 
 # build dirs
 .depend

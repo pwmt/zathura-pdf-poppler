@@ -11,7 +11,7 @@
 #include <libzathura/plugin-api.h>
 #include <libzathura/libzathura.h>
 
-#include "plugin.h"
+#include <zathura-pdf-poppler/plugin.h>
 #include "utils.h"
 
 zathura_document_t* document;
@@ -142,7 +142,7 @@ START_TEST(test_pdf_page_save_form_field) {
   fail_unless(zathura_document_free(document) == ZATHURA_ERROR_OK);
 
   /* open saved document */
-  setup_document_with_path(&plugin_manager, &document, path);
+  setup_document_with_full_path(&plugin_manager, &document, path);
   fail_unless(zathura_document_get_page(document, 0, &page) == ZATHURA_ERROR_OK);
   fail_unless(page != NULL);
 
@@ -173,7 +173,7 @@ START_TEST(test_pdf_page_save_form_field) {
 } END_TEST
 
 Suite*
-suite_form_fields(void)
+create_suite(void)
 {
   TCase* tcase = NULL;
   Suite* suite = suite_create("forms");

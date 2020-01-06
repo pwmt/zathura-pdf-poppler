@@ -12,7 +12,7 @@
 #include <libzathura/plugin-api.h>
 #include <libzathura/libzathura.h>
 
-#include "plugin.h"
+#include <zathura-pdf-poppler/plugin.h>
 #include "utils.h"
 
 zathura_document_t* document;
@@ -83,7 +83,7 @@ START_TEST(test_pdf_page_get_image_cairo_buffer) {
 #endif
 
 Suite*
-suite_images(void)
+create_suite(void)
 {
   TCase* tcase = NULL;
   Suite* suite = suite_create("images");

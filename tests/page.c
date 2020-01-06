@@ -5,7 +5,7 @@
 #include <libzathura/plugin-manager.h>
 #include <libzathura/plugin-api.h>
 
-#include "plugin.h"
+#include <zathura-pdf-poppler/plugin.h>
 #include "utils.h"
 
 zathura_document_t* document;
@@ -20,7 +20,7 @@ static void setup_document(void) {
   fail_unless(zathura_plugin_manager_get_plugin(plugin_manager, &plugin, "application/pdf") == ZATHURA_ERROR_OK);
   fail_unless(plugin != NULL);
 
-  fail_unless(zathura_plugin_open_document(plugin, &document, "files/empty.pdf", NULL) == ZATHURA_ERROR_OK);
+  fail_unless(zathura_plugin_open_document(plugin, &document, TEST_FILE_PATH, NULL) == ZATHURA_ERROR_OK);
   fail_unless(document != NULL);
 }
 
@@ -59,7 +59,7 @@ START_TEST(test_pdf_page_get_height) {
 } END_TEST
 
 Suite*
-suite_page(void)
+create_suite(void)
 {
   TCase* tcase = NULL;
   Suite* suite = suite_create("page");

@@ -5,11 +5,13 @@
 #include <string.h>
 #include <time.h>
 
+#include <libzathura/plugin-api.h>
+
 #include "plugin.h"
 #include "utils.h"
 #include "internal.h"
 
-static zathura_error_t poppler_annotation_to_zathura_annotation(PopplerAnnot*
+static zathura_error_t poppler_annotation_to_zathura_annotation(zathura_page_t* page, PopplerAnnot*
     poppler_annotation, zathura_annotation_t** annotation, zathura_rectangle_t position, double page_height);
 static zathura_list_t*
 create_quad_points_from_text_markup_annotation(PopplerAnnot*
@@ -67,7 +69,7 @@ pdf_page_get_annotations(zathura_page_t* page, zathura_list_t** annotations)
 
     /* Annotation data */
     zathura_annotation_t* annotation;
-    if (poppler_annotation_to_zathura_annotation(poppler_annotation->annot,
+    if (poppler_annotation_to_zathura_annotation(page, poppler_annotation->annot,
           &annotation, position, page_height) != ZATHURA_ERROR_OK) {
       continue;
     }
@@ -95,7 +97,7 @@ error_out:
 }
 
 static zathura_error_t
-poppler_annotation_to_zathura_annotation(PopplerAnnot* poppler_annotation,
+poppler_annotation_to_zathura_annotation(zathura_page_t* page, PopplerAnnot* poppler_annotation,
     zathura_annotation_t** annotation, zathura_rectangle_t position, double page_height)
 {
   PopplerAnnotType poppler_type = poppler_annot_get_annot_type(poppler_annotation);
@@ -144,7 +146,7 @@ poppler_annotation_to_zathura_annotation(PopplerAnnot* poppler_annotation,
   }
 
   /* create new annotation */
-  if ((error = zathura_annotation_new(annotation, zathura_type)) != ZATHURA_ERROR_OK) {
+  if ((error = zathura_annotation_new(page, annotation, zathura_type)) != ZATHURA_ERROR_OK) {
     goto error_out;
   }
 
@@ -263,7 +265,7 @@ poppler_annotation_to_zathura_annotation(PopplerAnnot* poppler_annotation,
 
     if (poppler_annot_markup_has_popup(poppler_annotation_markup) == TRUE) {
       zathura_annotation_t* popup_annotation;
-      if ((error = zathura_annotation_new(&popup_annotation, ZATHURA_ANNOTATION_POPUP)) != ZATHURA_ERROR_OK) {
+      if ((error = zathura_annotation_new(page, &popup_annotation, ZATHURA_ANNOTATION_POPUP)) != ZATHURA_ERROR_OK) {
         goto error_free;
       }
 

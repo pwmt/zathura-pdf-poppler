@@ -8,7 +8,7 @@
 #include <libzathura/plugin-api.h>
 #include <libzathura/libzathura.h>
 
-#include "plugin.h"
+#include <zathura-pdf-poppler/plugin.h>
 #include "utils.h"
 
 zathura_document_t* document;
@@ -44,6 +44,7 @@ static void compare_outline_element(zathura_node_t* node, const char* title)
 {
   fail_unless(node != NULL);
   zathura_outline_element_t* element = zathura_node_get_data(node);
+  fail_unless(element != NULL);
   const char* tmp_title;
   fail_unless(zathura_outline_element_get_title(element, &tmp_title) == ZATHURA_ERROR_OK);
   fail_unless(strcmp(title, tmp_title) == 0);
@@ -54,8 +55,7 @@ START_TEST(test_pdf_document_get_outline_simple) {
   fail_unless(pdf_document_get_outline(document, &outline) == ZATHURA_ERROR_OK);
 
   /* check number of root childs */
-  unsigned int number_of_children =
-    zathura_node_get_number_of_children(outline);
+  unsigned int number_of_children = zathura_node_get_number_of_children(outline);
   fail_unless(number_of_children == 2);
 
   zathura_node_t* node = zathura_node_get_nth_child(outline, 0);
@@ -73,7 +73,7 @@ START_TEST(test_pdf_document_get_outline_simple) {
 } END_TEST
 
 Suite*
-suite_outline(void)
+create_suite(void)
 {
   TCase* tcase = NULL;
   Suite* suite = suite_create("outline");

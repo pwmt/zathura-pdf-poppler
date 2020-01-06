@@ -12,7 +12,7 @@
 #include <libzathura/libzathura.h>
 #include <libzathura/libzathura.h>
 
-#include "plugin.h"
+#include <zathura-pdf-poppler/plugin.h>
 #include "utils.h"
 
 zathura_document_t* document;
@@ -126,7 +126,7 @@ START_TEST(test_pdf_page_search_text_case_whole_words) {
 } END_TEST
 
 Suite*
-suite_search(void)
+create_suite(void)
 {
   TCase* tcase = NULL;
   Suite* suite = suite_create("search");

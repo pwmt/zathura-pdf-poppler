@@ -7,18 +7,22 @@ zathura_error_t
 poppler_action_to_zathura_action(PopplerDocument* UNUSED(poppler_document),
     PopplerAction* UNUSED(poppler_action), zathura_action_t** UNUSED(action))
 {
-  return ZATHURA_ERROR_OK;
+  return ZATHURA_ERROR_PLUGIN_NOT_IMPLEMENTED;
 }
 
 zathura_error_t
 pdf_attachment_save(zathura_attachment_t* UNUSED(attachment), const char* path, void* user_data)
 {
-    if (poppler_attachment_save((PopplerAttachment*) user_data, path, NULL) ==
-        FALSE) {
-      return ZATHURA_ERROR_UNKNOWN;
-    }
+  if (user_data == NULL || path == NULL) {
+    return ZATHURA_ERROR_INVALID_ARGUMENTS;
+  }
 
-    return ZATHURA_ERROR_OK;
+  /* if (poppler_attachment_save((PopplerAttachment*) user_data, path, NULL) == */
+  /*     FALSE) { */
+  /*   return ZATHURA_ERROR_UNKNOWN; */
+  /* } */
+
+  return ZATHURA_ERROR_OK;
 }
 
 #if 0
