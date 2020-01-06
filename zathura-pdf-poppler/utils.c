@@ -4,10 +4,75 @@
 #include "macros.h"
 
 zathura_error_t
-poppler_action_to_zathura_action(PopplerDocument* UNUSED(poppler_document),
-    PopplerAction* UNUSED(poppler_action), zathura_action_t** UNUSED(action))
+poppler_action_to_zathura_action(PopplerDocument* poppler_document, PopplerAction* poppler_action, zathura_action_t** action)
 {
-  return ZATHURA_ERROR_PLUGIN_NOT_IMPLEMENTED;
+  if (poppler_document == NULL || poppler_action == NULL || action == NULL) {
+    return ZATHURA_ERROR_INVALID_ARGUMENTS;
+  }
+
+  zathura_action_type_t type = ZATHURA_ACTION_UNKNOWN;
+
+  /* ZATHURA_ACTION_UNKNOWN, #<{(|*< Invalid type |)}># */
+  /* ZATHURA_ACTION_NONE, #<{(|*< No action |)}># */
+  /* ZATHURA_ACTION_GOTO, #<{(|*< actions to a page |)}># */
+  /* ZATHURA_ACTION_GOTO_REMOTE, #<{(|*< actions to a page |)}># */
+  /* ZATHURA_ACTION_GOTO_EMBEDDED, #<{(|*< actions to an embedded file |)}># */
+  /* ZATHURA_ACTION_LAUNCH, #<{(|*< actions to an external source |)}># */
+  /* ZATHURA_ACTION_THREAD, #<{(|*< Begin reading an article |)}># */
+  /* ZATHURA_ACTION_URI, #<{(|*< actions to an external source |)}># */
+  /* ZATHURA_ACTION_SOUND, #<{(|*< Play a sound |)}># */
+  /* ZATHURA_ACTION_MOVIE, #<{(|<< Play a movie |)}># */
+  /* ZATHURA_ACTION_HIDE_ANNOTATIONS, #<{(|*< Set an annotation's hidden flag |)}># */
+  /* ZATHURA_ACTION_NAMED, #<{(|*< actions to an external source |)}># */
+  /* ZATHURA_ACTION_SET_OCG_STATE, #<{(|*< Sets the states of optional content groups |)}># */
+  /* ZATHURA_ACTION_RENDITION, #<{(|*< Controls the playing of multimedia content. |)}># */
+  /* ZATHURA_ACTION_TRANSITION, #<{(|*< Updates the display of a document, using a transition diary |)}># */
+  /* ZATHURA_ACTION_GOTO_3D_VIEW #<{(|*< Set the current view of a 3d annotation |)}># */
+
+  switch (poppler_action->type) {
+    case POPPLER_ACTION_UNKNOWN:
+      type = ZATHURA_ACTION_UNKNOWN;
+      break;
+    case POPPLER_ACTION_NONE:
+      type = ZATHURA_ACTION_NONE;
+      break;
+    case POPPLER_ACTION_GOTO_DEST:
+      type = ZATHURA_ACTION_GOTO_REMOTE;
+      break;
+    case POPPLER_ACTION_GOTO_REMOTE:
+      type = ZATHURA_ACTION_GOTO_REMOTE;
+      break;
+    case POPPLER_ACTION_LAUNCH:
+      type = ZATHURA_ACTION_LAUNCH;
+      break;
+    case POPPLER_ACTION_URI:
+      type = ZATHURA_ACTION_URI;
+      break;
+    case POPPLER_ACTION_NAMED:
+      type = ZATHURA_ACTION_NAMED;
+      break;
+    case POPPLER_ACTION_MOVIE:
+      type = ZATHURA_ACTION_MOVIE;
+      break;
+    case POPPLER_ACTION_RENDITION:
+      type = ZATHURA_ACTION_RENDITION;
+      break;
+    case POPPLER_ACTION_OCG_STATE:
+      type = ZATHURA_ACTION_SET_OCG_STATE;
+      break;
+    case POPPLER_ACTION_JAVASCRIPT:
+      type = ZATHURA_ACTION_JAVASCRIPT;
+      break;
+    default:
+      type = ZATHURA_ACTION_UNKNOWN;
+      break;
+  }
+
+  if (type == ZATHURA_ACTION_UNKNOWN) {
+    return ZATHURA_ERROR_INVALID_ARGUMENTS;
+  }
+
+  return zathura_action_new(action, type);
 }
 
 zathura_error_t
@@ -17,137 +82,10 @@ pdf_attachment_save(zathura_attachment_t* UNUSED(attachment), const char* path, 
     return ZATHURA_ERROR_INVALID_ARGUMENTS;
   }
 
-  /* if (poppler_attachment_save((PopplerAttachment*) user_data, path, NULL) == */
-  /*     FALSE) { */
-  /*   return ZATHURA_ERROR_UNKNOWN; */
-  /* } */
+  if (poppler_attachment_save((PopplerAttachment*) user_data, path, NULL) ==
+      FALSE) {
+    return ZATHURA_ERROR_UNKNOWN;
+  }
 
   return ZATHURA_ERROR_OK;
 }
-
-#if 0
-zathura_link_t*
-poppler_link_to_zathura_link(PopplerDocument* poppler_document, PopplerAction*
-    poppler_action, zathura_rectangle_t position)
-{
-  zathura_link_type_t type     = ZATHURA_LINK_INVALID;
-  zathura_link_target_t target = { ZATHURA_LINK_DESTINATION_UNKNOWN, NULL, 0, -1, -1, -1, -1, 0 };
-
-  /* extract link */
-  switch (poppler_action->type) {
-    case POPPLER_ACTION_NONE:
-      type = ZATHURA_LINK_NONE;
-      break;
-    case POPPLER_ACTION_GOTO_DEST: {
-      PopplerDest* poppler_destination = poppler_action->goto_dest.dest;
-      if (poppler_destination == NULL) {
-        return NULL;
-      }
-
-      type = ZATHURA_LINK_GOTO_DEST;
-
-      if (poppler_action->goto_dest.dest->type == POPPLER_DEST_NAMED) {
-        poppler_destination = poppler_document_find_dest(poppler_document, poppler_destination->named_dest);
-        if (poppler_destination == NULL) {
-          return NULL;
-        }
-      }
-
-      PopplerPage* poppler_page = poppler_document_get_page(poppler_document, poppler_destination->page_num - 1);
-      double height = 0;
-      poppler_page_get_size(poppler_page, NULL, &height);
-
-      switch (poppler_destination->type) {
-        case POPPLER_DEST_XYZ:
-          target.destination_type = ZATHURA_LINK_DESTINATION_XYZ;
-          target.page_number      = poppler_destination->page_num - 1;
-          if (poppler_destination->change_zoom != 0) {
-            target.scale          = poppler_destination->zoom;
-          }
-          if (poppler_destination->change_left != 0) {
-            target.left           = poppler_destination->left;
-          }
-          if (poppler_destination->change_top != 0) {
-            target.top            = height - MIN(height, poppler_destination->top);
-          }
-          break;
-        case POPPLER_DEST_FIT:
-          target.destination_type = ZATHURA_LINK_DESTINATION_FIT;
-          target.page_number      = poppler_destination->page_num - 1;
-          break;
-        case POPPLER_DEST_FITH:
-          target.destination_type = ZATHURA_LINK_DESTINATION_FITH;
-          target.page_number      = poppler_destination->page_num - 1;
-          if (poppler_destination->change_top != 0) {
-            target.top            = height - MIN(height, poppler_destination->top);
-          }
-          break;
-        case POPPLER_DEST_FITV:
-          target.destination_type = ZATHURA_LINK_DESTINATION_FITV;
-          target.page_number      = poppler_destination->page_num - 1;
-          if (poppler_destination->change_left != 0) {
-            target.left           = poppler_destination->left;
-          }
-          break;
-        case POPPLER_DEST_FITR:
-          target.destination_type = ZATHURA_LINK_DESTINATION_FITR;
-          target.page_number      = poppler_destination->page_num - 1;
-          if (poppler_destination->change_left != 0) {
-            target.left           = poppler_destination->left;
-          }
-          if (poppler_destination->change_top != 0) {
-            target.top            = height - MIN(height, poppler_destination->top);
-          }
-          target.right            = poppler_destination->right;
-          target.bottom           = height - MIN(height, poppler_destination->bottom);
-          break;
-        case POPPLER_DEST_FITB:
-          target.destination_type = ZATHURA_LINK_DESTINATION_FITB;
-          target.page_number      = poppler_destination->page_num - 1;
-          break;
-        case POPPLER_DEST_FITBH:
-          target.destination_type = ZATHURA_LINK_DESTINATION_FITBH;
-          target.page_number      = poppler_destination->page_num - 1;
-          if (poppler_destination->change_top != 0) {
-            target.top            = height - MIN(height, poppler_destination->top);
-          }
-          break;
-        case POPPLER_DEST_FITBV:
-          target.destination_type = ZATHURA_LINK_DESTINATION_FITBV;
-          target.page_number      = poppler_destination->page_num - 1;
-          target.left             = poppler_destination->top;
-          break;
-        case POPPLER_DEST_UNKNOWN:
-          target.destination_type = ZATHURA_LINK_DESTINATION_UNKNOWN;
-          target.page_number      = poppler_destination->page_num - 1;
-          break;
-        default:
-          return NULL;
-      }
-      break;
-    }
-    case POPPLER_ACTION_GOTO_REMOTE:
-      type = ZATHURA_LINK_GOTO_REMOTE;
-      if ((target.value = poppler_action->goto_remote.file_name) == NULL) {
-        return NULL;
-      }
-      break;
-    case POPPLER_ACTION_URI:
-      type         = ZATHURA_LINK_URI;
-      target.value = poppler_action->uri.uri;
-      break;
-    case POPPLER_ACTION_LAUNCH:
-      type         = ZATHURA_LINK_LAUNCH;
-      target.value = poppler_action->launch.file_name;
-      break;
-    case POPPLER_ACTION_NAMED:
-      type         = ZATHURA_LINK_NAMED;
-      target.value = poppler_action->named.named_dest;
-      break;
-    default:
-      return NULL;
-  }
-
-  return zathura_link_new(type, position, target);
-}
-#endif

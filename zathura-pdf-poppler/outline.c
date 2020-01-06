@@ -72,6 +72,7 @@ build_index(PopplerDocument* poppler_document, zathura_node_t* root, PopplerInde
 
     /* escape title */
     gchar* title = g_markup_escape_text(poppler_action->any.title, -1);
+    fprintf(stderr, "%s\n", title);
 
     poppler_action_free(poppler_action);
 
