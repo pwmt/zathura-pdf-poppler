@@ -28,22 +28,6 @@ build:archlinux:
   except:
     - tags
 
-test:archlinux:
-  tags:
-    - pwmt
-  stage: test
-  image: registry.pwmt.org/pwmt/gitlab-runner-images/archlinux:latest
-  script:
-    - cd build
-    - ninja test
-  cache:
-    <<: *dependency_cache
-    policy: pull
-  dependencies:
-    - build:archlinux
-  except:
-    - tags
-
 # Debian 10 (Buster)
 build:debian-buster:
   tags:
@@ -60,22 +44,6 @@ build:debian-buster:
     expire_in: 1 day
     paths:
       - build
-  except:
-    - tags
-
-test:debian-buster:
-  tags:
-    - pwmt
-  stage: test
-  image: registry.pwmt.org/pwmt/gitlab-runner-images/debian:buster
-  script:
-    - cd build
-    - ninja test
-  cache:
-    <<: *dependency_cache
-    policy: pull
-  dependencies:
-    - build:debian-buster
   except:
     - tags
 
@@ -98,22 +66,6 @@ build:ubuntu-bionic:
   except:
     - tags
 
-test:ubuntu-bionic:
-  tags:
-    - pwmt
-  stage: test
-  image: registry.pwmt.org/pwmt/gitlab-runner-images/ubuntu:bionic
-  script:
-    - cd build
-    - ninja test
-  cache:
-    <<: *dependency_cache
-    policy: pull
-  dependencies:
-    - build:ubuntu-bionic
-  except:
-    - tags
-
 # Ubuntu 19.10 (Eoan Ermine)
 build:ubuntu-eoan:
   tags:
@@ -130,21 +82,5 @@ build:ubuntu-eoan:
     expire_in: 1 day
     paths:
       - build
-  except:
-    - tags
-
-test:ubuntu-eoan:
-  tags:
-    - pwmt
-  stage: test
-  image: registry.pwmt.org/pwmt/gitlab-runner-images/ubuntu:eoan
-  script:
-    - cd build
-    - ninja test
-  cache:
-    <<: *dependency_cache
-    policy: pull
-  dependencies:
-    - build:ubuntu-eoan
   except:
     - tags
