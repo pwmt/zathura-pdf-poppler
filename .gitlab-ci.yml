@@ -1,0 +1,86 @@
+stages:
+  - build
+  - test
+
+# Cache
+cache: &dependency_cache
+  key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
+  paths:
+    - subprojects/girara
+    - subprojects/zathura
+
+# Archlinux
+build:archlinux:
+  tags:
+    - pwmt
+  stage: build
+  image: registry.pwmt.org/pwmt/gitlab-runner-images/archlinux:latest
+  script:
+    - mkdir -p build && cd build
+    - meson ..
+    - ninja
+  cache:
+    <<: *dependency_cache
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - build
+  except:
+    - tags
+
+# Debian 10 (Buster)
+build:debian-buster:
+  tags:
+    - pwmt
+  stage: build
+  image: registry.pwmt.org/pwmt/gitlab-runner-images/debian:buster
+  script:
+    - mkdir -p build && cd build
+    - meson ..
+    - ninja
+  cache:
+    <<: *dependency_cache
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - build
+  except:
+    - tags
+
+# Ubuntu 18.04 LTS (Bionic Beaver)
+build:ubuntu-bionic:
+  tags:
+    - pwmt
+  stage: build
+  image: registry.pwmt.org/pwmt/gitlab-runner-images/ubuntu:bionic
+  script:
+    - mkdir -p build && cd build
+    - meson ..
+    - ninja
+  cache:
+    <<: *dependency_cache
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - build
+  except:
+    - tags
+
+# Ubuntu 19.10 (Eoan Ermine)
+build:ubuntu-eoan:
+  tags:
+    - pwmt
+  stage: build
+  image: registry.pwmt.org/pwmt/gitlab-runner-images/ubuntu:eoan
+  script:
+    - mkdir -p build && cd build
+    - meson ..
+    - ninja
+  cache:
+    <<: *dependency_cache
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - build
+  except:
+    - tags

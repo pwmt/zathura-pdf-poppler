@@ -1,9 +1,17 @@
-/* See LICENSE file for license and copyright information */
+/* SPDX-License-Identifier: Zlib */
 
 #include "plugin.h"
 #include "utils.h"
 
-static void pdf_zathura_image_free(void* image);
+static void
+pdf_zathura_image_free(void* data)
+{
+  zathura_image_t* image = data;
+  if (image != NULL) {
+    g_free(image->data);
+  }
+  g_free(image);
+}
 
 girara_list_t*
 pdf_page_images_get(zathura_page_t* page, void* data, zathura_error_t* error)
@@ -103,19 +111,4 @@ pdf_page_image_get_cairo(zathura_page_t* page, void* data,
 error_ret:
 
   return NULL;
-}
-
-static void
-pdf_zathura_image_free(void* data)
-{
-  if (data == NULL) {
-    return;
-  }
-
-  zathura_image_t* image = data;
-  if (image->data != NULL) {
-    g_free(image->data);
-  }
-
-  g_free(image);
 }

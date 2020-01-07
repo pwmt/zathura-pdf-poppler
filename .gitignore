@@ -6,3 +6,5 @@
 build
 compile_commands.json
 .ycm_extra_conf.*
+subprojects/girara
+subprojects/zathura

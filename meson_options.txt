@@ -1,0 +1,5 @@
+option('plugindir',
+  type: 'string',
+  value: '',
+  description: 'Install to a different location than Zathura\'s plugin directory'
+)
