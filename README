@@ -5,7 +5,7 @@ rendering library.
 
 Requirements
 ------------
-zathura (>= 0.2.0)
+zathura (>= 0.4.4)
 girara
 poppler-glib (>= 0.18)
 
