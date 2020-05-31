@@ -12,7 +12,7 @@ pdf_page_search_text(zathura_page_t* page, void* data, const
     if (error != NULL) {
       *error = ZATHURA_ERROR_INVALID_ARGUMENTS;
     }
-    goto error_ret;
+    return NULL;
   }
 
   PopplerPage* poppler_page = data;
@@ -53,7 +53,6 @@ pdf_page_search_text(zathura_page_t* page, void* data, const
   return list;
 
 error_free:
-
   if (results != NULL) {
     g_list_free(results);
   }
@@ -61,8 +60,6 @@ error_free:
   if (list != NULL) {
     girara_list_free(list);
   }
-
-error_ret:
 
   return NULL;
 }
