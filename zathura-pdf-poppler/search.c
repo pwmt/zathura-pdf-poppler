@@ -36,8 +36,7 @@ pdf_page_search_text(zathura_page_t* page, void* data, const
     goto error_free;
   }
 
-  GList* entry = NULL;
-  for (entry = results; entry && entry->data; entry = g_list_next(entry)) {
+  for (GList* entry = results; entry && entry->data; entry = g_list_next(entry)) {
     PopplerRectangle* poppler_rectangle = (PopplerRectangle*) entry->data;
     zathura_rectangle_t* rectangle      = g_malloc0(sizeof(zathura_rectangle_t));
 
