@@ -28,12 +28,12 @@ build:archlinux:
   except:
     - tags
 
-# Debian 10 (Buster)
-build:debian-buster:
+# Debian 11 (bullseye)
+build:debian-bullseye:
   tags:
     - pwmt
   stage: build
-  image: registry.pwmt.org/pwmt/gitlab-runner-images/debian:buster
+  image: registry.pwmt.org/pwmt/gitlab-runner-images/debian:bullseye
   script:
     - mkdir -p build && cd build
     - meson ..
@@ -47,12 +47,12 @@ build:debian-buster:
   except:
     - tags
 
-# Ubuntu 18.04 LTS (Bionic Beaver)
-build:ubuntu-bionic:
+# Debian 12 (bookworm)
+build:debian-bookworm:
   tags:
     - pwmt
   stage: build
-  image: registry.pwmt.org/pwmt/gitlab-runner-images/ubuntu:bionic
+  image: registry.pwmt.org/pwmt/gitlab-runner-images/debian:bookworm
   script:
     - mkdir -p build && cd build
     - meson ..
@@ -66,12 +66,32 @@ build:ubuntu-bionic:
   except:
     - tags
 
-# Ubuntu 19.10 (Eoan Ermine)
-build:ubuntu-eoan:
+
+# Ubuntu 20.04 LTS (focal)
+build:ubuntu-focal:
   tags:
     - pwmt
   stage: build
-  image: registry.pwmt.org/pwmt/gitlab-runner-images/ubuntu:eoan
+  image: registry.pwmt.org/pwmt/gitlab-runner-images/ubuntu:focal
+  script:
+    - mkdir -p build && cd build
+    - meson ..
+    - ninja
+  cache:
+    <<: *dependency_cache
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - build
+  except:
+    - tags
+
+# Ubuntu 22.04 LTS (jammy)
+build:ubuntu-jammy:
+  tags:
+    - pwmt
+  stage: build
+  image: registry.pwmt.org/pwmt/gitlab-runner-images/ubuntu:jammy
   script:
     - mkdir -p build && cd build
     - meson ..
