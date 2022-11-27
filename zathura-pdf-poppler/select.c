@@ -50,17 +50,20 @@ pdf_page_get_selection(zathura_page_t* page, void* data, zathura_rectangle_t rec
     goto error_free;
   }
 
-  GList* rectangles = poppler_page_get_selection_region(poppler_page, 1.0, POPPLER_SELECTION_GLYPH, &rect);
-  for (GList* head = rectangles; head != NULL; head = head->next) {
-    PopplerRectangle* r = head->data;
+  cairo_region_t* region = poppler_page_get_selected_region(poppler_page, 1.0, POPPLER_SELECTION_GLYPH, &rect);
+  const int num_rectangles = cairo_region_num_rectangles(region);
+  for (int n = 0; n < num_rectangles; ++n) {
+    cairo_rectangle_int_t r;
+    cairo_region_get_rectangle(region, n, &r);
+
     zathura_rectangle_t* inner_rectangle = g_malloc0(sizeof(zathura_rectangle_t));
-    inner_rectangle->x1 = r->x1;
-    inner_rectangle->x2 = r->x2;
-    inner_rectangle->y1 = r->y1;
-    inner_rectangle->y2 = r->y2;
+    inner_rectangle->x1 = r.x;
+    inner_rectangle->x2 = r.x + r.width;
+    inner_rectangle->y1 = r.y;
+    inner_rectangle->y2 = r.y + r.height;
     girara_list_append(list, inner_rectangle);
   }
-  poppler_page_selection_region_free(rectangles);
+  cairo_region_destroy(region);
   return list;
 
 error_free:
