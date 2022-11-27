@@ -175,6 +175,9 @@ GIRARA_HIDDEN girara_list_t* pdf_page_form_fields_get(zathura_page_t* page,
 GIRARA_HIDDEN char* pdf_page_get_text(zathura_page_t* page, void* poppler_page,
     zathura_rectangle_t rectangle, zathura_error_t* error);
 
+GIRARA_HIDDEN girara_list_t*
+pdf_page_get_selection(zathura_page_t* page, void* data, zathura_rectangle_t rectangle, zathura_error_t* error);
+
 /**
  * Renders a page onto a cairo object
  *

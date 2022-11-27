@@ -12,7 +12,7 @@ pdf_page_search_text(zathura_page_t* page, void* data, const
     if (error != NULL) {
       *error = ZATHURA_ERROR_INVALID_ARGUMENTS;
     }
-    goto error_ret;
+    return NULL;
   }
 
   PopplerPage* poppler_page = data;
@@ -36,15 +36,15 @@ pdf_page_search_text(zathura_page_t* page, void* data, const
     goto error_free;
   }
 
-  GList* entry = NULL;
-  for (entry = results; entry && entry->data; entry = g_list_next(entry)) {
+  const double page_height = zathura_page_get_height(page);
+  for (GList* entry = results; entry && entry->data; entry = g_list_next(entry)) {
     PopplerRectangle* poppler_rectangle = (PopplerRectangle*) entry->data;
     zathura_rectangle_t* rectangle      = g_malloc0(sizeof(zathura_rectangle_t));
 
     rectangle->x1 = poppler_rectangle->x1;
     rectangle->x2 = poppler_rectangle->x2;
-    rectangle->y1 = zathura_page_get_height(page) - poppler_rectangle->y2;
-    rectangle->y2 = zathura_page_get_height(page) - poppler_rectangle->y1;
+    rectangle->y1 = page_height - poppler_rectangle->y2;
+    rectangle->y2 = page_height - poppler_rectangle->y1;
 
     girara_list_append(list, rectangle);
     poppler_rectangle_free(poppler_rectangle);
@@ -54,7 +54,6 @@ pdf_page_search_text(zathura_page_t* page, void* data, const
   return list;
 
 error_free:
-
   if (results != NULL) {
     g_list_free(results);
   }
@@ -62,8 +61,6 @@ error_free:
   if (list != NULL) {
     girara_list_free(list);
   }
-
-error_ret:
 
   return NULL;
 }

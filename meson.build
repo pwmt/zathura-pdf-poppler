@@ -1,6 +1,6 @@
 project('zathura-pdf-poppler', 'c',
-  version: '0.3.0',
-  meson_version: '>=0.43',
+  version: '0.3.1',
+  meson_version: '>=0.56',
   default_options: 'c_std=c11'
 )
 
@@ -15,7 +15,7 @@ metainfodir = join_paths(datadir, 'metainfo')
 desktopdir = join_paths(datadir, 'applications')
 
 # required dependencies
-zathura = dependency('zathura', version: '>=0.4.4', fallback: ['zathura', 'zathura_dependency'])
+zathura = dependency('zathura', version: '>=0.5.2', fallback: ['zathura', 'zathura_dependency'])
 girara = dependency('girara-gtk3', fallback: ['girara', 'girara_dependency'])
 glib = dependency('glib-2.0')
 poppler = dependency('poppler-glib', version: '>=0.18')
@@ -24,7 +24,7 @@ build_dependencies = [zathura, girara, glib, poppler]
 
 if get_option('plugindir') == ''
   if zathura.type_name() == 'pkgconfig'
-    plugindir = zathura.get_pkgconfig_variable('plugindir')
+    plugindir = zathura.get_variable(pkgconfig: 'plugindir')
   else
     zathura_subproject = subproject('zathura')
     plugindir = zathura_subproject.get_variable('plugindir')
