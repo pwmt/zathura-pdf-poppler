@@ -48,7 +48,6 @@ flags = [
   '-pedantic',
   '-Werror=implicit-function-declaration',
   '-Werror=vla',
-  '-fvisibility=hidden'
 ]
 flags = cc.get_supported_arguments(flags)
 
@@ -73,7 +72,8 @@ pdf = shared_module('pdf-poppler',
   dependencies: build_dependencies,
   c_args: defines + flags,
   install: true,
-  install_dir: plugindir
+  install_dir: plugindir,
+  gnu_symbol_visibility: 'hidden'
 )
 
 subdir('data')
