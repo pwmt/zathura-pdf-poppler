@@ -1,7 +1,7 @@
 project('zathura-pdf-poppler', 'c',
   version: '0.3.1',
   meson_version: '>=0.61',
-  default_options: 'c_std=c17'
+  default_options: ['c_std=c17', 'warning_level=3']
 )
 
 version = meson.project_version()
@@ -43,9 +43,6 @@ defines = [
 
 # compile flags
 flags = [
-  '-Wall',
-  '-Wextra',
-  '-pedantic',
   '-Werror=implicit-function-declaration',
   '-Werror=vla',
 ]
