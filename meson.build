@@ -1,7 +1,7 @@
 project('zathura-pdf-poppler', 'c',
   version: '0.3.1',
   meson_version: '>=0.61',
-  default_options: 'c_std=c11'
+  default_options: 'c_std=c17'
 )
 
 version = meson.project_version()
