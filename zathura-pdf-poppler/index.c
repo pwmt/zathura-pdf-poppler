@@ -58,9 +58,10 @@ build_index(PopplerDocument* poppler_document, girara_tree_node_t* root, Poppler
       continue;
     }
 
-    zathura_rectangle_t rect = { 0, 0, 0, 0 };
-    index_element->link = poppler_link_to_zathura_link(poppler_document, action, rect);
+    zathura_rectangle_t rect = {0, 0, 0, 0};
+    index_element->link      = poppler_link_to_zathura_link(poppler_document, action, rect);
     if (index_element->link == NULL) {
+      zathura_index_element_free(index_element);
       poppler_action_free(action);
       continue;
     }
