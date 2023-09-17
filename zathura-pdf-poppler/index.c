@@ -48,11 +48,7 @@ build_index(PopplerDocument* poppler_document, girara_tree_node_t* root, Poppler
       continue;
     }
 
-    gchar* markup = g_markup_escape_text(action->any.title, -1);
-    zathura_index_element_t* index_element = zathura_index_element_new(markup);
-
-    g_free(markup);
-
+    zathura_index_element_t* index_element = zathura_index_element_new(action->any.title);
     if (index_element == NULL) {
       poppler_action_free(action);
       continue;
