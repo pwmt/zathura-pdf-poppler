@@ -1,7 +1,9 @@
 /* SPDX-License-Identifier: Zlib */
 
-#include "plugin.h"
 #include <cairo.h>
+#include <girara/log.h>
+
+#include "plugin.h"
 
 #define SIGNATURE_OVERLAY_OFFSET 3
 #define SIGNATURE_OVERLAY_ADJUST .5
@@ -10,7 +12,7 @@
 #define CAIRO_LINE_OFFSET_HORIZONTAL 5
 
 void print_validation_result(PopplerSignatureInfo* sig_info) {
-  const char* cert_status_strings[] = {
+  static const char* const cert_status_strings[] = {
     "trusted",  // POPPLER_CERTIFICATE_TRUSTED
     "untrusted issuer",  // POPPLER_CERTIFICATE_UNTRUSTED_ISSUER
     "unknown issuer",  // POPPLER_CERTIFICATE_UNKNOWN_ISSUER
@@ -20,7 +22,7 @@ void print_validation_result(PopplerSignatureInfo* sig_info) {
     "not verified"  // POPPLER_CERTIFICATE_NOT_VERIFIED
   };
 
-  const char* sig_status_strings[] = {
+  static const char* const sig_status_strings[] = {
     "valid",  // POPPLER_SIGNATURE_VALID
     "invalid",  // POPPLER_SIGNATURE_INVALID
     "digest mismatch",  // POPPLER_SIGNATURE_DIGEST_MISMATCH
@@ -33,18 +35,18 @@ void print_validation_result(PopplerSignatureInfo* sig_info) {
   PopplerSignatureStatus sig_status = poppler_signature_info_get_signature_status(sig_info);
   PopplerCertificateStatus cert_status = poppler_signature_info_get_certificate_status(sig_info);
   
-  printf("signature validation result is %s and certification validation result is %s\n", sig_status_strings[sig_status], cert_status_strings[cert_status]);
+  girara_debug("signature validation result is %s and certification validation result is %s\n", sig_status_strings[sig_status], cert_status_strings[cert_status]);
 }
 
-void cairo_set_color_success(cairo_t* cr) {
+static void cairo_set_color_success(cairo_t* cr) {
   cairo_set_source_rgba(cr, 0.18, 0.8, 0.33, SIGNATURE_OVERLAY_OPACITY); // green
 }
 
-void cairo_set_color_warning(cairo_t* cr) {
+static void cairo_set_color_warning(cairo_t* cr) {
   cairo_set_source_rgba(cr, 1, 0.84, 0, SIGNATURE_OVERLAY_OPACITY); // yellow
 }
 
-void cairo_set_color_error(cairo_t* cr) {
+static void cairo_set_color_error(cairo_t* cr) {
   cairo_set_source_rgba(cr, 0.92, 0.11, 0.14, SIGNATURE_OVERLAY_OPACITY); // red
 }
 
