@@ -65,6 +65,7 @@ sources = files(
   'zathura-pdf-poppler/render.c',
   'zathura-pdf-poppler/search.c',
   'zathura-pdf-poppler/select.c',
+  'zathura-pdf-poppler/signature.c',
   'zathura-pdf-poppler/utils.c'
 )
 

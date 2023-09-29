@@ -2,6 +2,8 @@
 
 #include "plugin.h"
 
+gboolean g_signature_overlay_toggle = true;
+
 ZATHURA_PLUGIN_REGISTER_WITH_FUNCTIONS(
   "pdf-poppler",
   VERSION_MAJOR, VERSION_MINOR, VERSION_REV,
