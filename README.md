@@ -12,7 +12,7 @@ The following dependencies are required:
 
 * `zathura` (>= 0.4.4)
 * `girara`
-* `poppler-glib` (>= 0.18)
+* `poppler-glib` (>= 21.12)
 
 Installation
 ------------
