@@ -11,7 +11,7 @@
 #define CAIRO_LINE_OFFSET_VERTICAL 13
 #define CAIRO_LINE_OFFSET_HORIZONTAL 5
 
-void print_validation_result(PopplerSignatureInfo* sig_info) {
+static void print_validation_result(PopplerSignatureInfo* sig_info) {
   static const char* const cert_status_strings[] = {
     "trusted",  // POPPLER_CERTIFICATE_TRUSTED
     "untrusted issuer",  // POPPLER_CERTIFICATE_UNTRUSTED_ISSUER
@@ -34,7 +34,7 @@ void print_validation_result(PopplerSignatureInfo* sig_info) {
 
   PopplerSignatureStatus sig_status = poppler_signature_info_get_signature_status(sig_info);
   PopplerCertificateStatus cert_status = poppler_signature_info_get_certificate_status(sig_info);
-  
+
   girara_debug("signature validation result is %s and certification validation result is %s\n", sig_status_strings[sig_status], cert_status_strings[cert_status]);
 }
 
@@ -72,7 +72,7 @@ void hide_signatures(zathura_page_t* zathura_page, PopplerPage *poppler_page, ca
       int flags = POPPLER_SIGNATURE_VALIDATION_FLAG_VALIDATE_CERTIFICATE | POPPLER_SIGNATURE_VALIDATION_FLAG_WITHOUT_OCSP_REVOCATION_CHECK | POPPLER_SIGNATURE_VALIDATION_FLAG_USE_AIA_CERTIFICATE_FETCH;
       PopplerSignatureInfo* sig_info = poppler_form_field_signature_validate_sync(form_field, flags, NULL, NULL);
       print_validation_result(sig_info);
-      
+
       PopplerSignatureStatus sig_status = poppler_signature_info_get_signature_status(sig_info);
       PopplerCertificateStatus cert_status = poppler_signature_info_get_certificate_status(sig_info);
 
@@ -82,7 +82,6 @@ void hide_signatures(zathura_page_t* zathura_page, PopplerPage *poppler_page, ca
       // define rectangle color and content
       switch (sig_status) {
       case POPPLER_SIGNATURE_VALID:
-        
         switch (cert_status) {
         case POPPLER_CERTIFICATE_TRUSTED:
           g_ptr_array_add(text, g_string_new("Signature is valid."));
@@ -91,7 +90,7 @@ void hide_signatures(zathura_page_t* zathura_page, PopplerPage *poppler_page, ca
           GDateTime* sig_time = poppler_signature_info_get_local_signing_time(sig_info);
           gchar* sig_time_str = g_date_time_format(sig_time, "%F %T");
           const gchar* sig_name = poppler_signature_info_get_signer_name(sig_info);
-          
+
           g_ptr_array_add(text, g_string_new("This document is signed by"));
           g_ptr_array_add(text, g_string_append(g_string_new("  "), sig_name));
           g_ptr_array_add(text, g_string_append(g_string_new("on "), sig_time_str));
@@ -112,7 +111,7 @@ void hide_signatures(zathura_page_t* zathura_page, PopplerPage *poppler_page, ca
         case POPPLER_CERTIFICATE_EXPIRED:
           g_ptr_array_add(text, g_string_new("Signature certificate is expired."));
           cairo_set_color_warning(cr);
-          break;  
+          break;
         default: // CERTIFICATE NOT VERIFIED or GENERIC ERROR
           g_ptr_array_add(text, g_string_new("Signature certificate could not be verified."));
           cairo_set_color_error(cr);
@@ -143,7 +142,7 @@ void hide_signatures(zathura_page_t* zathura_page, PopplerPage *poppler_page, ca
         cairo_show_text(cr, line->str);
         g_string_free(line, TRUE);
       }
-      
+
       // free stuff
       g_ptr_array_unref(text);
       poppler_signature_info_free(sig_info);
@@ -152,5 +151,4 @@ void hide_signatures(zathura_page_t* zathura_page, PopplerPage *poppler_page, ca
 
   poppler_page_free_form_field_mapping(form_fields);
 }
-
 
