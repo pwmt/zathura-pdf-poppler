@@ -35,7 +35,7 @@ static void print_validation_result(PopplerSignatureInfo* sig_info) {
   PopplerSignatureStatus sig_status    = poppler_signature_info_get_signature_status(sig_info);
   PopplerCertificateStatus cert_status = poppler_signature_info_get_certificate_status(sig_info);
 
-  girara_debug("signature validation result is %s and certification validation result is %s\n",
+  girara_debug("signature validation result: '%s'\ncertification validation: '%s'",
                sig_status_strings[sig_status], cert_status_strings[cert_status]);
 }
 
