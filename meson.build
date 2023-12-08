@@ -1,7 +1,7 @@
 project('zathura-pdf-poppler', 'c',
-  version: '0.3.1',
-  meson_version: '>=0.56',
-  default_options: 'c_std=c11'
+  version: '0.3.2',
+  meson_version: '>=0.61',
+  default_options: ['c_std=c17', 'warning_level=3']
 )
 
 version = meson.project_version()
@@ -15,10 +15,10 @@ metainfodir = join_paths(datadir, 'metainfo')
 desktopdir = join_paths(datadir, 'applications')
 
 # required dependencies
-zathura = dependency('zathura', version: '>=0.5.2', fallback: ['zathura', 'zathura_dependency'])
+zathura = dependency('zathura', version: '>=0.5.3', fallback: ['zathura', 'zathura_dependency'])
 girara = dependency('girara-gtk3', fallback: ['girara', 'girara_dependency'])
 glib = dependency('glib-2.0')
-poppler = dependency('poppler-glib', version: '>=0.18')
+poppler = dependency('poppler-glib', version: '>=21.12')
 
 build_dependencies = [zathura, girara, glib, poppler]
 
@@ -43,12 +43,8 @@ defines = [
 
 # compile flags
 flags = [
-  '-Wall',
-  '-Wextra',
-  '-pedantic',
   '-Werror=implicit-function-declaration',
   '-Werror=vla',
-  '-fvisibility=hidden'
 ]
 flags = cc.get_supported_arguments(flags)
 
@@ -65,6 +61,7 @@ sources = files(
   'zathura-pdf-poppler/render.c',
   'zathura-pdf-poppler/search.c',
   'zathura-pdf-poppler/select.c',
+  'zathura-pdf-poppler/signature.c',
   'zathura-pdf-poppler/utils.c'
 )
 
@@ -73,7 +70,8 @@ pdf = shared_module('pdf-poppler',
   dependencies: build_dependencies,
   c_args: defines + flags,
   install: true,
-  install_dir: plugindir
+  install_dir: plugindir,
+  gnu_symbol_visibility: 'hidden'
 )
 
 subdir('data')

@@ -28,25 +28,6 @@ build:archlinux:
   except:
     - tags
 
-# Debian 11 (bullseye)
-build:debian-bullseye:
-  tags:
-    - pwmt
-  stage: build
-  image: registry.pwmt.org/pwmt/gitlab-runner-images/debian:bullseye
-  script:
-    - mkdir -p build && cd build
-    - meson ..
-    - ninja
-  cache:
-    <<: *dependency_cache
-  artifacts:
-    expire_in: 1 day
-    paths:
-      - build
-  except:
-    - tags
-
 # Debian 12 (bookworm)
 build:debian-bookworm:
   tags:
@@ -66,13 +47,12 @@ build:debian-bookworm:
   except:
     - tags
 
-
-# Ubuntu 20.04 LTS (focal)
-build:ubuntu-focal:
+# Debian 13 (trixie)
+build:debian-trixie:
   tags:
     - pwmt
   stage: build
-  image: registry.pwmt.org/pwmt/gitlab-runner-images/ubuntu:focal
+  image: registry.pwmt.org/pwmt/gitlab-runner-images/debian:trixie
   script:
     - mkdir -p build && cd build
     - meson ..

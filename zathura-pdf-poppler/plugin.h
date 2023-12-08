@@ -202,4 +202,12 @@ GIRARA_HIDDEN zathura_error_t pdf_page_render_cairo(zathura_page_t* page, void*
 GIRARA_HIDDEN zathura_error_t pdf_page_get_label(zathura_page_t* page,
     void* data, char** label);
 
+/**
+ * Get signatures
+ *
+ * @param poppler_document Internal document representation
+ * @param cairo Cairo object
+ */
+GIRARA_HIDDEN girara_list_t* pdf_page_get_signatures(zathura_page_t* page, void* data, zathura_error_t* error);
+
 #endif // PDF_H
