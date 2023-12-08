@@ -13,7 +13,6 @@ pdf_page_render_cairo(zathura_page_t* page, void* data, cairo_t*
   PopplerPage* poppler_page = data;
   if (printing == false) {
     poppler_page_render(poppler_page, cairo);
-    hide_signatures(page, poppler_page, cairo);
   } else {
     poppler_page_render_for_printing(poppler_page, cairo);
   }
