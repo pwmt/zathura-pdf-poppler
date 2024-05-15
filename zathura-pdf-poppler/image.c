@@ -3,9 +3,7 @@
 #include "plugin.h"
 #include "utils.h"
 
-static void
-pdf_zathura_image_free(void* data)
-{
+static void pdf_zathura_image_free(void* data) {
   zathura_image_t* image = data;
   if (image != NULL) {
     g_free(image->data);
@@ -13,9 +11,7 @@ pdf_zathura_image_free(void* data)
   g_free(image);
 }
 
-girara_list_t*
-pdf_page_images_get(zathura_page_t* page, void* data, zathura_error_t* error)
-{
+girara_list_t* pdf_page_images_get(zathura_page_t* page, void* data, zathura_error_t* error) {
   if (page == NULL || data == NULL) {
     if (error != NULL) {
       *error = ZATHURA_ERROR_INVALID_ARGUMENTS;
@@ -27,7 +23,7 @@ pdf_page_images_get(zathura_page_t* page, void* data, zathura_error_t* error)
   GList* image_mapping = NULL;
 
   PopplerPage* poppler_page = data;
-  image_mapping = poppler_page_get_image_mapping(poppler_page);
+  image_mapping             = poppler_page_get_image_mapping(poppler_page);
   if (image_mapping == NULL || g_list_length(image_mapping) == 0) {
     if (error != NULL) {
       *error = ZATHURA_ERROR_UNKNOWN;
@@ -48,13 +44,13 @@ pdf_page_images_get(zathura_page_t* page, void* data, zathura_error_t* error)
   for (GList* image = image_mapping; image != NULL; image = g_list_next(image)) {
     zathura_image_t* zathura_image = g_malloc0(sizeof(zathura_image_t));
 
-    PopplerImageMapping* poppler_image = (PopplerImageMapping*) image->data;
+    PopplerImageMapping* poppler_image = (PopplerImageMapping*)image->data;
 
     /* extract id */
     zathura_image->data = g_malloc(sizeof(gint));
 
     gint* image_id = zathura_image->data;
-    *image_id = poppler_image->image_id;
+    *image_id      = poppler_image->image_id;
 
     /* extract position */
     zathura_image->position.x1 = poppler_image->area.x1;
@@ -84,10 +80,8 @@ error_ret:
   return NULL;
 }
 
-cairo_surface_t*
-pdf_page_image_get_cairo(zathura_page_t* page, void* data,
-    zathura_image_t* image, zathura_error_t* error)
-{
+cairo_surface_t* pdf_page_image_get_cairo(zathura_page_t* page, void* data, zathura_image_t* image,
+                                          zathura_error_t* error) {
   if (page == NULL || data == NULL || image == NULL || image->data == NULL) {
     if (error != NULL) {
       *error = ZATHURA_ERROR_INVALID_ARGUMENTS;
@@ -95,10 +89,10 @@ pdf_page_image_get_cairo(zathura_page_t* page, void* data,
     goto error_ret;
   }
 
-  gint* image_id = (gint*) image->data;
+  gint* image_id = (gint*)image->data;
 
   PopplerPage* poppler_page = data;
-  cairo_surface_t* surface = poppler_page_get_image(poppler_page, *image_id);
+  cairo_surface_t* surface  = poppler_page_get_image(poppler_page, *image_id);
   if (surface == NULL) {
     if (error != NULL) {
       *error = ZATHURA_ERROR_UNKNOWN;
