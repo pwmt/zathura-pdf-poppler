@@ -101,10 +101,11 @@ zathura_link_t* poppler_link_to_zathura_link(PopplerDocument* poppler_document, 
     break;
   }
   case POPPLER_ACTION_GOTO_REMOTE:
-    type = ZATHURA_LINK_GOTO_REMOTE;
-    if ((target.value = poppler_action->goto_remote.file_name) == NULL) {
+    if (poppler_action->goto_remote.file_name == NULL) {
       return NULL;
     }
+    type         = ZATHURA_LINK_GOTO_REMOTE;
+    target.value = poppler_action->goto_remote.file_name;
     break;
   case POPPLER_ACTION_URI:
     type         = ZATHURA_LINK_URI;
