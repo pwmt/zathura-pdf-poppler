@@ -2,6 +2,16 @@
 
 #include "plugin.h"
 
+static PopplerRectangle poppler_rect_from_zathura(zathura_rectangle_t rectangle) {
+  PopplerRectangle rect = {
+      .x1 = rectangle.x1,
+      .x2 = rectangle.x2,
+      .y1 = rectangle.y1,
+      .y2 = rectangle.y2,
+  };
+  return rect;
+}
+
 char* pdf_page_get_text(zathura_page_t* page, void* data, zathura_rectangle_t rectangle, zathura_error_t* error) {
   if (page == NULL || data == NULL) {
     if (error != NULL) {
@@ -10,12 +20,7 @@ char* pdf_page_get_text(zathura_page_t* page, void* data, zathura_rectangle_t re
     return NULL;
   }
 
-  PopplerRectangle rect = {
-      .x1 = rectangle.x1,
-      .x2 = rectangle.x2,
-      .y1 = rectangle.y1,
-      .y2 = rectangle.y2,
-  };
+  PopplerRectangle rect = poppler_rect_from_zathura(rectangle);
   PopplerPage* poppler_page = data;
 
   /* get selected text */
@@ -31,12 +36,7 @@ girara_list_t* pdf_page_get_selection(zathura_page_t* page, void* data, zathura_
     return NULL;
   }
 
-  PopplerRectangle rect = {
-      .x1 = rectangle.x1,
-      .x2 = rectangle.x2,
-      .y1 = rectangle.y1,
-      .y2 = rectangle.y2,
-  };
+  PopplerRectangle rect = poppler_rect_from_zathura(rectangle);
   PopplerPage* poppler_page = data;
 
   girara_list_t* list = girara_list_new2(g_free);
