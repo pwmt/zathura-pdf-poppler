@@ -3,12 +3,9 @@
 #include "plugin.h"
 #include "utils.h"
 
-static void build_index(PopplerDocument* poppler_document, girara_tree_node_t*
-    root, PopplerIndexIter* iter);
+static void build_index(PopplerDocument* poppler_document, girara_tree_node_t* root, PopplerIndexIter* iter);
 
-girara_tree_node_t*
-pdf_document_index_generate(zathura_document_t* document, void* data, zathura_error_t* error)
-{
+girara_tree_node_t* pdf_document_index_generate(zathura_document_t* document, void* data, zathura_error_t* error) {
   if (document == NULL || data == NULL) {
     if (error != NULL) {
       *error = ZATHURA_ERROR_INVALID_ARGUMENTS;
@@ -17,7 +14,7 @@ pdf_document_index_generate(zathura_document_t* document, void* data, zathura_er
   }
 
   PopplerDocument* poppler_document = data;
-  PopplerIndexIter* iter = poppler_index_iter_new(poppler_document);
+  PopplerIndexIter* iter            = poppler_index_iter_new(poppler_document);
 
   if (iter == NULL) {
     if (error != NULL) {
@@ -34,9 +31,7 @@ pdf_document_index_generate(zathura_document_t* document, void* data, zathura_er
   return root;
 }
 
-static void
-build_index(PopplerDocument* poppler_document, girara_tree_node_t* root, PopplerIndexIter* iter)
-{
+static void build_index(PopplerDocument* poppler_document, girara_tree_node_t* root, PopplerIndexIter* iter) {
   if (poppler_document == NULL || root == NULL || iter == NULL) {
     return;
   }

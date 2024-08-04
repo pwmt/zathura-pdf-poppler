@@ -3,9 +3,7 @@
 #include "plugin.h"
 #include "utils.h"
 
-girara_list_t*
-pdf_page_links_get(zathura_page_t* page, void* data, zathura_error_t* error)
-{
+girara_list_t* pdf_page_links_get(zathura_page_t* page, void* data, zathura_error_t* error) {
   if (page == NULL || data == NULL) {
     if (error != NULL) {
       *error = ZATHURA_ERROR_INVALID_ARGUMENTS;
@@ -26,7 +24,7 @@ pdf_page_links_get(zathura_page_t* page, void* data, zathura_error_t* error)
   }
   link_mapping = g_list_reverse(link_mapping);
 
-  list = girara_list_new2((girara_free_function_t) zathura_link_free);
+  list = girara_list_new2((girara_free_function_t)zathura_link_free);
   if (list == NULL) {
     if (error != NULL) {
       *error = ZATHURA_ERROR_OUT_OF_MEMORY;
@@ -34,25 +32,23 @@ pdf_page_links_get(zathura_page_t* page, void* data, zathura_error_t* error)
     goto error_free;
   }
 
-  zathura_document_t* zathura_document = (zathura_document_t*) zathura_page_get_document(page);
+  zathura_document_t* zathura_document = (zathura_document_t*)zathura_page_get_document(page);
   PopplerDocument* poppler_document    = zathura_document_get_data(zathura_document);
 
   const double page_height = zathura_page_get_height(page);
 
   for (GList* link = link_mapping; link != NULL; link = g_list_next(link)) {
-    PopplerLinkMapping* poppler_link       = (PopplerLinkMapping*) link->data;
+    PopplerLinkMapping* poppler_link = (PopplerLinkMapping*)link->data;
 
     /* extract position */
     const zathura_rectangle_t position = {
-      .x1 = poppler_link->area.x1,
-      .x2 = poppler_link->area.x2,
-      .y1 = page_height - poppler_link->area.y2,
-      .y2 = page_height - poppler_link->area.y1
+        .x1 = poppler_link->area.x1,
+        .x2 = poppler_link->area.x2,
+        .y1 = page_height - poppler_link->area.y2,
+        .y2 = page_height - poppler_link->area.y1,
     };
 
-    zathura_link_t* zathura_link =
-      poppler_link_to_zathura_link(poppler_document, poppler_link->action,
-          position);
+    zathura_link_t* zathura_link = poppler_link_to_zathura_link(poppler_document, poppler_link->action, position);
     if (zathura_link != NULL) {
       girara_list_append(list, zathura_link);
     }

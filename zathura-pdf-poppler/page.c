@@ -2,9 +2,7 @@
 
 #include "plugin.h"
 
-zathura_error_t
-pdf_page_init(zathura_page_t* page)
-{
+zathura_error_t pdf_page_init(zathura_page_t* page) {
   if (page == NULL) {
     return ZATHURA_ERROR_INVALID_ARGUMENTS;
   }
@@ -36,9 +34,7 @@ pdf_page_init(zathura_page_t* page)
   return ZATHURA_ERROR_OK;
 }
 
-zathura_error_t
-pdf_page_clear(zathura_page_t* page, void* data)
-{
+zathura_error_t pdf_page_clear(zathura_page_t* page, void* data) {
   if (page == NULL) {
     return ZATHURA_ERROR_INVALID_ARGUMENTS;
   }
