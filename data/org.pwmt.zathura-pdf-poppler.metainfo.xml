@@ -8,5 +8,4 @@
   <name>Zathura-PDF-Poppler</name>
   <summary>PDF plugin for zathura based on Poppler</summary>
   <url type="homepage">https://pwmt.org/projects/zathura-pdf-poppler/</url>
-  <update_contact>zathura@lists.pwmt.org</update_contact>
 </component>
