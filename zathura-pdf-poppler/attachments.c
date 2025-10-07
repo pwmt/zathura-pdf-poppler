@@ -57,7 +57,7 @@ zathura_error_t pdf_document_attachment_save(zathura_document_t* document, void*
       continue;
     }
 
-    return poppler_attachment_save(attachment, file, NULL);
+    return poppler_attachment_save(attachment, file, NULL) ? ZATHURA_ERROR_OK : ZATHURA_ERROR_UNKNOWN;
   }
 
   return ZATHURA_ERROR_OK;
