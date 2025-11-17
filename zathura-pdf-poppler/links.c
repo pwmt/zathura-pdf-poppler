@@ -24,7 +24,7 @@ girara_list_t* pdf_page_links_get(zathura_page_t* page, void* data, zathura_erro
   }
   link_mapping = g_list_reverse(link_mapping);
 
-  list = girara_list_new2((girara_free_function_t)zathura_link_free);
+  list = girara_list_new_with_free((girara_free_function_t)zathura_link_free);
   if (list == NULL) {
     if (error != NULL) {
       *error = ZATHURA_ERROR_OUT_OF_MEMORY;

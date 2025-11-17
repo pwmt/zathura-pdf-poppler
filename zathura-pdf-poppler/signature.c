@@ -52,7 +52,7 @@ girara_list_t* pdf_page_get_signatures(zathura_page_t* page, void* data, zathura
     return NULL;
   }
 
-  girara_list_t* signatures = girara_list_new2(signature_info_free);
+  girara_list_t* signatures = girara_list_new_with_free(signature_info_free);
 
   PopplerPage* poppler_page = data;
   const double page_height  = zathura_page_get_height(page);

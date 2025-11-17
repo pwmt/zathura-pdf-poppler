@@ -20,7 +20,7 @@ char* pdf_page_get_text(zathura_page_t* page, void* data, zathura_rectangle_t re
     return NULL;
   }
 
-  PopplerRectangle rect = poppler_rect_from_zathura(rectangle);
+  PopplerRectangle rect     = poppler_rect_from_zathura(rectangle);
   PopplerPage* poppler_page = data;
 
   /* get selected text */
@@ -36,10 +36,10 @@ girara_list_t* pdf_page_get_selection(zathura_page_t* page, void* data, zathura_
     return NULL;
   }
 
-  PopplerRectangle rect = poppler_rect_from_zathura(rectangle);
+  PopplerRectangle rect     = poppler_rect_from_zathura(rectangle);
   PopplerPage* poppler_page = data;
 
-  girara_list_t* list = girara_list_new2(g_free);
+  girara_list_t* list = girara_list_new_with_free(g_free);
   if (list == NULL) {
     if (error != NULL) {
       *error = ZATHURA_ERROR_OUT_OF_MEMORY;
