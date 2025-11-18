@@ -152,16 +152,6 @@ GIRARA_HIDDEN girara_list_t* pdf_page_search_text(zathura_page_t* page, void* da
 GIRARA_HIDDEN girara_list_t* pdf_page_links_get(zathura_page_t* page, void* poppler_page, zathura_error_t* error);
 
 /**
- * Returns a list of form fields available on the given page
- *
- * @param page Page
- * @param error Set to an error value (see zathura_error_t) if an
- *   error occurred
- * @return List of form fields or NULL if an error occurred
- */
-GIRARA_HIDDEN girara_list_t* pdf_page_form_fields_get(zathura_page_t* page, void* poppler_page, zathura_error_t* error);
-
-/**
  * Get text for selection
  * @param page Page
  * @param rectangle Selection

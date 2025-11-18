@@ -53,7 +53,6 @@ flags = cc.get_supported_arguments(flags)
 sources = files(
   'zathura-pdf-poppler/attachments.c',
   'zathura-pdf-poppler/document.c',
-  'zathura-pdf-poppler/forms.c',
   'zathura-pdf-poppler/image.c',
   'zathura-pdf-poppler/index.c',
   'zathura-pdf-poppler/links.c',
