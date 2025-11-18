@@ -47,7 +47,7 @@ girara_list_t* pdf_page_get_selection(zathura_page_t* page, void* data, zathura_
     cairo_rectangle_int_t r;
     cairo_region_get_rectangle(region, n, &r);
 
-    zathura_rectangle_t* inner_rectangle = g_malloc0(sizeof(zathura_rectangle_t));
+    zathura_rectangle_t* inner_rectangle = g_try_malloc0(sizeof(zathura_rectangle_t));
     if (inner_rectangle == NULL) {
       zathura_check_set_error(error, ZATHURA_ERROR_OUT_OF_MEMORY);
       cairo_region_destroy(region);
