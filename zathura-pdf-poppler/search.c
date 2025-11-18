@@ -4,6 +4,10 @@
 
 #include "plugin.h"
 
+static void rectangle_free(void* data) {
+  poppler_rectangle_free(data);
+}
+
 girara_list_t* pdf_page_search_text(zathura_page_t* page, void* data, const char* text, zathura_error_t* error) {
   if (page == NULL || data == NULL || text == NULL || strlen(text) == 0) {
     zathura_check_set_error(error, ZATHURA_ERROR_INVALID_ARGUMENTS);
@@ -38,10 +42,9 @@ girara_list_t* pdf_page_search_text(zathura_page_t* page, void* data, const char
     rectangle->y2 = page_height - poppler_rectangle->y1;
 
     girara_list_append(list, rectangle);
-    poppler_rectangle_free(poppler_rectangle);
   }
 
-  g_list_free(results);
+  g_list_free_full(results, rectangle_free);
   return list;
 
 error_free:
