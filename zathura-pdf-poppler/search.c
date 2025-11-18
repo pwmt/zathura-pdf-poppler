@@ -19,7 +19,7 @@ girara_list_t* pdf_page_search_text(zathura_page_t* page, void* data, const char
   girara_list_t* list       = NULL;
 
   /* search text */
-  results = poppler_page_find_text(poppler_page, text);
+  results = poppler_page_find_text_with_options(poppler_page, text, POPPLER_FIND_MULTILINE);
   if (results == NULL || g_list_length(results) == 0) {
     zathura_check_set_error(error, ZATHURA_ERROR_UNKNOWN);
     goto error_free;
