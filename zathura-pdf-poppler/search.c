@@ -34,7 +34,11 @@ girara_list_t* pdf_page_search_text(zathura_page_t* page, void* data, const char
   const double page_height = zathura_page_get_height(page);
   for (GList* entry = results; entry && entry->data; entry = g_list_next(entry)) {
     PopplerRectangle* poppler_rectangle = (PopplerRectangle*)entry->data;
-    zathura_rectangle_t* rectangle      = g_malloc0(sizeof(zathura_rectangle_t));
+    zathura_rectangle_t* rectangle      = g_try_malloc0(sizeof(zathura_rectangle_t));
+    if (rectangle == NULL) {
+      zathura_check_set_error(error, ZATHURA_ERROR_OUT_OF_MEMORY);
+      goto error_free;
+    }
 
     rectangle->x1 = poppler_rectangle->x1;
     rectangle->x2 = poppler_rectangle->x2;

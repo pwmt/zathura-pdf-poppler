@@ -48,10 +48,16 @@ girara_list_t* pdf_page_get_selection(zathura_page_t* page, void* data, zathura_
     cairo_region_get_rectangle(region, n, &r);
 
     zathura_rectangle_t* inner_rectangle = g_malloc0(sizeof(zathura_rectangle_t));
-    inner_rectangle->x1                  = r.x;
-    inner_rectangle->x2                  = r.x + r.width;
-    inner_rectangle->y1                  = r.y;
-    inner_rectangle->y2                  = r.y + r.height;
+    if (inner_rectangle == NULL) {
+      zathura_check_set_error(error, ZATHURA_ERROR_OUT_OF_MEMORY);
+      cairo_region_destroy(region);
+      goto error_free;
+    }
+
+    inner_rectangle->x1 = r.x;
+    inner_rectangle->x2 = r.x + r.width;
+    inner_rectangle->y1 = r.y;
+    inner_rectangle->y2 = r.y + r.height;
     girara_list_append(list, inner_rectangle);
   }
   cairo_region_destroy(region);
