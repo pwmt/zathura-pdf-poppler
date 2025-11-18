@@ -14,9 +14,7 @@ static PopplerRectangle poppler_rect_from_zathura(zathura_rectangle_t rectangle)
 
 char* pdf_page_get_text(zathura_page_t* page, void* data, zathura_rectangle_t rectangle, zathura_error_t* error) {
   if (page == NULL || data == NULL) {
-    if (error != NULL) {
-      *error = ZATHURA_ERROR_INVALID_ARGUMENTS;
-    }
+    zathura_check_set_error(error, ZATHURA_ERROR_INVALID_ARGUMENTS);
     return NULL;
   }
 
@@ -30,9 +28,7 @@ char* pdf_page_get_text(zathura_page_t* page, void* data, zathura_rectangle_t re
 girara_list_t* pdf_page_get_selection(zathura_page_t* page, void* data, zathura_rectangle_t rectangle,
                                       zathura_error_t* error) {
   if (page == NULL || data == NULL) {
-    if (error != NULL) {
-      *error = ZATHURA_ERROR_INVALID_ARGUMENTS;
-    }
+    zathura_check_set_error(error, ZATHURA_ERROR_INVALID_ARGUMENTS);
     return NULL;
   }
 
@@ -41,9 +37,7 @@ girara_list_t* pdf_page_get_selection(zathura_page_t* page, void* data, zathura_
 
   girara_list_t* list = girara_list_new_with_free(g_free);
   if (list == NULL) {
-    if (error != NULL) {
-      *error = ZATHURA_ERROR_OUT_OF_MEMORY;
-    }
+    zathura_check_set_error(error, ZATHURA_ERROR_OUT_OF_MEMORY);
     goto error_free;
   }
 

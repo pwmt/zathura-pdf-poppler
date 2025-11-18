@@ -5,9 +5,7 @@
 
 girara_list_t* pdf_page_links_get(zathura_page_t* page, void* data, zathura_error_t* error) {
   if (page == NULL || data == NULL) {
-    if (error != NULL) {
-      *error = ZATHURA_ERROR_INVALID_ARGUMENTS;
-    }
+    zathura_check_set_error(error, ZATHURA_ERROR_INVALID_ARGUMENTS);
     goto error_ret;
   }
 
@@ -17,18 +15,14 @@ girara_list_t* pdf_page_links_get(zathura_page_t* page, void* data, zathura_erro
 
   link_mapping = poppler_page_get_link_mapping(poppler_page);
   if (link_mapping == NULL || g_list_length(link_mapping) == 0) {
-    if (error != NULL) {
-      *error = ZATHURA_ERROR_UNKNOWN;
-    }
+    zathura_check_set_error(error, ZATHURA_ERROR_UNKNOWN);
     goto error_free;
   }
   link_mapping = g_list_reverse(link_mapping);
 
   list = girara_list_new_with_free((girara_free_function_t)zathura_link_free);
   if (list == NULL) {
-    if (error != NULL) {
-      *error = ZATHURA_ERROR_OUT_OF_MEMORY;
-    }
+    zathura_check_set_error(error, ZATHURA_ERROR_OUT_OF_MEMORY);
     goto error_free;
   }
 

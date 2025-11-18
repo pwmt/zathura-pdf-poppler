@@ -7,9 +7,7 @@ static void build_index(PopplerDocument* poppler_document, girara_tree_node_t* r
 
 girara_tree_node_t* pdf_document_index_generate(zathura_document_t* document, void* data, zathura_error_t* error) {
   if (document == NULL || data == NULL) {
-    if (error != NULL) {
-      *error = ZATHURA_ERROR_INVALID_ARGUMENTS;
-    }
+    zathura_check_set_error(error, ZATHURA_ERROR_INVALID_ARGUMENTS);
     return NULL;
   }
 
@@ -17,9 +15,7 @@ girara_tree_node_t* pdf_document_index_generate(zathura_document_t* document, vo
   PopplerIndexIter* iter            = poppler_index_iter_new(poppler_document);
 
   if (iter == NULL) {
-    if (error != NULL) {
-      *error = ZATHURA_ERROR_OUT_OF_MEMORY;
-    }
+    zathura_check_set_error(error, ZATHURA_ERROR_OUT_OF_MEMORY);
     return NULL;
   }
 

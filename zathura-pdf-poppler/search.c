@@ -6,9 +6,7 @@
 
 girara_list_t* pdf_page_search_text(zathura_page_t* page, void* data, const char* text, zathura_error_t* error) {
   if (page == NULL || data == NULL || text == NULL || strlen(text) == 0) {
-    if (error != NULL) {
-      *error = ZATHURA_ERROR_INVALID_ARGUMENTS;
-    }
+    zathura_check_set_error(error, ZATHURA_ERROR_INVALID_ARGUMENTS);
     return NULL;
   }
 
@@ -19,17 +17,13 @@ girara_list_t* pdf_page_search_text(zathura_page_t* page, void* data, const char
   /* search text */
   results = poppler_page_find_text(poppler_page, text);
   if (results == NULL || g_list_length(results) == 0) {
-    if (error != NULL) {
-      *error = ZATHURA_ERROR_UNKNOWN;
-    }
+    zathura_check_set_error(error, ZATHURA_ERROR_UNKNOWN);
     goto error_free;
   }
 
   list = girara_list_new_with_free(g_free);
   if (list == NULL) {
-    if (error != NULL) {
-      *error = ZATHURA_ERROR_OUT_OF_MEMORY;
-    }
+    zathura_check_set_error(error, ZATHURA_ERROR_OUT_OF_MEMORY);
     goto error_free;
   }
 

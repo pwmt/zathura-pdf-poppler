@@ -8,15 +8,14 @@
 
 girara_list_t* pdf_document_get_information(zathura_document_t* document, void* data, zathura_error_t* error) {
   if (document == NULL || data == NULL) {
-    if (error != NULL) {
-      *error = ZATHURA_ERROR_INVALID_ARGUMENTS;
-    }
+    zathura_check_set_error(error, ZATHURA_ERROR_INVALID_ARGUMENTS);
     return NULL;
   }
 
   PopplerDocument* poppler_document = data;
   girara_list_t* list               = zathura_document_information_entry_list_new();
   if (list == NULL) {
+    zathura_check_set_error(error, ZATHURA_ERROR_OUT_OF_MEMORY);
     return NULL;
   }
 

@@ -6,26 +6,20 @@
 
 girara_list_t* pdf_document_attachments_get(zathura_document_t* document, void* data, zathura_error_t* error) {
   if (document == NULL || data == NULL) {
-    if (error != NULL) {
-      *error = ZATHURA_ERROR_INVALID_ARGUMENTS;
-    }
+    zathura_check_set_error(error, ZATHURA_ERROR_INVALID_ARGUMENTS);
     return NULL;
   }
 
   PopplerDocument* poppler_document = data;
   if (poppler_document_has_attachments(poppler_document) == FALSE) {
     girara_warning("PDF file has no attachments");
-    if (error != NULL) {
-      *error = ZATHURA_ERROR_UNKNOWN;
-    }
+    zathura_check_set_error(error, ZATHURA_ERROR_UNKNOWN);
     return NULL;
   }
 
   girara_list_t* res = girara_sorted_list_new_with_free((girara_compare_function_t)g_strcmp0, g_free);
   if (res == NULL) {
-    if (error != NULL) {
-      *error = ZATHURA_ERROR_OUT_OF_MEMORY;
-    }
+    zathura_check_set_error(error, ZATHURA_ERROR_OUT_OF_MEMORY);
     return NULL;
   }
 
