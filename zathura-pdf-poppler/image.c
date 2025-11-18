@@ -34,12 +34,20 @@ girara_list_t* pdf_page_images_get(zathura_page_t* page, void* data, zathura_err
   }
 
   for (GList* image = image_mapping; image != NULL; image = g_list_next(image)) {
-    zathura_image_t* zathura_image = g_malloc0(sizeof(zathura_image_t));
+    zathura_image_t* zathura_image = g_try_malloc0(sizeof(zathura_image_t));
+    if (zathura_image == NULL) {
+      zathura_check_set_error(error, ZATHURA_ERROR_OUT_OF_MEMORY);
+      goto error_free;
+    }
 
     PopplerImageMapping* poppler_image = (PopplerImageMapping*)image->data;
 
     /* extract id */
-    zathura_image->data = g_malloc(sizeof(gint));
+    zathura_image->data = g_try_malloc(sizeof(gint));
+    if (zathura_image->data == NULL) {
+      zathura_check_set_error(error, ZATHURA_ERROR_OUT_OF_MEMORY);
+      goto error_free;
+    }
 
     gint* image_id = zathura_image->data;
     *image_id      = poppler_image->image_id;
