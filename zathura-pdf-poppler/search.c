@@ -49,7 +49,7 @@ girara_list_t* pdf_page_search_text(zathura_page_t* page, void* data, const char
 
 error_free:
   if (results != NULL) {
-    g_list_free(results);
+    g_list_free_full(results, rectangle_free);
   }
 
   if (list != NULL) {
