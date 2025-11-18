@@ -13,7 +13,6 @@ girara_list_t* pdf_document_attachments_get(zathura_document_t* document, void* 
   PopplerDocument* poppler_document = data;
   if (poppler_document_has_attachments(poppler_document) == FALSE) {
     girara_warning("PDF file has no attachments");
-    zathura_check_set_error(error, ZATHURA_ERROR_UNKNOWN);
     return NULL;
   }
 
@@ -28,6 +27,7 @@ girara_list_t* pdf_document_attachments_get(zathura_document_t* document, void* 
     PopplerAttachment* attachment = (PopplerAttachment*)attachments->data;
     girara_list_append(res, g_strdup(attachment->name));
   }
+  g_list_free_full(attachment_list, g_object_unref);
 
   return res;
 }
@@ -44,6 +44,7 @@ zathura_error_t pdf_document_attachment_save(zathura_document_t* document, void*
     return ZATHURA_ERROR_INVALID_ARGUMENTS;
   }
 
+  zathura_error_t ret = ZATHURA_ERROR_OK;
   GList* attachment_list = poppler_document_get_attachments(poppler_document);
   for (GList* attachments = attachment_list; attachments != NULL; attachments = g_list_next(attachments)) {
     PopplerAttachment* attachment = (PopplerAttachment*)attachments->data;
@@ -51,8 +52,10 @@ zathura_error_t pdf_document_attachment_save(zathura_document_t* document, void*
       continue;
     }
 
-    return poppler_attachment_save(attachment, file, NULL) ? ZATHURA_ERROR_OK : ZATHURA_ERROR_UNKNOWN;
+    ret = poppler_attachment_save(attachment, file, NULL) ? ZATHURA_ERROR_OK : ZATHURA_ERROR_UNKNOWN;
+    break;
   }
 
-  return ZATHURA_ERROR_OK;
+  g_list_free_full(attachment_list, g_object_unref);
+  return ret;
 }
