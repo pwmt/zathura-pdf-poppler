@@ -27,13 +27,11 @@ girara_list_t* pdf_page_images_get(zathura_page_t* page, void* data, zathura_err
     goto error_free;
   }
 
-  list = girara_list_new();
+  list = girara_list_new_with_free(pdf_zathura_image_free);
   if (list == NULL) {
     zathura_check_set_error(error, ZATHURA_ERROR_OUT_OF_MEMORY);
     goto error_free;
   }
-
-  girara_list_set_free_function(list, pdf_zathura_image_free);
 
   for (GList* image = image_mapping; image != NULL; image = g_list_next(image)) {
     zathura_image_t* zathura_image = g_malloc0(sizeof(zathura_image_t));
