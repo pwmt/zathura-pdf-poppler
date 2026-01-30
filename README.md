@@ -10,7 +10,7 @@ Requirements
 
 The following dependencies are required:
 
-* `zathura` (>= 0.5.3)
+* `zathura` (>= 2026.01.30)
 * `girara`
 * `poppler-glib` (>= 21.12)
 
@@ -24,7 +24,7 @@ To build and install the plugin using meson's ninja backend:
     ninja
     ninja install
 
-Note that the default backend for meson might vary based on the platform. Please
+> **Note:** The default backend for meson might vary based on the platform. Please
 refer to the meson documentation for platform specific dependencies.
 
 Bugs

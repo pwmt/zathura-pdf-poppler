@@ -6,26 +6,19 @@
 
 girara_list_t* pdf_document_attachments_get(zathura_document_t* document, void* data, zathura_error_t* error) {
   if (document == NULL || data == NULL) {
-    if (error != NULL) {
-      *error = ZATHURA_ERROR_INVALID_ARGUMENTS;
-    }
+    zathura_check_set_error(error, ZATHURA_ERROR_INVALID_ARGUMENTS);
     return NULL;
   }
 
   PopplerDocument* poppler_document = data;
   if (poppler_document_has_attachments(poppler_document) == FALSE) {
     girara_warning("PDF file has no attachments");
-    if (error != NULL) {
-      *error = ZATHURA_ERROR_UNKNOWN;
-    }
     return NULL;
   }
 
-  girara_list_t* res = girara_sorted_list_new2((girara_compare_function_t)g_strcmp0, g_free);
+  girara_list_t* res = girara_sorted_list_new_with_free((girara_compare_function_t)g_strcmp0, g_free);
   if (res == NULL) {
-    if (error != NULL) {
-      *error = ZATHURA_ERROR_OUT_OF_MEMORY;
-    }
+    zathura_check_set_error(error, ZATHURA_ERROR_OUT_OF_MEMORY);
     return NULL;
   }
 
@@ -34,6 +27,7 @@ girara_list_t* pdf_document_attachments_get(zathura_document_t* document, void* 
     PopplerAttachment* attachment = (PopplerAttachment*)attachments->data;
     girara_list_append(res, g_strdup(attachment->name));
   }
+  g_list_free_full(attachment_list, g_object_unref);
 
   return res;
 }
@@ -50,6 +44,7 @@ zathura_error_t pdf_document_attachment_save(zathura_document_t* document, void*
     return ZATHURA_ERROR_INVALID_ARGUMENTS;
   }
 
+  zathura_error_t ret = ZATHURA_ERROR_OK;
   GList* attachment_list = poppler_document_get_attachments(poppler_document);
   for (GList* attachments = attachment_list; attachments != NULL; attachments = g_list_next(attachments)) {
     PopplerAttachment* attachment = (PopplerAttachment*)attachments->data;
@@ -57,8 +52,10 @@ zathura_error_t pdf_document_attachment_save(zathura_document_t* document, void*
       continue;
     }
 
-    return poppler_attachment_save(attachment, file, NULL) ? ZATHURA_ERROR_OK : ZATHURA_ERROR_UNKNOWN;
+    ret = poppler_attachment_save(attachment, file, NULL) ? ZATHURA_ERROR_OK : ZATHURA_ERROR_UNKNOWN;
+    break;
   }
 
-  return ZATHURA_ERROR_OK;
+  g_list_free_full(attachment_list, g_object_unref);
+  return ret;
 }
