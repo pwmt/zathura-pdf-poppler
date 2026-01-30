@@ -10,7 +10,7 @@ Requirements
 
 The following dependencies are required:
 
-* `zathura` (>= 0.5.3)
+* `zathura` (>= 2026.01.30)
 * `girara`
 * `poppler-glib` (>= 21.12)
 
