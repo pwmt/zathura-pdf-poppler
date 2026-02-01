@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: Zlib */
 
+#include <girara/log.h>
 #include <girara/utils.h>
 
 #include "plugin.h"
