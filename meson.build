@@ -18,9 +18,10 @@ desktopdir = join_paths(datadir, 'applications')
 zathura = dependency('zathura', version: '>=2026.01.30', fallback: ['zathura', 'zathura_dependency'])
 girara = dependency('girara-gtk3', fallback: ['girara', 'girara_dependency'])
 glib = dependency('glib-2.0')
+gtk3 = dependency('gtk+-3.0')
 poppler = dependency('poppler-glib', version: '>=21.12')
 
-build_dependencies = [zathura, girara, glib, poppler]
+build_dependencies = [zathura, girara, glib, gtk3, poppler]
 
 if get_option('plugindir') == ''
   if zathura.type_name() == 'pkgconfig'

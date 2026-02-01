@@ -1,4 +1,4 @@
 [wrap-git]
 directory=zathura
-url=https://git.pwmt.org/pwmt/zathura.git
+url=https://github.com/pwmt/zathura.git
 revision=develop
