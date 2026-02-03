@@ -1,5 +1,5 @@
 project('zathura-pdf-poppler', 'c',
-  version: '2026.01.30',
+  version: '2026.02.03',
   meson_version: '>=0.61',
   default_options: ['c_std=c17', 'warning_level=3']
 )
