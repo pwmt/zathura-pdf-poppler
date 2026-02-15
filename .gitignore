@@ -20,3 +20,4 @@ build/
 .frama-c
 compile_commands.json
 *.log
+.cache
