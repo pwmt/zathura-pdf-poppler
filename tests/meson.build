@@ -11,7 +11,7 @@ if check.found()
 
   # Set plugin path for tests
   defines += [
-    '-D_TEST_PLUGIN_DIR_PATH=@0@/@1@'.format(meson.build_root(), pdf.outdir()),
+    '-D_TEST_PLUGIN_DIR_PATH=@0@/@1@'.format(meson.current_build_dir(), pdf.outdir()),
     '-D_TEST_PLUGIN_FILE_PATH=@0@'.format(pdf.full_path()),
     '-D_TEST_FILE_PATH=@0@'.format(meson.current_source_dir() + '/files/empty.pdf'),
     '-D_TEST_FILES_PATH=@0@'.format(meson.current_source_dir()),
@@ -43,7 +43,8 @@ if check.found()
       sources + ['utils.c', 'tests.c'],
       dependencies: build_dependencies + test_dependencies,
       include_directories: include_directories,
-      c_args: defines + flags
+      c_args: defines + flags,
+      override_options: ['b_asneeded=false']
     )
 
     if fiu_run.found() and libfiu.found()
