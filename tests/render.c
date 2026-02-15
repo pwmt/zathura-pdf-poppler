@@ -38,9 +38,9 @@ START_TEST(test_pdf_page_render_invalid) {
   cairo_surface_t* surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, 1, 1);
   cairo_t* cairo = cairo_create(surface);
 
-  fail_unless(zathura_page_render_cairo(NULL, NULL, 1.0, 0, 0)  == ZATHURA_ERROR_INVALID_ARGUMENTS);
-  fail_unless(zathura_page_render_cairo(page, NULL, 1.0, 0, 0)  == ZATHURA_ERROR_INVALID_ARGUMENTS);
-  fail_unless(zathura_page_render_cairo(NULL, cairo, 1.0, 0, 0) == ZATHURA_ERROR_INVALID_ARGUMENTS);
+  fail_unless(zathura_page_render_cairo(NULL, NULL, 0)  == ZATHURA_ERROR_INVALID_ARGUMENTS);
+  fail_unless(zathura_page_render_cairo(page, NULL, 0)  == ZATHURA_ERROR_INVALID_ARGUMENTS);
+  fail_unless(zathura_page_render_cairo(NULL, cairo, 0) == ZATHURA_ERROR_INVALID_ARGUMENTS);
 
   cairo_destroy(cairo);
   cairo_surface_destroy(surface);
@@ -75,7 +75,7 @@ START_TEST(test_pdf_page_render) {
   cairo_t* cairo = cairo_create(surface);
   cairo_save(cairo);
 
-  fail_unless(zathura_page_render_cairo(page, cairo, 1.0, 0, 0) == ZATHURA_ERROR_OK);
+  fail_unless(zathura_page_render_cairo(page, cairo, 0) == ZATHURA_ERROR_OK);
   cairo_restore(cairo);
 
   cairo_set_operator(cairo, CAIRO_OPERATOR_DEST_OVER);
