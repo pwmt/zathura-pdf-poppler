@@ -35,7 +35,7 @@ jobs:
       - name: Install zathura
         run: |
           mkdir zathura/build
-          meson setup --prefix /usr --libdir=lib/x86_64-linux-gnu zathura/build girara
+          meson setup --prefix /usr --libdir=lib/x86_64-linux-gnu zathura/build zathura
           ninja --verbose -C zathura/build install
           rm -rf zathura
       - name: Build and test
@@ -71,7 +71,7 @@ jobs:
       - name: Install zathura
         run: |
           mkdir zathura/build
-          meson setup --prefix /usr --libdir=lib/x86_64-linux-gnu zathura/build girara
+          meson setup --prefix /usr --libdir=lib/x86_64-linux-gnu zathura/build zathura
           ninja --verbose -C zathura/build install
           rm -rf zathura
       - name: Build and test
@@ -108,7 +108,7 @@ jobs:
       - name: Install zathura
         run: |
           mkdir zathura/build
-          meson setup --prefix /usr --libdir=lib/x86_64-linux-gnu zathura/build girara
+          meson setup --prefix /usr --libdir=lib/x86_64-linux-gnu zathura/build zathura
           ninja --verbose -C zathura/build install
           rm -rf zathura
       - name: Build and test
@@ -145,7 +145,7 @@ jobs:
       - name: Install zathura
         run: |
           mkdir zathura/build
-          meson setup --prefix /usr --libdir=lib/x86_64-linux-gnu zathura/build girara
+          meson setup --prefix /usr --libdir=lib/x86_64-linux-gnu zathura/build zathura
           ninja --verbose -C zathura/build install
           rm -rf zathura
       - name: Build and test
@@ -182,7 +182,7 @@ jobs:
       - name: Install zathura
         run: |
           mkdir zathura/build
-          meson setup --prefix /usr zathura/build girara
+          meson setup --prefix /usr zathura/build zathura
           ninja --verbose -C zathura/build install
           rm -rf zathura
       - name: Build and test
