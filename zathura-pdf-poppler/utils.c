@@ -20,8 +20,10 @@ zathura_link_t* poppler_link_to_zathura_link(PopplerDocument* poppler_document, 
 
     type = ZATHURA_LINK_GOTO_DEST;
 
+    PopplerDest* named_dest = NULL;
     if (poppler_action->goto_dest.dest->type == POPPLER_DEST_NAMED) {
-      poppler_destination = poppler_document_find_dest(poppler_document, poppler_destination->named_dest);
+      named_dest          = poppler_document_find_dest(poppler_document, poppler_destination->named_dest);
+      poppler_destination = named_dest;
       if (poppler_destination == NULL) {
         return NULL;
       }
@@ -30,6 +32,7 @@ zathura_link_t* poppler_link_to_zathura_link(PopplerDocument* poppler_document, 
     /* the page number is coming from poppler, so the page should exist; return if it doesn't */
     PopplerPage* poppler_page = poppler_document_get_page(poppler_document, poppler_destination->page_num - 1);
     if (poppler_page == NULL) {
+      poppler_dest_free(named_dest);
       return NULL;
     }
 
@@ -101,8 +104,12 @@ zathura_link_t* poppler_link_to_zathura_link(PopplerDocument* poppler_document, 
       target.page_number      = poppler_destination->page_num - 1;
       break;
     default:
+      g_object_unref(poppler_page);
+      poppler_dest_free(named_dest);
       return NULL;
     }
+    g_object_unref(poppler_page);
+    poppler_dest_free(named_dest);
     break;
   }
   case POPPLER_ACTION_GOTO_REMOTE:
