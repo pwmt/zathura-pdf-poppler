@@ -33,7 +33,7 @@ girara_list_t* pdf_document_get_information(zathura_document_t* document, void* 
   };
 
   for (unsigned int i = 0; i < LENGTH(string_values); i++) {
-    char* string_value = NULL;
+    g_autofree char* string_value = NULL;
     g_object_get(poppler_document, string_values[i].property, &string_value, NULL);
     if (!string_value) {
       continue;
@@ -61,6 +61,7 @@ girara_list_t* pdf_document_get_information(zathura_document_t* document, void* 
     }
 
     g_autofree char* string_value = g_date_time_format(time_value, "%Y-%m-%d %H:%M:%S");
+    g_date_time_unref(time_value);
     zathura_document_information_entry_t* entry =
         zathura_document_information_entry_new(time_values[i].type, string_value);
     if (entry != NULL) {
