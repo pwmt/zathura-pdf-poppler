@@ -45,7 +45,7 @@ zathura_error_t pdf_document_attachment_save(zathura_document_t* document, void*
     return ZATHURA_ERROR_INVALID_ARGUMENTS;
   }
 
-  zathura_error_t ret = ZATHURA_ERROR_OK;
+  zathura_error_t ret    = ZATHURA_ERROR_OK;
   GList* attachment_list = poppler_document_get_attachments(poppler_document);
   for (GList* attachments = attachment_list; attachments != NULL; attachments = g_list_next(attachments)) {
     PopplerAttachment* attachment = (PopplerAttachment*)attachments->data;

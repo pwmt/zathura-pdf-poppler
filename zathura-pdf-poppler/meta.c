@@ -32,9 +32,13 @@ girara_list_t* pdf_document_get_information(zathura_document_t* document, void* 
       {"format", ZATHURA_DOCUMENT_INFORMATION_FORMAT},
   };
 
-  char* string_value;
   for (unsigned int i = 0; i < LENGTH(string_values); i++) {
+    g_autofree char* string_value = NULL;
     g_object_get(poppler_document, string_values[i].property, &string_value, NULL);
+    if (!string_value) {
+      continue;
+    }
+
     zathura_document_information_entry_t* entry =
         zathura_document_information_entry_new(string_values[i].type, string_value);
     if (entry != NULL) {
@@ -44,25 +48,24 @@ girara_list_t* pdf_document_get_information(zathura_document_t* document, void* 
 
   /* get time values */
   static const info_value_t time_values[] = {
-      {"creation-date", ZATHURA_DOCUMENT_INFORMATION_CREATION_DATE},
-      {"mod-date", ZATHURA_DOCUMENT_INFORMATION_MODIFICATION_DATE},
+      {"creation-datetime", ZATHURA_DOCUMENT_INFORMATION_CREATION_DATE},
+      {"mod-datetime", ZATHURA_DOCUMENT_INFORMATION_MODIFICATION_DATE},
   };
 
   for (unsigned int i = 0; i < LENGTH(time_values); i++) {
-    /* the properties stored in PopplerDocument are gints */
-    gint time_value;
+    /* the properties stored in PopplerDocument are GDateTime* */
+    GDateTime* time_value = NULL;
     g_object_get(poppler_document, time_values[i].property, &time_value, NULL);
-    /* but we need time_ts */
-    time_t r_time_value = time_value;
-    char* tmp           = ctime(&r_time_value);
-    if (tmp != NULL) {
-      string_value = g_strndup(tmp, strlen(tmp) - 1);
-      zathura_document_information_entry_t* entry =
-          zathura_document_information_entry_new(time_values[i].type, string_value);
-      if (entry != NULL) {
-        girara_list_append(list, entry);
-      }
-      g_free(string_value);
+    if (!time_value) {
+      continue;
+    }
+
+    g_autofree char* string_value = g_date_time_format(time_value, "%Y-%m-%d %H:%M:%S");
+    g_date_time_unref(time_value);
+    zathura_document_information_entry_t* entry =
+        zathura_document_information_entry_new(time_values[i].type, string_value);
+    if (entry != NULL) {
+      girara_list_append(list, entry);
     }
   }
 

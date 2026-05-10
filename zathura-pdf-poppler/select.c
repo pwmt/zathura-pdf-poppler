@@ -41,7 +41,10 @@ girara_list_t* pdf_page_get_selection(zathura_page_t* page, void* data, zathura_
     goto error_free;
   }
 
-  cairo_region_t* region   = poppler_page_get_selected_region(poppler_page, 1.0, POPPLER_SELECTION_GLYPH, &rect);
+  cairo_region_t* region = poppler_page_get_selected_region(poppler_page, 1.0, POPPLER_SELECTION_GLYPH, &rect);
+  if (region == NULL) {
+    goto error_free;
+  }
   const int num_rectangles = cairo_region_num_rectangles(region);
   for (int n = 0; n < num_rectangles; ++n) {
     cairo_rectangle_int_t r;

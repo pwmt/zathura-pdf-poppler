@@ -46,6 +46,7 @@ girara_list_t* pdf_page_images_get(zathura_page_t* page, void* data, zathura_err
     zathura_image->data = g_try_malloc(sizeof(gint));
     if (zathura_image->data == NULL) {
       zathura_check_set_error(error, ZATHURA_ERROR_OUT_OF_MEMORY);
+      g_free(zathura_image);
       goto error_free;
     }
 
