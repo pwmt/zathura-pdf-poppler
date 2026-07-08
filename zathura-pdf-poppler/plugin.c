@@ -2,7 +2,7 @@
 
 #include "plugin.h"
 
-ZATHURA_PLUGIN_REGISTER_WITH_FUNCTIONS("pdf-poppler", VERSION_MAJOR, VERSION_MINOR, VERSION_REV,
+ZATHURA_PLUGIN_REGISTER_WITH_FUNCTIONS("pdf-poppler", VERSION,
                                        ZATHURA_PLUGIN_FUNCTIONS({
                                            .document_open            = pdf_document_open,
                                            .document_free            = pdf_document_free,
