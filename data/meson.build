@@ -1,7 +1,7 @@
 install_data('org.pwmt.zathura-pdf-poppler.metainfo.xml', install_dir: metainfodir)
 install_data('org.pwmt.zathura-pdf-poppler.desktop', install_dir: desktopdir)
 
-desktop_file_validate = find_program('desktop-file-validate', required: get_option('tests'), native: true)
+desktop_file_validate = find_program('desktop-file-validate', required: false, native: true)
 if desktop_file_validate.found()
   test('validate-desktop',
     desktop_file_validate,
@@ -9,7 +9,7 @@ if desktop_file_validate.found()
   )
 endif
 
-appstream_util = find_program('appstreamcli', required: get_option('tests'), native: true)
+appstream_util = find_program('appstreamcli', required: false, native: true)
 if appstream_util.found()
   test('validate-appdata',
     appstream_util,
