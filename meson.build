@@ -1,5 +1,5 @@
 project('zathura-pdf-poppler', 'c',
-  version: '2026.05.10',
+  version: '2026.07.18',
   meson_version: '>=0.61',
   default_options: ['c_std=c23', 'warning_level=3']
 )
@@ -14,7 +14,7 @@ metainfodir = join_paths(datadir, 'metainfo')
 desktopdir = join_paths(datadir, 'applications')
 
 # required dependencies
-zathura = dependency('zathura', version: '>=2026.01.30')
+zathura = dependency('zathura', version: '>=2026.07.18')
 girara = dependency('girara')
 glib = dependency('glib-2.0')
 poppler = dependency('poppler-glib', version: '>=21.12')
