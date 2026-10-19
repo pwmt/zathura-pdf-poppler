@@ -72,3 +72,46 @@ error_free:
   }
   return NULL;
 }
+
+zathura_error_t pdf_page_get_text_layout(zathura_page_t* page, void* data, zathura_text_layout_t* layout) {
+  if (page == NULL || data == NULL || layout == NULL) {
+    return ZATHURA_ERROR_INVALID_ARGUMENTS;
+  }
+
+  PopplerPage* poppler_page = data;
+  char* text                = poppler_page_get_text(poppler_page);
+  if (text == NULL) {
+    return ZATHURA_ERROR_UNKNOWN;
+  }
+
+  /* one rectangle per character of the text returned by poppler_page_get_text */
+  PopplerRectangle* rectangles = NULL;
+  guint n_rectangles           = 0;
+  if (poppler_page_get_text_layout(poppler_page, &rectangles, &n_rectangles) == FALSE) {
+    /* pages without text have no layout */
+    layout->text    = text;
+    layout->rects   = NULL;
+    layout->n_rects = 0;
+    return ZATHURA_ERROR_OK;
+  }
+
+  zathura_rectangle_t* rects = g_try_malloc_n(n_rectangles, sizeof(zathura_rectangle_t));
+  if (rects == NULL) {
+    g_free(rectangles);
+    g_free(text);
+    return ZATHURA_ERROR_OUT_OF_MEMORY;
+  }
+
+  for (guint n = 0; n < n_rectangles; ++n) {
+    rects[n].x1 = rectangles[n].x1;
+    rects[n].x2 = rectangles[n].x2;
+    rects[n].y1 = rectangles[n].y1;
+    rects[n].y2 = rectangles[n].y2;
+  }
+  g_free(rectangles);
+
+  layout->text    = text;
+  layout->rects   = rects;
+  layout->n_rects = n_rectangles;
+  return ZATHURA_ERROR_OK;
+}
