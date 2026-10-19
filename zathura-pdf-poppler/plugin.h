@@ -164,6 +164,17 @@ girara_list_t* pdf_page_get_selection(zathura_page_t* page, void* data, zathura_
                                       zathura_error_t* error);
 
 /**
+ * Get the text layout of a page
+ *
+ * @param page Page
+ * @param poppler_page The poppler page
+ * @param layout Set to the page text and the bounding box of each character
+ * @return ZATHURA_ERROR_OK when no error occurred, otherwise see
+ *    zathura_error_t
+ */
+zathura_error_t pdf_page_get_text_layout(zathura_page_t* page, void* poppler_page, zathura_text_layout_t* layout);
+
+/**
  * Renders a page onto a cairo object
  *
  * @param page Page
